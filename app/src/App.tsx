@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/components/theme-provider";
 import { AppSidebar } from "@/components/AppSidebar";
-import './App.css'
+import "./App.css";
 
 function App() {
 
@@ -20,7 +20,7 @@ function App() {
         </SidebarProvider>
       </ThemeProvider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

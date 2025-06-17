@@ -23,6 +23,24 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      "semi": [2, "always"],
+      "@typescript-eslint/naming-convention": ["warn",
+        {
+          "selector": "function",
+          "format": ["camelCase", "PascalCase"]
+        },
+        {
+          "selector": "enumMember",
+          "format": ["UPPER_CASE"]
+        }],
+      "quotes": [
+        "error",
+        "double",
+        {
+          "avoidEscape": true,
+          "allowTemplateLiterals": true
+        }
+      ],
     },
   },
 )

@@ -8,6 +8,7 @@ export const EDITOR_EVENT = {
   ChangePosition: "ChangePosition",
   ChangeScale: "ChangeScale",
   ChangeRotation: "ChangeRotation",
+  ChangeMeshColor: "ChangeMeshColor",
   ChangeSceneColor: "ChangeSceneColor",
   UNDO: "Undo",
   REDO: "Redo",

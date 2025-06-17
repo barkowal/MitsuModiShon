@@ -13,6 +13,7 @@ import { SetMeshPositionCommand } from "./commands/SetMeshPositionCommand";
 import { SetMeshScaleCommand } from "./commands/SetMeshScaleCommand";
 import { SetMeshRotationCommand } from "./commands/SetMeshRotationCommand";
 import * as THREE from "three/webgpu";
+import { SetMeshColorCommand } from "./commands/SetMeshColorCommand";
 
 
 function Editor() {
@@ -26,7 +27,7 @@ function Editor() {
       const mesh = GetMesh(meshType);
       commandHistory.addCommand(new AddMeshCommand(scene, mesh));
       uiController.refreshTree();
-    }
+    };
 
     const handleSelectObject = (id: number) => {
       selectionController.changeSelection(scene, id);
@@ -54,10 +55,18 @@ function Editor() {
       }
     };
 
+    const handleChangeMeshColor = (color: number) => {
+      const meshColor = new THREE.Color(color);
+      const selectedMesh = selectionController.getCurrentMesh();
+      if (selectedMesh) {
+        commandHistory.addCommand(new SetMeshColorCommand(selectedMesh, meshColor));
+      }
+    };
+
     const handleChangeSceneColor = (color: number) => {
       const background = new THREE.Color(color);
       scene.background = background;
-    }
+    };
 
     const handleUndo = () => {
       commandHistory.undo();
@@ -74,6 +83,7 @@ function Editor() {
     editorEventBus.on(EDITOR_EVENT.ChangePosition, handleChangePosition);
     editorEventBus.on(EDITOR_EVENT.ChangeScale, handleChangeScale);
     editorEventBus.on(EDITOR_EVENT.ChangeRotation, handleChangeRotation);
+    editorEventBus.on(EDITOR_EVENT.ChangeMeshColor, handleChangeMeshColor);
     editorEventBus.on(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
     editorEventBus.on(EDITOR_EVENT.UNDO, handleUndo);
     editorEventBus.on(EDITOR_EVENT.REDO, handleRedo);
@@ -84,6 +94,7 @@ function Editor() {
       editorEventBus.off(EDITOR_EVENT.ChangePosition, handleChangePosition);
       editorEventBus.off(EDITOR_EVENT.ChangeScale, handleChangeScale);
       editorEventBus.off(EDITOR_EVENT.ChangeRotation, handleChangeRotation);
+      editorEventBus.off(EDITOR_EVENT.ChangeMeshColor, handleChangeMeshColor);
       editorEventBus.off(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
       editorEventBus.off(EDITOR_EVENT.UNDO, handleUndo);
       editorEventBus.off(EDITOR_EVENT.REDO, handleRedo);
@@ -93,8 +104,7 @@ function Editor() {
   return (
     <>
 
-      <div className="w-full h-full flex justify-center">
-
+      <div className="w-full h-full flex justify-center overflow-auto">
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel>
             <div className="flex-col inline-flex w-full h-full bg-background">
@@ -106,7 +116,7 @@ function Editor() {
             </div>
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel maxSize={32} minSize={18} className="bg-card border border-l-card-foreground">
+          <ResizablePanel maxSize={38} minSize={26} className="bg-card border border-l-card-foreground">
             <EditorPanel />
           </ResizablePanel>
         </ResizablePanelGroup>
