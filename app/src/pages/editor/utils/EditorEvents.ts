@@ -2,6 +2,7 @@ import type { TreeItem, Vec3 } from "@/pages/editor/utils/Types";
 
 export const EDITOR_EVENT = {
   AddMesh: "AddMesh",
+  RemoveMesh: "RemoveMesh",
   RefreshTreeView: "RefreshTreeView",
   RefreshTransformationMenu: "RefreshTransformationMenu",
   RefreshColorMenu: "RefreshColorMenu",

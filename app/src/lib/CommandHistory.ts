@@ -1,5 +1,7 @@
 import type { Command } from "@/pages/editor/commands/CommandInterface";
 
+const MAX_COMMAND_COUNT = 25;
+
 export class CommandHistory {
   private commandStack: Array<Command>;
   private redoStack: Array<Command>;
@@ -12,6 +14,7 @@ export class CommandHistory {
 
   addCommand(command: Command) {
     command.execute();
+    this.removeFirstIfFull();
     this.commandStack.push(command);
     this.clearRedoStack();
   }
@@ -39,6 +42,14 @@ export class CommandHistory {
         this.commandStack.push(command);
       }
 
+    }
+  }
+
+  private removeFirstIfFull() {
+    if (this.commandStack.length >= MAX_COMMAND_COUNT) {
+      const removedCommand = this.commandStack.shift();
+      console.log(removedCommand);
+      removedCommand?.destroy();
     }
   }
 

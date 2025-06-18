@@ -2,15 +2,18 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { MESH_TYPE } from "../utils/GetMesh";
+import { LucidePackagePlus } from "lucide-react";
 
 function AddMeshDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Add Mesh</Button>
+        <Button className="[&_svg]:size-6" >
+          <LucidePackagePlus className="size-1" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>Add new mesh</DropdownMenuLabel>
+        <DropdownMenuLabel> Add Mesh </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           {

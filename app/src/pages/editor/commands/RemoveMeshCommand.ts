@@ -1,7 +1,7 @@
 import type { Command } from "./CommandInterface";
 import { Scene, Mesh } from "three/webgpu";
 
-export class AddMeshCommand implements Command {
+export class RemoveMeshCommand implements Command {
     private scene: Scene;
     private mesh: Mesh;
 
@@ -11,11 +11,11 @@ export class AddMeshCommand implements Command {
     }
 
     execute() {
-        this.scene.add(this.mesh);
+        this.scene.remove(this.mesh);
     }
 
     undo() {
-        this.scene.remove(this.mesh);
+        this.scene.add(this.mesh);
     }
 
     destroy(): void {
@@ -28,5 +28,6 @@ export class AddMeshCommand implements Command {
             this.mesh.geometry.dispose();
         }
     }
+
 
 }

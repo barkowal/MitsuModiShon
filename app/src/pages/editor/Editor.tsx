@@ -14,6 +14,7 @@ import { SetMeshScaleCommand } from "./commands/SetMeshScaleCommand";
 import { SetMeshRotationCommand } from "./commands/SetMeshRotationCommand";
 import * as THREE from "three/webgpu";
 import { SetMeshColorCommand } from "./commands/SetMeshColorCommand";
+import { RemoveMeshCommand } from "./commands/RemoveMeshCommand";
 
 
 function Editor() {
@@ -27,6 +28,14 @@ function Editor() {
       const mesh = GetMesh(meshType);
       commandHistory.addCommand(new AddMeshCommand(scene, mesh));
       uiController.refreshTree();
+    };
+
+    const handleRemoveMesh = () => {
+      const selectedMesh = selectionController.getCurrentMesh();
+      if (selectedMesh) {
+        commandHistory.addCommand(new RemoveMeshCommand(scene, selectedMesh));
+        uiController.refreshTree();
+      }
     };
 
     const handleSelectObject = (id: number) => {
@@ -79,6 +88,7 @@ function Editor() {
     };
 
     editorEventBus.on(EDITOR_EVENT.AddMesh, handleAddMesh);
+    editorEventBus.on(EDITOR_EVENT.RemoveMesh, handleRemoveMesh);
     editorEventBus.on(EDITOR_EVENT.SelectObject, handleSelectObject);
     editorEventBus.on(EDITOR_EVENT.ChangePosition, handleChangePosition);
     editorEventBus.on(EDITOR_EVENT.ChangeScale, handleChangeScale);
