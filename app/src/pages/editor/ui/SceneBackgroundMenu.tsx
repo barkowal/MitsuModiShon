@@ -18,7 +18,7 @@ export function SceneBackgroundMenu() {
         <span className="mx-2">
           Scene Color
         </span>
-        <ColorPopover onColorChange={(val: string) => { changeSceneColor(val); }} defaultValue={sceneColor} />
+        <ColorPopover onColorChange={(val: string) => { changeSceneColor(val); }} colorValue={sceneColor} />
       </span>
     </div>
   </>);

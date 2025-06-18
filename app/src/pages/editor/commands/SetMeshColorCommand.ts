@@ -16,7 +16,7 @@ export class SetMeshColorCommand implements Command {
             return;
         }
 
-        this.oldColor = mesh.material.color;
+        this.oldColor = new Color(mesh.material.color);
         this.mesh = mesh;
     }
 

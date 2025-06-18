@@ -55,7 +55,7 @@ const InitRenderer = () => {
         const renderScene = (time: number) => {
             if (renderer) {
                 time *= 0.01;
-                renderer.clearAsync()
+                renderer.clearAsync();
                 postProcessing.renderAsync();
 
             }

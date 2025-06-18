@@ -6,14 +6,12 @@ import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 export class SelectionController {
     private raycaster: THREE.Raycaster;
     private selectedObject: THREE.Mesh | null;
-    private selectedObjectSavedColor: THREE.Color;
     private transformController: TransformControls | null;
     private subscribers: Array<CallableFunction>;
 
     constructor() {
         this.raycaster = new THREE.Raycaster();
         this.selectedObject = null;
-        this.selectedObjectSavedColor = new THREE.Color(0xffffff);
         this.transformController = null;
         this.subscribers = [];
     }
@@ -47,22 +45,8 @@ export class SelectionController {
         }
     }
 
-    onSelection(fn: CallableFunction) {
-        this.subscribers.push(fn);
-    }
-
-    notifySubscribers(obj: THREE.Object3D) {
-        this.subscribers.forEach((fn) => {
-            fn(obj);
-        });
-    }
-
-    destroy() {
-        this.subscribers = [];
-    }
-
     changeSelection(scene: THREE.Scene, id: number) {
-        if (this.selectedObject?.id == id) {
+        if (this.selectedObject?.id === id) {
             return;
         }
         this.checkCurrentSelectedObject(scene);
@@ -84,21 +68,29 @@ export class SelectionController {
         return -1;
     }
 
+    onSelection(fn: CallableFunction) {
+        this.subscribers.push(fn);
+    }
+
+    notifySubscribers(obj: THREE.Object3D) {
+        this.subscribers.forEach((fn) => {
+            fn(obj);
+        });
+    }
+
+    destroy() {
+        this.subscribers = [];
+    }
+
     private setCurrentSelection(mesh: THREE.Mesh) {
         this.selectedObject = mesh;
-        this.selectedObjectSavedColor.set(mesh.material.color);
-        // mesh.material.color.setHex(0xa9e2f2);
         this.transformController?.attach(mesh);
         this.notifySubscribers(mesh);
     }
 
     private removeCurrentSelection() {
         if (this.selectedObject) {
-            if ("color" in this.selectedObject.material
-                && this.selectedObject.material.color instanceof THREE.Color) {
-                this.selectedObject.material.color.set(this.selectedObjectSavedColor);
-                this.transformController?.detach();
-            }
+            this.transformController?.detach();
             this.selectedObject = null;
         }
     }
@@ -107,7 +99,6 @@ export class SelectionController {
         if (this.selectedObject != null) {
             const found = scene.getObjectById(this.selectedObject.id);
             if (found == undefined) {
-                this.selectedObject.material.color.set(this.selectedObjectSavedColor);
                 this.transformController?.detach();
                 this.selectedObject = null;
             }

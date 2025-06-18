@@ -4,6 +4,7 @@ export const EDITOR_EVENT = {
   AddMesh: "AddMesh",
   RefreshTreeView: "RefreshTreeView",
   RefreshTransformationMenu: "RefreshTransformationMenu",
+  RefreshColorMenu: "RefreshColorMenu",
   SelectObject: "SelectObject",
   ChangePosition: "ChangePosition",
   ChangeScale: "ChangeScale",

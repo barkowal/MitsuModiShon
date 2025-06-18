@@ -15,6 +15,7 @@ export class UiController {
     refreshPanel() {
         this.refreshTree();
         this.refreshTransformation();
+        this.refreshColorMenu();
     }
 
     refreshTree() {
@@ -28,32 +29,50 @@ export class UiController {
     }
 
     refreshTransformation() {
-        const mesh = this.scene.getObjectById(this.selectedMeshId)
+        const mesh = this.scene.getObjectById(this.selectedMeshId);
         if (mesh == undefined) {
             return;
-        }
+        };
         const pos = {
             x: mesh.position.x,
             y: mesh.position.y,
             z: mesh.position.z,
-        }
+        };
         const scale = {
             x: mesh.scale.x,
             y: mesh.scale.y,
             z: mesh.scale.z,
-        }
+        };
         const rotation = {
             x: mesh.rotation.x * (180 / Math.PI),
             y: mesh.rotation.y * (180 / Math.PI),
             z: mesh.rotation.z * (180 / Math.PI),
-        }
+        };
         const transform = [pos, scale, rotation];
         editorEventBus.emit(EDITOR_EVENT.RefreshTransformationMenu, transform);
     }
 
+    refreshColorMenu() {
+        const mesh = this.scene.getObjectById(this.selectedMeshId);
+        if (mesh == undefined || !(mesh instanceof THREE.Mesh)) {
+            return;
+        };
+
+        if (!("color" in mesh.material) ||
+            !(mesh.material.color instanceof THREE.Color)) {
+            return;
+        }
+        const color = "#" + mesh.material.color.getHexString();
+        editorEventBus.emit(EDITOR_EVENT.RefreshColorMenu, color);
+    }
+
     setSelectedMeshId(id: number) {
+        if (this.selectedMeshId === id) {
+            return;
+        }
         this.selectedMeshId = id;
         this.refreshTransformation();
+        this.refreshColorMenu();
     }
 
     // Could be util function, if used more
@@ -62,7 +81,7 @@ export class UiController {
             id: obj.id,
             name: obj.name,
             children: obj.children
-        }
+        };
         return item;
     }
 
