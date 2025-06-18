@@ -82,6 +82,15 @@ export class SelectionController {
         this.subscribers = [];
     }
 
+    checkCurrentSelectedObject(scene: THREE.Scene) {
+        if (this.selectedObject != null) {
+            const found = scene.getObjectById(this.selectedObject.id);
+            if (found == undefined) {
+                this.transformController?.detach();
+                this.selectedObject = null;
+            }
+        }
+    }
     private setCurrentSelection(mesh: THREE.Mesh) {
         this.selectedObject = mesh;
         this.transformController?.attach(mesh);
@@ -95,13 +104,4 @@ export class SelectionController {
         }
     }
 
-    private checkCurrentSelectedObject(scene: THREE.Scene) {
-        if (this.selectedObject != null) {
-            const found = scene.getObjectById(this.selectedObject.id);
-            if (found == undefined) {
-                this.transformController?.detach();
-                this.selectedObject = null;
-            }
-        }
-    }
 }

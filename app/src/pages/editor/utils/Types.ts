@@ -16,5 +16,10 @@ export const TRANSFORMATION_ARR = {
     Rotation: 2,
 } as const;
 
-// type ObjectValues<T> = T[keyof T]
+export type ListenerHandler = {
+    node: Node | Window,
+    event: string,
+    handler: EventListenerOrEventListenerObject,
+    capture: boolean
+}
 

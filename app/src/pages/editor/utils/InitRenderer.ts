@@ -8,6 +8,7 @@ import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import { convertTVector3ToVec3 } from "./utils";
 import type { Vec3 } from "./Types";
 import { DEFAULT_SCENE_COLOR } from "./Global";
+import { AddListener, RemoveAllListeners } from "./AddListener";
 
 const InitRenderer = () => {
 
@@ -67,6 +68,7 @@ const InitRenderer = () => {
             renderer?.setAnimationLoop(null);
             resizeObserver.disconnect();
             selectionController.destroy();
+            RemoveAllListeners();
 
         };
     }, [renderer, scene, selectionController]);
@@ -121,11 +123,14 @@ function handleResizing(renderer: THREE.Renderer, camera: THREE.PerspectiveCamer
     });
     observer.observe(canvas);
 
-    window.addEventListener("resize", () => {
+    const handleResize = () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    });
+    };
+
+    AddListener(window, "resize", handleResize);
+
     return observer;
 }
 
@@ -137,17 +142,21 @@ function handlePicking(canvas: HTMLElement, scene: THREE.Scene, camera: THREE.Ca
         mouse.y = -100000;
     };
 
-
-    window.addEventListener("click", (e) => {
+    const handlePickEvent = (e: Event) => {
+        if (!(e instanceof MouseEvent)) {
+            return;
+        }
         const offsetX = canvas.offsetLeft;
         const offsetY = canvas.offsetTop;
         mouse.x = ((e.clientX - offsetX) / canvas.clientWidth) * 2 - 1;
         mouse.y = -((e.clientY - offsetY) / canvas.clientHeight) * 2 + 1;
         selectionController.select(mouse, scene, camera);
-    });
+    };
 
-    window.addEventListener("mouseout", clearMouse);
-    window.addEventListener("mouseleave", clearMouse);
+    AddListener(window, "click", handlePickEvent);
+    AddListener(window, "mouseout", clearMouse);
+    AddListener(window, "mouseleave", clearMouse);
+
 }
 
 function createOutlinePass(scene: THREE.Scene, camera: THREE.Camera, selectionController: SelectionController) {

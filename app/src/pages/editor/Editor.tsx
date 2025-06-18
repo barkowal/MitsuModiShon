@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, type KeyboardEvent } from "react";
 import EditorPanel from "./ui/EditorPanel";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import EditorTopBar from "./ui/EditorTopBar";
@@ -15,6 +15,7 @@ import { SetMeshRotationCommand } from "./commands/SetMeshRotationCommand";
 import * as THREE from "three/webgpu";
 import { SetMeshColorCommand } from "./commands/SetMeshColorCommand";
 import { RemoveMeshCommand } from "./commands/RemoveMeshCommand";
+import { HandleKeyboardPress } from "./utils/KeyboardShortcuts";
 
 
 function Editor() {
@@ -35,6 +36,7 @@ function Editor() {
       if (selectedMesh) {
         commandHistory.addCommand(new RemoveMeshCommand(scene, selectedMesh));
         uiController.refreshTree();
+        selectionController.checkCurrentSelectedObject(scene); // Only for now. In the future add something to reduce repeating, maybe event for refreshing?
       }
     };
 
@@ -80,11 +82,13 @@ function Editor() {
     const handleUndo = () => {
       commandHistory.undo();
       uiController.refreshPanel();
+      selectionController.checkCurrentSelectedObject(scene);
     };
 
     const handleRedo = () => {
       commandHistory.redo();
       uiController.refreshPanel();
+      selectionController.checkCurrentSelectedObject(scene);
     };
 
     editorEventBus.on(EDITOR_EVENT.AddMesh, handleAddMesh);
@@ -117,11 +121,12 @@ function Editor() {
       <div className="w-full h-full flex justify-center overflow-auto">
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel>
-            <div className="flex-col inline-flex w-full h-full bg-background">
+            <div tabIndex={1} onKeyDown={(event: KeyboardEvent) => { HandleKeyboardPress(event); }}
+              className="flex-col inline-flex w-full h-full bg-background">
               <div className="flex-auto bg-card border border-b-card-foreground">
                 <EditorTopBar />
               </div>
-              <div ref={canvasRef} className="flex-auto">
+              <div ref={canvasRef} className="flex-auto" >
               </div>
             </div>
           </ResizablePanel>
