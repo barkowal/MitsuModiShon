@@ -14,8 +14,8 @@ import { SetMeshScaleCommand } from "./commands/SetMeshScaleCommand";
 import { SetMeshRotationCommand } from "./commands/SetMeshRotationCommand";
 import * as THREE from "three/webgpu";
 import { SetMeshColorCommand } from "./commands/SetMeshColorCommand";
-import { RemoveMeshCommand } from "./commands/RemoveMeshCommand";
 import { HandleKeyboardPress } from "./utils/KeyboardShortcuts";
+import { RemoveObjectsCommand } from "./commands/RemoveObjectsCommand";
 
 
 function Editor() {
@@ -32,12 +32,10 @@ function Editor() {
     };
 
     const handleRemoveMesh = () => {
-      const selectedMesh = selectionController.getCurrentMesh();
-      if (selectedMesh) {
-        commandHistory.addCommand(new RemoveMeshCommand(scene, selectedMesh));
-        uiController.refreshTree();
-        selectionController.checkCurrentSelectedObject(scene); // Only for now. In the future add something to reduce repeating, maybe event for refreshing?
-      }
+      const selections = selectionController.getSelectedObjects();
+      commandHistory.addCommand(new RemoveObjectsCommand(scene, selections));
+      uiController.refreshTree();
+      selectionController.checkIfSelectionExists(scene); // Only for now. In the future add something to reduce repeating, maybe event for refreshing?
     };
 
     const handleSelectObject = (id: number) => {
@@ -45,32 +43,37 @@ function Editor() {
       uiController.setSelectedMeshId(id);
     };
 
+    const handleAddSelection = (id: number) => {
+      selectionController.addSelection(scene, id);
+      uiController.setSelectedMeshId(id);
+    };
+
     const handleChangePosition = (pos: Vec3) => {
-      const selectedMesh = selectionController.getCurrentMesh();
-      if (selectedMesh) {
+      const selectedMesh = selectionController.getCurrentSelection();
+      if (selectedMesh && selectedMesh instanceof THREE.Mesh) {
         commandHistory.addCommand(new SetMeshPositionCommand(selectedMesh, pos));
       }
     };
 
     const handleChangeScale = (scale: Vec3) => {
-      const selectedMesh = selectionController.getCurrentMesh();
-      if (selectedMesh) {
-        commandHistory.addCommand(new SetMeshScaleCommand(selectedMesh, scale));
+      const selection = selectionController.getCurrentSelection();
+      if (selection && selection instanceof THREE.Mesh) {
+        commandHistory.addCommand(new SetMeshScaleCommand(selection, scale));
       }
     };
 
     const handleChangeRotation = (rotation: Vec3) => {
-      const selectedMesh = selectionController.getCurrentMesh();
-      if (selectedMesh) {
-        commandHistory.addCommand(new SetMeshRotationCommand(selectedMesh, rotation));
+      const selection = selectionController.getCurrentSelection();
+      if (selection && selection instanceof THREE.Mesh) {
+        commandHistory.addCommand(new SetMeshRotationCommand(selection, rotation));
       }
     };
 
     const handleChangeMeshColor = (color: number) => {
       const meshColor = new THREE.Color(color);
-      const selectedMesh = selectionController.getCurrentMesh();
-      if (selectedMesh) {
-        commandHistory.addCommand(new SetMeshColorCommand(selectedMesh, meshColor));
+      const selection = selectionController.getCurrentSelection();
+      if (selection && selection instanceof THREE.Mesh) {
+        commandHistory.addCommand(new SetMeshColorCommand(selection, meshColor));
       }
     };
 
@@ -82,18 +85,19 @@ function Editor() {
     const handleUndo = () => {
       commandHistory.undo();
       uiController.refreshPanel();
-      selectionController.checkCurrentSelectedObject(scene);
+      selectionController.checkIfSelectionExists(scene);
     };
 
     const handleRedo = () => {
       commandHistory.redo();
       uiController.refreshPanel();
-      selectionController.checkCurrentSelectedObject(scene);
+      selectionController.checkIfSelectionExists(scene);
     };
 
     editorEventBus.on(EDITOR_EVENT.AddMesh, handleAddMesh);
     editorEventBus.on(EDITOR_EVENT.RemoveMesh, handleRemoveMesh);
     editorEventBus.on(EDITOR_EVENT.SelectObject, handleSelectObject);
+    editorEventBus.on(EDITOR_EVENT.AddSelection, handleAddSelection);
     editorEventBus.on(EDITOR_EVENT.ChangePosition, handleChangePosition);
     editorEventBus.on(EDITOR_EVENT.ChangeScale, handleChangeScale);
     editorEventBus.on(EDITOR_EVENT.ChangeRotation, handleChangeRotation);
@@ -105,6 +109,7 @@ function Editor() {
     return () => {
       editorEventBus.off(EDITOR_EVENT.AddMesh, handleAddMesh);
       editorEventBus.off(EDITOR_EVENT.SelectObject, handleSelectObject);
+      editorEventBus.off(EDITOR_EVENT.AddSelection, handleAddSelection);
       editorEventBus.off(EDITOR_EVENT.ChangePosition, handleChangePosition);
       editorEventBus.off(EDITOR_EVENT.ChangeScale, handleChangeScale);
       editorEventBus.off(EDITOR_EVENT.ChangeRotation, handleChangeRotation);

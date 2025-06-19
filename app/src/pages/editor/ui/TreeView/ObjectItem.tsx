@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import type { TreeItem } from "../../utils/Types";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { ObjectList } from "./ObjectList";
@@ -11,38 +11,42 @@ type Props = {
 
 export function ObjectItem({ item, level }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [selectedObjectId, setSelectedObjectId] = useState<number>(0);
+  const [selectedObjectsId, setSelectedObjectsId] = useState<Array<number>>([0]);
 
-  const bgColor = item.id === selectedObjectId ? "var(--card)" : "";
+  const bgColor = selectedObjectsId.includes(item.id) ? "var(--card)" : "";
   const dynamicStyling = {
     paddingLeft: `calc(var(--spacing) * 4 * ${level})`,
     backgroundColor: bgColor
-  }
+  };
 
   const handleToggle = () => {
     setIsExpanded((prev) => !prev);
   };
 
-  const changeSelection = () => {
-    editorEventBus.emit(EDITOR_EVENT.SelectObject, item.id);
+  const changeSelection = (e: MouseEvent) => {
+    if (e.shiftKey) {
+      editorEventBus.emit(EDITOR_EVENT.AddSelection, item.id);
+    } else {
+      editorEventBus.emit(EDITOR_EVENT.SelectObject, item.id);
+    }
   };
 
   useEffect(() => {
-    const handleSelectObject = (id: number) => {
-      setSelectedObjectId(id);
+    const handleRefreshSelections = (ids: Array<number>) => {
+      setSelectedObjectsId(ids);
     };
 
-    editorEventBus.on(EDITOR_EVENT.SelectObject, handleSelectObject);
+    editorEventBus.on(EDITOR_EVENT.RefreshSelections, handleRefreshSelections);
 
     return () => {
-      editorEventBus.off(EDITOR_EVENT.SelectObject, handleSelectObject);
+      editorEventBus.off(EDITOR_EVENT.RefreshSelections, handleRefreshSelections);
     };
 
-  }, [])
+  }, []);
 
   return (<>
     <li className="">
-      <div style={dynamicStyling} onClick={() => { changeSelection(); }}
+      <div style={dynamicStyling} onClick={(e: MouseEvent) => { changeSelection(e); }}
         className="flex items-center justify-start px-2 py-1 hover:bg-card">
         {item.children && item.children.length > 0 ? (
           <span onClick={handleToggle}>

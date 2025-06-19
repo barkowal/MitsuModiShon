@@ -48,7 +48,6 @@ export class CommandHistory {
   private removeFirstIfFull() {
     if (this.commandStack.length >= MAX_COMMAND_COUNT) {
       const removedCommand = this.commandStack.shift();
-      console.log(removedCommand);
       removedCommand?.destroy();
     }
   }

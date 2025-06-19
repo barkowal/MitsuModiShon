@@ -42,7 +42,12 @@ const InitRenderer = () => {
         const orbitControls = new OrbitControls(camera, renderer.domElement);
         const control = createTransformControl(camera, renderer, orbitControls);
 
-        selectionController.setTransformController(control);
+        selectionController.onSelect((obj: THREE.Object3D) => {
+            control.attach(obj);
+        });
+        selectionController.onDeselect(() => {
+            control.detach();
+        });
 
         const gizmo = control.getHelper();
         scene.add(gizmo);
@@ -136,13 +141,25 @@ function handleResizing(renderer: THREE.Renderer, camera: THREE.PerspectiveCamer
 
 function handlePicking(canvas: HTMLElement, scene: THREE.Scene, camera: THREE.Camera, selectionController: SelectionController) {
     const mouse = new THREE.Vector2();
+    let mouseDownTime = 0;
 
     const clearMouse = () => {
         mouse.x = -100000;
         mouse.y = -100000;
     };
 
+    const handleMouseDown = (e: Event) => {
+        if (!(e instanceof MouseEvent)) {
+            return;
+        }
+        mouseDownTime = Date.now();
+    };
+
     const handlePickEvent = (e: Event) => {
+        // Only fast click will allow selecting objects
+        if ((Date.now() - mouseDownTime > 100)) {
+            return;
+        }
         if (!(e instanceof MouseEvent)) {
             return;
         }
@@ -150,10 +167,16 @@ function handlePicking(canvas: HTMLElement, scene: THREE.Scene, camera: THREE.Ca
         const offsetY = canvas.offsetTop;
         mouse.x = ((e.clientX - offsetX) / canvas.clientWidth) * 2 - 1;
         mouse.y = -((e.clientY - offsetY) / canvas.clientHeight) * 2 + 1;
-        selectionController.select(mouse, scene, camera);
+
+        if (e.shiftKey) {
+            selectionController.select(mouse, scene, camera, true);
+        } else {
+            selectionController.select(mouse, scene, camera);
+        }
     };
 
-    AddListener(window, "click", handlePickEvent);
+    AddListener(window, "mousedown", handleMouseDown);
+    AddListener(window, "mouseup", handlePickEvent);
     AddListener(window, "mouseout", clearMouse);
     AddListener(window, "mouseleave", clearMouse);
 
@@ -167,9 +190,11 @@ function createOutlinePass(scene: THREE.Scene, camera: THREE.Camera, selectionCo
         edgeThickness
     });
 
-    selectionController.onSelection((mesh: THREE.Object3D) => {
+    selectionController.onSelect((object: THREE.Object3D) => {
+        outlinePass.selectedObjects.push(object);
+    });
+    selectionController.onClear(() => {
         outlinePass.selectedObjects = [];
-        outlinePass.selectedObjects.push(mesh);
     });
 
     return outlinePass;

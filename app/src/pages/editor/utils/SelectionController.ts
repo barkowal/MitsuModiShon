@@ -1,106 +1,167 @@
 import * as THREE from "three/webgpu";
-import { TransformControls } from "three/addons/controls/TransformControls.js";
 import { INTERSECTION_LAYER } from "./Global";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 
 export class SelectionController {
     private raycaster: THREE.Raycaster;
-    private selectedObject: THREE.Mesh | null;
-    private transformController: TransformControls | null;
-    private subscribers: Array<CallableFunction>;
+    private onSelectListeners: Array<CallableFunction>;
+    private onClearListeners: Array<CallableFunction>;
+    private onDeselectListeners: Array<CallableFunction>;
+    private currentSelection: THREE.Object3D | null;
+    private selectedObjects: Array<THREE.Object3D>;
 
     constructor() {
         this.raycaster = new THREE.Raycaster();
-        this.selectedObject = null;
-        this.transformController = null;
-        this.subscribers = [];
+        this.currentSelection = null;
+        this.selectedObjects = [];
+        this.onSelectListeners = [];
+        this.onClearListeners = [];
+        this.onDeselectListeners = [];
     }
 
-    setTransformController(control: TransformControls) {
-        this.transformController = control;
-    }
-
-    select(normalizedPosition: THREE.Vector2, scene: THREE.Scene, camera: THREE.Camera) {
+    select(normalizedPosition: THREE.Vector2, scene: THREE.Scene, camera: THREE.Camera, multiSelect: boolean = false) {
 
         this.raycaster.setFromCamera(normalizedPosition, camera);
         this.raycaster.layers.set(INTERSECTION_LAYER);
         const intersectedObjects = this.raycaster.intersectObjects(scene.children);
 
-        this.checkCurrentSelectedObject(scene);
+        this.checkIfSelectionExists(scene);
 
         if (intersectedObjects.length) {
 
-            this.removeCurrentSelection();
-
             for (const obj of intersectedObjects) {
 
-                if (obj.object instanceof THREE.Mesh) {
-                    this.setCurrentSelection(obj.object);
-                    editorEventBus.emit(EDITOR_EVENT.SelectObject, obj.object.id);
-                    break;
+                if (this.currentSelection && this.currentSelection.id == obj.object.id) {
+                    return;
                 }
+
+                if (!multiSelect) {
+                    this.clearSelectedObjects();
+                }
+
+                this.removeCurrentSelection();
+                this.setCurrentSelection(obj.object);
+                break;
 
             }
 
         }
     }
 
+    IsAlreadySelected(objectId: number) {
+
+        let isSelected = false;
+        this.selectedObjects.forEach((obj) => {
+            if (objectId === obj.id) {
+                isSelected = true;
+                return;
+            }
+        });
+
+        return isSelected;
+
+    }
+
     changeSelection(scene: THREE.Scene, id: number) {
-        if (this.selectedObject?.id === id) {
+        if (this.currentSelection?.id === id) {
             return;
         }
-        this.checkCurrentSelectedObject(scene);
+        this.checkIfSelectionExists(scene);
+        this.clearSelectedObjects();
         this.removeCurrentSelection();
         const obj = scene.getObjectById(id);
-        if (obj instanceof THREE.Mesh) {
+        if (obj) {
             this.setCurrentSelection(obj);
         }
     }
 
-    getCurrentMesh(): THREE.Mesh | null {
-        return this.selectedObject;
-    }
-
-    getCurrentMeshId(): number {
-        if (this.selectedObject) {
-            return this.selectedObject.id;
+    addSelection(scene: THREE.Scene, id: number) {
+        const obj = scene.getObjectById(id);
+        if (obj) {
+            this.setCurrentSelection(obj);
         }
-        return -1;
     }
 
-    onSelection(fn: CallableFunction) {
-        this.subscribers.push(fn);
+    getCurrentSelection(): THREE.Object3D | null {
+        return this.currentSelection;
     }
 
-    notifySubscribers(obj: THREE.Object3D) {
-        this.subscribers.forEach((fn) => {
-            fn(obj);
-        });
+    getSelectedObjects(): Array<THREE.Object3D> {
+        return this.selectedObjects;
+    }
+
+    clearSelectedObjects() {
+        this.selectedObjects = [];
+        this.notifyClearListeners();
     }
 
     destroy() {
-        this.subscribers = [];
+        this.onSelectListeners = [];
+        this.onDeselectListeners = [];
     }
 
-    checkCurrentSelectedObject(scene: THREE.Scene) {
-        if (this.selectedObject != null) {
-            const found = scene.getObjectById(this.selectedObject.id);
+    checkIfSelectionExists(scene: THREE.Scene) {
+        if (this.currentSelection != null) {
+            const found = scene.getObjectById(this.currentSelection.id);
             if (found == undefined) {
-                this.transformController?.detach();
-                this.selectedObject = null;
+                this.notifyDeselectListeners(this.currentSelection);
+                this.currentSelection = null;
             }
         }
     }
-    private setCurrentSelection(mesh: THREE.Mesh) {
-        this.selectedObject = mesh;
-        this.transformController?.attach(mesh);
-        this.notifySubscribers(mesh);
+
+    onSelect(fn: CallableFunction) {
+        this.onSelectListeners.push(fn);
+    }
+
+    onDeselect(fn: CallableFunction) {
+        this.onDeselectListeners.push(fn);
+    }
+
+    onClear(fn: CallableFunction) {
+        this.onClearListeners.push(fn);
+    }
+
+    notifySelectionListeners(obj: THREE.Object3D) {
+        this.onSelectListeners.forEach((listener) => {
+            listener(obj);
+        });
+    }
+
+    notifyDeselectListeners(obj: THREE.Object3D) {
+        this.onDeselectListeners.forEach((listener) => {
+            listener(obj);
+        });
+    }
+
+    notifyClearListeners() {
+        this.onClearListeners.forEach((listener) => {
+            listener();
+        });
+    }
+
+    private emitSelections() {
+        const objIds: Array<number> = [];
+        this.selectedObjects.forEach((obj) => {
+            objIds.push(obj.id);
+        });
+        editorEventBus.emit(EDITOR_EVENT.RefreshSelections, objIds);
+    }
+
+    private setCurrentSelection(obj: THREE.Object3D) {
+        if (!this.IsAlreadySelected(obj.id)) {
+            this.selectedObjects.push(obj);
+        }
+        this.currentSelection = obj;
+        editorEventBus.emit(EDITOR_EVENT.SelectObject, obj.id);
+        this.emitSelections();
+        this.notifySelectionListeners(obj);
     }
 
     private removeCurrentSelection() {
-        if (this.selectedObject) {
-            this.transformController?.detach();
-            this.selectedObject = null;
+        if (this.currentSelection) {
+            this.notifyDeselectListeners(this.currentSelection);
+            this.currentSelection = null;
         }
     }
 

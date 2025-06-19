@@ -1,18 +1,94 @@
 import type { TreeItem, Vec3 } from "@/pages/editor/utils/Types";
 
 export const EDITOR_EVENT = {
+  /**
+   * Signal for adding a mesh to the scene.
+   * @returns {string} meshType - The type of the mesh to add
+   */
   AddMesh: "AddMesh",
+
+  /**
+   * Signal for removing an object from the scene
+   * @returns {void}
+   */
   RemoveMesh: "RemoveMesh",
+
+  /**
+   * Signal for refreshing the tree scene view
+   * @returns {Array<TreeItem>} treeItems - array of TreeItems
+   */
   RefreshTreeView: "RefreshTreeView",
+
+  /**
+   * Signal for refreshing the transformation panel
+   * @returns {Array<Vec3>} transformations - array of position, scale, rotation
+   */
   RefreshTransformationMenu: "RefreshTransformationMenu",
+
+  /**
+   * Signal for refreshing the selected color of the object in the ui
+   * @returns {string} color - hex string of color
+   */
   RefreshColorMenu: "RefreshColorMenu",
+
+  /**
+   * Signal for selecting single object. It should clear all selections
+   * @returns {number} id - id of the selected object
+   */
   SelectObject: "SelectObject",
+
+  /**
+   * Signal for new object to add into selections
+   * @returns {number} - object id to add
+   */
+  AddSelection: "AddSelection",
+
+  /**
+   * Signal for refreshing the object selections in the ui
+   * @returns {Array<number>} - array of selected object id's 
+   */
+  RefreshSelections: "RefreshSelections",
+
+  /**
+   * Signal for changing the object's position
+   * @returns {Vec3} position - Vec3 position of currently selected object
+   */
   ChangePosition: "ChangePosition",
+
+  /**
+   * Signal for changing the object's scale
+   * @returns {Vec3} scale - Vec3 scale of currently selected object
+   */
   ChangeScale: "ChangeScale",
+
+  /**
+   * Signal for changing the object's rotation 
+   * @returns {Vec3} rotation - Vec3 rotation of currently selected object
+   */
   ChangeRotation: "ChangeRotation",
+
+  /**
+   * Signal for changing the object's color 
+   * @returns {number} color - hex color of currently selected object
+   */
   ChangeMeshColor: "ChangeMeshColor",
+
+  /**
+   * Signal for changing the scene's color 
+   * @returns {number} color - hex color of the scene
+   */
   ChangeSceneColor: "ChangeSceneColor",
+
+  /**
+   * Signal for undo
+   * @returns {void}
+   */
   UNDO: "Undo",
+
+  /**
+   * Signal for redo
+   * @returns {void}
+   */
   REDO: "Redo",
 } as const;
 
@@ -25,6 +101,7 @@ type eventData =
   | string
   | boolean
   | Vec3
+  | Array<number>
   | Array<Vec3>
   | Array<TreeItem>;
 
