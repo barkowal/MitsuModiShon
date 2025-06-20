@@ -67,8 +67,7 @@ export class SelectionController {
             return;
         }
         this.checkIfSelectionExists(scene);
-        this.clearSelectedObjects();
-        this.removeCurrentSelection();
+        this.clearAllSelections();
         const obj = scene.getObjectById(id);
         if (obj) {
             this.setCurrentSelection(obj);
@@ -93,6 +92,12 @@ export class SelectionController {
     clearSelectedObjects() {
         this.selectedObjects = [];
         this.notifyClearListeners();
+    }
+
+    clearAllSelections() {
+        this.clearSelectedObjects();
+        this.removeCurrentSelection();
+        this.emitSelections();
     }
 
     destroy() {

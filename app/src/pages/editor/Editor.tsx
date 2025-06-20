@@ -48,6 +48,10 @@ function Editor() {
       uiController.setSelectedMeshId(id);
     };
 
+    const handleClearSelections = () => {
+      selectionController.clearAllSelections();
+    };
+
     const handleChangePosition = (pos: Vec3) => {
       const selectedMesh = selectionController.getCurrentSelection();
       if (selectedMesh && selectedMesh instanceof THREE.Mesh) {
@@ -98,6 +102,7 @@ function Editor() {
     editorEventBus.on(EDITOR_EVENT.RemoveMesh, handleRemoveMesh);
     editorEventBus.on(EDITOR_EVENT.SelectObject, handleSelectObject);
     editorEventBus.on(EDITOR_EVENT.AddSelection, handleAddSelection);
+    editorEventBus.on(EDITOR_EVENT.ClearSelections, handleClearSelections);
     editorEventBus.on(EDITOR_EVENT.ChangePosition, handleChangePosition);
     editorEventBus.on(EDITOR_EVENT.ChangeScale, handleChangeScale);
     editorEventBus.on(EDITOR_EVENT.ChangeRotation, handleChangeRotation);
@@ -110,6 +115,7 @@ function Editor() {
       editorEventBus.off(EDITOR_EVENT.AddMesh, handleAddMesh);
       editorEventBus.off(EDITOR_EVENT.SelectObject, handleSelectObject);
       editorEventBus.off(EDITOR_EVENT.AddSelection, handleAddSelection);
+      editorEventBus.off(EDITOR_EVENT.ClearSelections, handleClearSelections);
       editorEventBus.off(EDITOR_EVENT.ChangePosition, handleChangePosition);
       editorEventBus.off(EDITOR_EVENT.ChangeScale, handleChangeScale);
       editorEventBus.off(EDITOR_EVENT.ChangeRotation, handleChangeRotation);

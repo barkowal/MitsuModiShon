@@ -44,6 +44,12 @@ export const EDITOR_EVENT = {
   AddSelection: "AddSelection",
 
   /**
+   * Signal for deselecting every object
+   * @returns {void}
+   */
+  ClearSelections: "ClearSelections",
+
+  /**
    * Signal for refreshing the object selections in the ui
    * @returns {Array<number>} - array of selected object id's 
    */

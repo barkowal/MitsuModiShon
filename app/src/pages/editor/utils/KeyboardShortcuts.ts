@@ -8,6 +8,7 @@ export function HandleKeyboardPress(e: KeyboardEvent) {
   }
 
   if (e.key === "Delete") { editorEventBus.emit(EDITOR_EVENT.RemoveMesh); };
+  if (e.key === "Escape") { editorEventBus.emit(EDITOR_EVENT.ClearSelections); };
 }
 
 function handleCtrlShortcuts(e: KeyboardEvent) {
