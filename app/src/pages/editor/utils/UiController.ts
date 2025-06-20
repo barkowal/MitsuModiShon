@@ -66,6 +66,14 @@ export class UiController {
         editorEventBus.emit(EDITOR_EVENT.RefreshColorMenu, color);
     }
 
+    refreshNameMenu() {
+        const obj = this.scene.getObjectById(this.selectedMeshId);
+        if (obj == undefined) {
+            return;
+        };
+        editorEventBus.emit(EDITOR_EVENT.RefreshNameMenu, obj.name);
+    }
+
     setSelectedMeshId(id: number) {
         if (this.selectedMeshId === id) {
             return;
@@ -73,6 +81,7 @@ export class UiController {
         this.selectedMeshId = id;
         this.refreshTransformation();
         this.refreshColorMenu();
+        this.refreshNameMenu();
     }
 
     // Could be util function, if used more

@@ -80,6 +80,15 @@ function Editor() {
       }
     };
 
+    const handleChangeObjectName = (name: string) => {
+      const selection = selectionController.getCurrentSelection();
+      if (selection) {
+        selection.name = name;
+      }
+      uiController.refreshTree();
+    };
+
+
     const handleChangeMeshColor = (color: number) => {
       const meshColor = new THREE.Color(color);
       const selection = selectionController.getSelectedObjects();
@@ -114,6 +123,7 @@ function Editor() {
     editorEventBus.on(EDITOR_EVENT.ChangePosition, handleChangePosition);
     editorEventBus.on(EDITOR_EVENT.ChangeScale, handleChangeScale);
     editorEventBus.on(EDITOR_EVENT.ChangeRotation, handleChangeRotation);
+    editorEventBus.on(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
     editorEventBus.on(EDITOR_EVENT.ChangeMeshColor, handleChangeMeshColor);
     editorEventBus.on(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
     editorEventBus.on(EDITOR_EVENT.UNDO, handleUndo);
@@ -128,6 +138,7 @@ function Editor() {
       editorEventBus.off(EDITOR_EVENT.ChangeScale, handleChangeScale);
       editorEventBus.off(EDITOR_EVENT.ChangeRotation, handleChangeRotation);
       editorEventBus.off(EDITOR_EVENT.ChangeMeshColor, handleChangeMeshColor);
+      editorEventBus.off(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
       editorEventBus.off(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
       editorEventBus.off(EDITOR_EVENT.UNDO, handleUndo);
       editorEventBus.off(EDITOR_EVENT.REDO, handleRedo);

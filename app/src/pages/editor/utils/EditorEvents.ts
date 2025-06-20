@@ -32,6 +32,12 @@ export const EDITOR_EVENT = {
   RefreshColorMenu: "RefreshColorMenu",
 
   /**
+   * Signal for refreshing the selected name of the object in the ui
+   * @returns {string} name - name of the object
+   */
+  RefreshNameMenu: "RefreshNameMenu",
+
+  /**
    * Signal for selecting single object. It should clear all selections
    * @returns {number} id - id of the selected object
    */
@@ -72,6 +78,12 @@ export const EDITOR_EVENT = {
    * @returns {Vec3} rotation - Vec3 rotation of currently selected object
    */
   ChangeRotation: "ChangeRotation",
+
+  /**
+   * Signal for changing the object's name
+   * @returns {string} name - name of currently selected object
+   */
+  ChangeObjectName: "ChangeObjectName",
 
   /**
    * Signal for changing the object's color 
