@@ -18,7 +18,7 @@ export function PositionInput() {
       editorEventBus.emit(EDITOR_EVENT.ChangePosition, newPos);
       setOldPos(newPos);
     }
-  }
+  };
 
   useEffect(() => {
     const handleChangePosition = (pos: Vec3) => {
@@ -34,7 +34,7 @@ export function PositionInput() {
       setPosY(pos.y);
       setPosZ(pos.z);
       setOldPos(pos);
-    }
+    };
 
     editorEventBus.on(EDITOR_EVENT.ChangePosition, handleChangePosition);
     editorEventBus.on(EDITOR_EVENT.RefreshTransformationMenu, handleRefresh);

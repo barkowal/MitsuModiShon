@@ -18,7 +18,7 @@ export function RotationInput() {
       editorEventBus.emit(EDITOR_EVENT.ChangeRotation, newRotation);
       setOldRotation(newRotation);
     }
-  }
+  };
 
   useEffect(() => {
     const handleChangeRotation = (rotation: Vec3) => {
@@ -34,7 +34,7 @@ export function RotationInput() {
       setRotationY(rotation.y);
       setRotationZ(rotation.z);
       setOldRotation(rotation);
-    }
+    };
 
     editorEventBus.on(EDITOR_EVENT.ChangeRotation, handleChangeRotation);
     editorEventBus.on(EDITOR_EVENT.RefreshTransformationMenu, handleRefresh);

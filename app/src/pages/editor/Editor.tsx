@@ -9,13 +9,14 @@ import InitRenderer from "./utils/InitRenderer";
 import { UiController } from "./utils/UiController";
 import { EDITOR_EVENT, editorEventBus } from "./utils/EditorEvents";
 import type { Vec3 } from "./utils/Types";
-import { SetMeshPositionCommand } from "./commands/SetMeshPositionCommand";
-import { SetMeshScaleCommand } from "./commands/SetMeshScaleCommand";
-import { SetMeshRotationCommand } from "./commands/SetMeshRotationCommand";
 import * as THREE from "three/webgpu";
-import { SetMeshColorCommand } from "./commands/SetMeshColorCommand";
 import { HandleKeyboardPress } from "./utils/KeyboardShortcuts";
 import { RemoveObjectsCommand } from "./commands/RemoveObjectsCommand";
+import { TranslateObjectsCommand } from "./commands/TranslateObjectsCommand";
+import { calculateVec3Difference, convertEulerToVec3Degrees, convertTVector3ToVec3, isArrayOfMeshes } from "./utils/utils";
+import { ScaleObjectsCommand } from "./commands/ScaleObjectsCommand";
+import { RotateObjectsCommand } from "./commands/RotateObjectsCommand";
+import { SetMeshesColorCommand } from "./commands/SetMeshesColorCommand";
 
 
 function Editor() {
@@ -35,7 +36,7 @@ function Editor() {
       const selections = selectionController.getSelectedObjects();
       commandHistory.addCommand(new RemoveObjectsCommand(scene, selections));
       uiController.refreshTree();
-      selectionController.checkIfSelectionExists(scene); // Only for now. In the future add something to reduce repeating, maybe event for refreshing?
+      selectionController.checkIfSelectionExists(scene); // Only for now -_o . In the future add something to reduce repeating, maybe event for refreshing?
     };
 
     const handleSelectObject = (id: number) => {
@@ -54,30 +55,37 @@ function Editor() {
 
     const handleChangePosition = (pos: Vec3) => {
       const selectedMesh = selectionController.getCurrentSelection();
-      if (selectedMesh && selectedMesh instanceof THREE.Mesh) {
-        commandHistory.addCommand(new SetMeshPositionCommand(selectedMesh, pos));
+      if (selectedMesh) {
+        const difference = calculateVec3Difference(pos, convertTVector3ToVec3(selectedMesh.position));
+        const allSelections = selectionController.getSelectedObjects();
+        commandHistory.addCommand(new TranslateObjectsCommand(allSelections, difference));
       }
     };
 
     const handleChangeScale = (scale: Vec3) => {
       const selection = selectionController.getCurrentSelection();
-      if (selection && selection instanceof THREE.Mesh) {
-        commandHistory.addCommand(new SetMeshScaleCommand(selection, scale));
+      if (selection) {
+        const difference = calculateVec3Difference(scale, convertTVector3ToVec3(selection.scale));
+        const allSelections = selectionController.getSelectedObjects();
+        commandHistory.addCommand(new ScaleObjectsCommand(allSelections, difference));
       }
     };
 
     const handleChangeRotation = (rotation: Vec3) => {
       const selection = selectionController.getCurrentSelection();
-      if (selection && selection instanceof THREE.Mesh) {
-        commandHistory.addCommand(new SetMeshRotationCommand(selection, rotation));
+      if (selection) {
+        const difference = calculateVec3Difference(rotation, convertEulerToVec3Degrees(selection.rotation));
+        const allSelections = selectionController.getSelectedObjects();
+        commandHistory.addCommand(new RotateObjectsCommand(allSelections, difference));
       }
     };
 
     const handleChangeMeshColor = (color: number) => {
       const meshColor = new THREE.Color(color);
-      const selection = selectionController.getCurrentSelection();
-      if (selection && selection instanceof THREE.Mesh) {
-        commandHistory.addCommand(new SetMeshColorCommand(selection, meshColor));
+      const selection = selectionController.getSelectedObjects();
+      if (isArrayOfMeshes(selection)) {
+        //@ts-expect-error Checked for meshes
+        commandHistory.addCommand(new SetMeshesColorCommand(selection, meshColor));
       }
     };
 

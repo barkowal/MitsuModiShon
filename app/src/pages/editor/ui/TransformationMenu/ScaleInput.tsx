@@ -18,7 +18,7 @@ export function ScaleInput() {
       editorEventBus.emit(EDITOR_EVENT.ChangeScale, newScale);
       setOldScale(newScale);
     }
-  }
+  };
 
   useEffect(() => {
     const handleChangeScale = (scale: Vec3) => {
@@ -34,7 +34,7 @@ export function ScaleInput() {
       setScaleY(scale.y);
       setScaleZ(scale.z);
       setOldScale(scale);
-    }
+    };
 
     editorEventBus.on(EDITOR_EVENT.ChangeScale, handleChangeScale);
     editorEventBus.on(EDITOR_EVENT.RefreshTransformationMenu, handleRefresh);
