@@ -19,6 +19,16 @@ export function ObjectItem({ item, level }: Props) {
     backgroundColor: bgColor
   };
 
+  const handleDrop = (e: React.DragEvent) => {
+    if (!e.dataTransfer) {
+      return;
+    }
+    const droppedItemsId = Number(e.dataTransfer.getData("itemID"));
+    if (droppedItemsId !== item.id) {
+      editorEventBus.emit(EDITOR_EVENT.AttachToObject, [item.id, droppedItemsId]);
+    }
+  };
+
   const handleToggle = () => {
     setIsExpanded((prev) => !prev);
   };
@@ -45,8 +55,14 @@ export function ObjectItem({ item, level }: Props) {
   }, []);
 
   return (<>
-    <li className="">
-      <div style={dynamicStyling} onClick={(e: MouseEvent) => { changeSelection(e); }}
+    <li>
+      <div
+        draggable="true"
+        onDragStart={(event) => { event.dataTransfer.setData("itemId", item.id.toString()); }}
+        onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+        onDrop={handleDrop}
+        style={dynamicStyling}
+        onClick={(e: MouseEvent) => { changeSelection(e); }}
         className="flex items-center justify-start px-2 py-1 hover:bg-card">
         {item.children && item.children.length > 0 ? (
           <span onClick={handleToggle}>

@@ -17,6 +17,7 @@ import { calculateVec3Difference, convertEulerToVec3Degrees, convertTVector3ToVe
 import { ScaleObjectsCommand } from "./commands/ScaleObjectsCommand";
 import { RotateObjectsCommand } from "./commands/RotateObjectsCommand";
 import { SetMeshesColorCommand } from "./commands/SetMeshesColorCommand";
+import { AttachObjectCommand } from "./commands/AttachObjectCommand";
 
 
 function Editor() {
@@ -47,6 +48,11 @@ function Editor() {
     const handleAddSelection = (id: number) => {
       selectionController.addSelection(scene, id);
       uiController.setSelectedMeshId(id);
+    };
+
+    const handleAttachToObject = (ids: Array<number>) => {
+      commandHistory.addCommand(new AttachObjectCommand(scene, ids[0], ids[1]));
+      uiController.refreshTree();
     };
 
     const handleClearSelections = () => {
@@ -119,6 +125,7 @@ function Editor() {
     editorEventBus.on(EDITOR_EVENT.RemoveMesh, handleRemoveMesh);
     editorEventBus.on(EDITOR_EVENT.SelectObject, handleSelectObject);
     editorEventBus.on(EDITOR_EVENT.AddSelection, handleAddSelection);
+    editorEventBus.on(EDITOR_EVENT.AttachToObject, handleAttachToObject);
     editorEventBus.on(EDITOR_EVENT.ClearSelections, handleClearSelections);
     editorEventBus.on(EDITOR_EVENT.ChangePosition, handleChangePosition);
     editorEventBus.on(EDITOR_EVENT.ChangeScale, handleChangeScale);
@@ -133,6 +140,7 @@ function Editor() {
       editorEventBus.off(EDITOR_EVENT.AddMesh, handleAddMesh);
       editorEventBus.off(EDITOR_EVENT.SelectObject, handleSelectObject);
       editorEventBus.off(EDITOR_EVENT.AddSelection, handleAddSelection);
+      editorEventBus.off(EDITOR_EVENT.AttachToObject, handleAttachToObject);
       editorEventBus.off(EDITOR_EVENT.ClearSelections, handleClearSelections);
       editorEventBus.off(EDITOR_EVENT.ChangePosition, handleChangePosition);
       editorEventBus.off(EDITOR_EVENT.ChangeScale, handleChangeScale);

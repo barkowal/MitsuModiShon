@@ -1,5 +1,5 @@
 import * as THREE from "three/webgpu";
-import { INTERSECTION_LAYER } from "./Global";
+import { INTERSECTION_LAYER, ROOT_ID } from "./Global";
 import type { TreeItem } from "./Types";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 
@@ -25,7 +25,8 @@ export class UiController {
                 items.push(this.convertSceneObjToTreeItem(child));
             }
         }
-        editorEventBus.emit(EDITOR_EVENT.RefreshTreeView, items);
+        const root = [{ id: ROOT_ID, name: "scene", children: items }];
+        editorEventBus.emit(EDITOR_EVENT.RefreshTreeView, root);
     }
 
     refreshTransformation() {

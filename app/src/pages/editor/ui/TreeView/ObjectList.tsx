@@ -8,7 +8,7 @@ type Props = {
 
 export function ObjectList({ treeList, level }: Props) {
   return (<>
-    <ul className="select-none ">
+    <ul className="select-none">
       {treeList.map((listItem, index) => (
         <ObjectItem key={index} item={listItem} level={level} />
       ))}

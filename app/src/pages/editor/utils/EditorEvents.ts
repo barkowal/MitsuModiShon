@@ -50,6 +50,12 @@ export const EDITOR_EVENT = {
   AddSelection: "AddSelection",
 
   /**
+   * Signal for attaching one object to another
+   * @returns {Array<number>} objectsId - first object is the parent, second is the object being attached
+   */
+  AttachToObject: "AttachToObject",
+
+  /**
    * Signal for deselecting every object
    * @returns {void}
    */
