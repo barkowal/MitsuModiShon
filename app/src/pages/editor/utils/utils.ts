@@ -41,3 +41,13 @@ export function isArrayOfMeshes(array: Array<THREE.Object3D>) {
   return onlyMeshes;
 }
 
+export function disposeMesh(scene: THREE.Scene, object: THREE.Object3D) {
+  if (object && !scene.getObjectById(object.id)) {
+    if (object instanceof THREE.Mesh) {
+      if ("dispose" in object.material) {
+        object.material.dispose();
+      }
+      object.geometry.dispose();
+    }
+  }
+}

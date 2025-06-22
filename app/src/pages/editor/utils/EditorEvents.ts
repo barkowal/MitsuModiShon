@@ -104,6 +104,18 @@ export const EDITOR_EVENT = {
   ChangeSceneColor: "ChangeSceneColor",
 
   /**
+   * Signal for copying object
+   * @returns {void}
+   */
+  COPY: "Copy",
+
+  /**
+   * Signal for pasting the copied object
+   * @returns {void}
+   */
+  PASTE: "Paste",
+
+  /**
    * Signal for undo
    * @returns {void}
    */

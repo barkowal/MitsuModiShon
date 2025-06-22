@@ -1,6 +1,6 @@
 import { ROOT_ID } from "../utils/Global";
 import type { Command } from "./CommandInterface";
-import { Scene, Object3D, Vector3 } from "three/webgpu";
+import { Scene, Object3D, Vector3, Quaternion } from "three/webgpu";
 
 export class AttachObjectCommand implements Command {
     private scene: Scene;
@@ -34,11 +34,17 @@ export class AttachObjectCommand implements Command {
             return;
 
         const worldPos = new Vector3();
+        const worldScale = new Vector3();
+        const worldRotation = new Quaternion();
         this.child.getWorldPosition(worldPos);
+        this.child.getWorldScale(worldScale);
+        this.child.getWorldQuaternion(worldRotation);
         this.child.removeFromParent();
 
         if (this.oldParent) {
             this.child.position.set(worldPos.x, worldPos.y, worldPos.z);
+            this.child.scale.set(worldScale.x, worldScale.y, worldScale.z);
+            this.child.setRotationFromQuaternion(worldRotation);
             this.oldParent.attach(this.child);
         }
     }

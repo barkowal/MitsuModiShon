@@ -18,6 +18,8 @@ import { ScaleObjectsCommand } from "./commands/ScaleObjectsCommand";
 import { RotateObjectsCommand } from "./commands/RotateObjectsCommand";
 import { SetMeshesColorCommand } from "./commands/SetMeshesColorCommand";
 import { AttachObjectCommand } from "./commands/AttachObjectCommand";
+import { EditorUtils } from "./utils/EditorUtils";
+import { AddObjectsCommand } from "./commands/AddObjectsCommand";
 
 
 function Editor() {
@@ -25,6 +27,7 @@ function Editor() {
 
   useEffect(() => {
     const commandHistory = new CommandHistory();
+    const editorUtils = new EditorUtils(scene);
     const uiController = new UiController(scene);
 
     const handleAddMesh = (meshType: MeshType) => {
@@ -109,6 +112,17 @@ function Editor() {
       scene.background = background;
     };
 
+    const handleCopy = () => {
+      const selections = selectionController.getSelectedObjects();
+      editorUtils.setCopiedObjects(selections);
+    };
+
+    const handlePaste = () => {
+      const copies = editorUtils.getCopiedObjects();
+      commandHistory.addCommand(new AddObjectsCommand(scene, copies));
+      uiController.refreshTree();
+    };
+
     const handleUndo = () => {
       commandHistory.undo();
       uiController.refreshPanel();
@@ -133,6 +147,8 @@ function Editor() {
     editorEventBus.on(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
     editorEventBus.on(EDITOR_EVENT.ChangeMeshColor, handleChangeMeshColor);
     editorEventBus.on(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
+    editorEventBus.on(EDITOR_EVENT.COPY, handleCopy);
+    editorEventBus.on(EDITOR_EVENT.PASTE, handlePaste);
     editorEventBus.on(EDITOR_EVENT.UNDO, handleUndo);
     editorEventBus.on(EDITOR_EVENT.REDO, handleRedo);
 
@@ -148,6 +164,8 @@ function Editor() {
       editorEventBus.off(EDITOR_EVENT.ChangeMeshColor, handleChangeMeshColor);
       editorEventBus.off(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
       editorEventBus.off(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
+      editorEventBus.off(EDITOR_EVENT.COPY, handleCopy);
+      editorEventBus.off(EDITOR_EVENT.PASTE, handlePaste);
       editorEventBus.off(EDITOR_EVENT.UNDO, handleUndo);
       editorEventBus.off(EDITOR_EVENT.REDO, handleRedo);
     };
