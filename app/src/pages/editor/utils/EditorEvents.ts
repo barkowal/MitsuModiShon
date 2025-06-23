@@ -104,6 +104,18 @@ export const EDITOR_EVENT = {
   ChangeSceneColor: "ChangeSceneColor",
 
   /**
+   * Signal for sending scene information to show
+   * @returns {Array<number>} sceneInfo - array of type SCENE_INFO
+   */
+  SendSceneInfo: "SendSceneInfo",
+
+  /**
+   * Signal for sending render time
+   * @returns {number} renderTime - time of render
+   */
+  SendRenderTime: "SendRenderTime",
+
+  /**
    * Signal for copying object
    * @returns {void}
    */

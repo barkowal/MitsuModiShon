@@ -23,3 +23,15 @@ export type ListenerHandler = {
     capture: boolean
 }
 
+export type RendererMemoryInfo = {
+    geometries: number,
+    textures: number
+}
+
+export const SCENE_INFO = {
+    Objects: 0,
+    Triangles: 1,
+    Vertices: 2,
+    RendererGeometries: 3,
+    RendererTextures: 4,
+} as const;

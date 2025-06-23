@@ -1,15 +1,21 @@
 import * as THREE from "three/webgpu";
 import { INTERSECTION_LAYER, ROOT_ID } from "./Global";
-import type { TreeItem } from "./Types";
+import type { RendererMemoryInfo, TreeItem } from "./Types";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 
 export class UiController {
     private scene: THREE.Scene;
     private selectedMeshId: number;
+    private rendererInfo: RendererMemoryInfo | null;
 
     constructor(scene: THREE.Scene) {
         this.scene = scene;
         this.selectedMeshId = -1;
+        this.rendererInfo = null;
+    }
+
+    setRendererInfo(memoryInfo: RendererMemoryInfo) {
+        this.rendererInfo = memoryInfo;
     }
 
     refreshPanel() {
@@ -27,6 +33,7 @@ export class UiController {
         }
         const root = [{ id: ROOT_ID, name: "scene", children: items }];
         editorEventBus.emit(EDITOR_EVENT.RefreshTreeView, root);
+        this.RefreshSceneInfo();
     }
 
     refreshTransformation() {
@@ -95,4 +102,43 @@ export class UiController {
         return item;
     }
 
+    RefreshSceneInfo() {
+
+        let objects = 0, vertices = 0, triangles = 0;
+
+        this.scene.children.forEach((obj) => {
+
+            if (!obj.layers.isEnabled(INTERSECTION_LAYER))
+                return;
+
+            objects++;
+
+            if (obj instanceof THREE.Mesh || obj instanceof THREE.Points) {
+
+                const geometry = obj.geometry;
+                vertices += geometry.attributes.position.count;
+
+                if (obj instanceof THREE.Mesh) {
+                    if (geometry.index !== null) {
+                        triangles += geometry.index.count / 3;
+                    } else {
+                        triangles += geometry.attributes.position.count / 3;
+                    }
+                }
+            }
+
+        });
+
+
+        const info = [objects, vertices, triangles];
+        if (this.rendererInfo) {
+            info.push(this.rendererInfo.geometries);
+            info.push(this.rendererInfo.textures);
+        }
+        editorEventBus.emit(EDITOR_EVENT.SendSceneInfo, info);
+    }
+
+
+
 }
+

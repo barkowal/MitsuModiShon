@@ -20,6 +20,7 @@ import { SetMeshesColorCommand } from "./commands/SetMeshesColorCommand";
 import { AttachObjectCommand } from "./commands/AttachObjectCommand";
 import { EditorUtils } from "./utils/EditorUtils";
 import { AddObjectsCommand } from "./commands/AddObjectsCommand";
+import RenderInfoPanel from "./ui/RenderInfoPanel";
 
 
 function Editor() {
@@ -29,6 +30,7 @@ function Editor() {
     const commandHistory = new CommandHistory();
     const editorUtils = new EditorUtils(scene);
     const uiController = new UiController(scene);
+    uiController.setRendererInfo(renderer.info.memory); // Only for testing if objects are dispatched correctly
 
     const handleAddMesh = (meshType: MeshType) => {
       const mesh = GetMesh(meshType);
@@ -169,7 +171,7 @@ function Editor() {
       editorEventBus.off(EDITOR_EVENT.UNDO, handleUndo);
       editorEventBus.off(EDITOR_EVENT.REDO, handleRedo);
     };
-  }, [scene]);
+  }, [scene, selectionController, renderer]);
 
   return (
     <>
@@ -184,6 +186,7 @@ function Editor() {
               </div>
               <div ref={canvasRef} className="flex-auto" >
               </div>
+              <RenderInfoPanel />
             </div>
           </ResizablePanel>
           <ResizableHandle />

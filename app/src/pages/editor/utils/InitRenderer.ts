@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three/webgpu";
 import { pass, uniform } from "three/tsl";
 import OutlineNode, { outline } from "three/examples/jsm/tsl/display/OutlineNode.js";
@@ -11,11 +11,10 @@ import { DEFAULT_SCENE_COLOR } from "./Global";
 import { AddListener, RemoveAllListeners } from "./AddListener";
 
 const InitRenderer = () => {
-
     const canvasRef = useRef<HTMLDivElement | null>(null);
-    const renderer = new THREE.WebGPURenderer({ antialias: true });
-    const scene = new THREE.Scene();
-    const selectionController = new SelectionController();
+    const renderer = useMemo(() => { return new THREE.WebGPURenderer({ antialias: true }); }, []);
+    const scene = useMemo(() => { return new THREE.Scene(); }, []);
+    const selectionController = useMemo(() => { return new SelectionController(); }, []);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -58,16 +57,37 @@ const InitRenderer = () => {
         const outlinePass = createOutlinePass(scene, camera, selectionController);
         const postProcessing = createPostProcessingOutline(renderer, scene, camera, outlinePass);
 
-        const renderScene = (time: number) => {
+        // Rendering
+        let startTime = 0;
+        let renderTime = 0;
+
+        const renderScene = () => {
+            renderRequested = false;
+            startTime = performance.now();
             if (renderer) {
-                time *= 0.01;
+
                 renderer.clearAsync();
                 postProcessing.renderAsync();
 
             }
+            renderTime = performance.now() - startTime;
+            editorEventBus.emit(EDITOR_EVENT.SendRenderTime, renderTime);
         };
 
-        renderer.setAnimationLoop(renderScene);
+        // Rendering on demand instead of animation loop
+        let renderRequested = false;
+        const requestRenderIfNotRequested = () => {
+            if (!renderRequested) {
+                renderRequested = true;
+                requestAnimationFrame(renderScene);
+            }
+            return true;
+        };
+        orbitControls.addEventListener("change", requestRenderIfNotRequested);
+        control.addEventListener("change", requestRenderIfNotRequested);
+        AddListener(window, "keyup", requestRenderIfNotRequested);
+        AddListener(window, "click", requestRenderIfNotRequested);
+        AddListener(window, "resize", requestRenderIfNotRequested);
 
         return () => {
             renderer?.setAnimationLoop(null);
