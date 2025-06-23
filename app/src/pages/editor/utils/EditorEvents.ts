@@ -104,6 +104,12 @@ export const EDITOR_EVENT = {
   ChangeSceneColor: "ChangeSceneColor",
 
   /**
+   * Signal for changing the transformsControl mode
+   * @returns {string} mode - The transformation mode
+   */
+  SetControlMode: "SetControlMode",
+
+  /**
    * Signal for sending scene information to show
    * @returns {Array<number>} sceneInfo - array of type SCENE_INFO
    */

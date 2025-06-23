@@ -21,6 +21,7 @@ import { AttachObjectCommand } from "./commands/AttachObjectCommand";
 import { EditorUtils } from "./utils/EditorUtils";
 import { AddObjectsCommand } from "./commands/AddObjectsCommand";
 import RenderInfoPanel from "./ui/RenderInfoPanel";
+import ToolbarPanel from "./ui/ToolbarPanel";
 
 
 function Editor() {
@@ -186,6 +187,7 @@ function Editor() {
               </div>
               <div ref={canvasRef} className="flex-auto" >
               </div>
+              <ToolbarPanel />
               <RenderInfoPanel />
             </div>
           </ResizablePanel>

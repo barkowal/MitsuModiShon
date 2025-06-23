@@ -2,10 +2,10 @@ import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three/webgpu";
 import { pass, uniform } from "three/tsl";
 import OutlineNode, { outline } from "three/examples/jsm/tsl/display/OutlineNode.js";
-import { OrbitControls, TransformControls } from "three/examples/jsm/Addons.js";
+import { OrbitControls, TransformControls, type TransformControlsMode } from "three/examples/jsm/Addons.js";
 import { SelectionController } from "@/pages/editor/utils/SelectionController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
-import { convertTVector3ToVec3 } from "./utils";
+import { convertEulerToVec3Degrees, convertTVector3ToVec3 } from "./utils";
 import type { Vec3 } from "./Types";
 import { DEFAULT_SCENE_COLOR } from "./Global";
 import { AddListener, RemoveAllListeners } from "./AddListener";
@@ -40,6 +40,9 @@ const InitRenderer = () => {
 
         const orbitControls = new OrbitControls(camera, renderer.domElement);
         const control = createTransformControl(camera, renderer, orbitControls);
+        const handleControlMode = (mode: TransformControlsMode) => {
+            control.setMode(mode);
+        };
 
         selectionController.onSelect((obj: THREE.Object3D) => {
             control.attach(obj);
@@ -50,9 +53,6 @@ const InitRenderer = () => {
 
         const gizmo = control.getHelper();
         scene.add(gizmo);
-
-        const resizeObserver = handleResizing(renderer, camera, canvas);
-        handlePicking(canvas, scene, camera, selectionController);
 
         const outlinePass = createOutlinePass(scene, camera, selectionController);
         const postProcessing = createPostProcessingOutline(renderer, scene, camera, outlinePass);
@@ -87,13 +87,18 @@ const InitRenderer = () => {
         control.addEventListener("change", requestRenderIfNotRequested);
         AddListener(window, "keyup", requestRenderIfNotRequested);
         AddListener(window, "click", requestRenderIfNotRequested);
-        AddListener(window, "resize", requestRenderIfNotRequested);
+
+        const resizeObserver = handleResizing(renderer, camera, canvas, requestRenderIfNotRequested);
+        handlePicking(canvas, scene, camera, selectionController);
+
+        editorEventBus.on(EDITOR_EVENT.SetControlMode, handleControlMode);
 
         return () => {
             renderer?.setAnimationLoop(null);
             resizeObserver.disconnect();
             selectionController.destroy();
             RemoveAllListeners();
+            editorEventBus.off(EDITOR_EVENT.SetControlMode, handleControlMode);
 
         };
     }, [renderer, scene, selectionController]);
@@ -118,9 +123,17 @@ function createTransformControl(camera: THREE.Camera, renderer: THREE.Renderer, 
     // Not great, Command is responsible for moving
     // I move the object with transformcontrol, then set it back and move with command
     let oldPos: Vec3;
+    let oldScale: Vec3;
+    let oldRotation: THREE.Euler;
     control.addEventListener("mouseDown", (e) => {
         if (e.mode === "translate") {
             oldPos = convertTVector3ToVec3(control.object.position);
+        }
+        if (e.mode === "scale") {
+            oldScale = convertTVector3ToVec3(control.object.scale);
+        }
+        if (e.mode === "rotate") {
+            oldRotation = control.object.rotation.clone();
         }
     });
     control.addEventListener("mouseUp", (e) => {
@@ -128,6 +141,16 @@ function createTransformControl(camera: THREE.Camera, renderer: THREE.Renderer, 
             const pos = convertTVector3ToVec3(control.object.position);
             control.object.position.set(oldPos.x, oldPos.y, oldPos.z);
             editorEventBus.emit(EDITOR_EVENT.ChangePosition, pos);
+        }
+        if (e.mode === "scale") {
+            const scale = convertTVector3ToVec3(control.object.scale);
+            control.object.scale.set(oldScale.x, oldScale.y, oldScale.z);
+            editorEventBus.emit(EDITOR_EVENT.ChangeScale, scale);
+        }
+        if (e.mode === "rotate") {
+            const rotation = convertEulerToVec3Degrees(control.object.rotation);
+            control.object.rotation.set(oldRotation.x, oldRotation.y, oldRotation.z);
+            editorEventBus.emit(EDITOR_EVENT.ChangeRotation, rotation);
         }
     });
 
@@ -138,12 +161,13 @@ function createTransformControl(camera: THREE.Camera, renderer: THREE.Renderer, 
     return control;
 }
 
-function handleResizing(renderer: THREE.Renderer, camera: THREE.PerspectiveCamera, canvas: HTMLElement): ResizeObserver {
+function handleResizing(renderer: THREE.Renderer, camera: THREE.PerspectiveCamera, canvas: HTMLElement, requestRender: CallableFunction): ResizeObserver {
     const observer = new ResizeObserver((entries) => {
         entries.forEach(() => {
             renderer.setSize(canvas.clientWidth, canvas.clientHeight);
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
+            requestRender();
         });
     });
     observer.observe(canvas);
