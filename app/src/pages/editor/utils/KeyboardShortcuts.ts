@@ -8,6 +8,7 @@ export function HandleKeyboardPress(e: KeyboardEvent) {
   }
 
   if (e.key === "Delete") { editorEventBus.emit(EDITOR_EVENT.RemoveMesh); };
+  if (e.key === "x") { editorEventBus.emit(EDITOR_EVENT.RemoveMesh); };
   if (e.key === "Escape") { editorEventBus.emit(EDITOR_EVENT.ClearSelections); };
   if (e.key === "g") { editorEventBus.emit(EDITOR_EVENT.SetControlMode, "translate"); };
   if (e.key === "s") { editorEventBus.emit(EDITOR_EVENT.SetControlMode, "scale"); };

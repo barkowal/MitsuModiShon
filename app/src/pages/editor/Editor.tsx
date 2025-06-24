@@ -31,7 +31,7 @@ function Editor() {
     const commandHistory = new CommandHistory();
     const editorUtils = new EditorUtils(scene);
     const uiController = new UiController(scene);
-    uiController.setRendererInfo(renderer.info.memory); // Only for testing if objects are dispatched correctly
+    uiController.setRendererInfo(renderer.info.memory); // Only for testing if objects are disposed correctly
 
     const handleAddMesh = (meshType: MeshType) => {
       const mesh = GetMesh(meshType);
