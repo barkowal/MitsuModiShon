@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three/webgpu";
-import { pass, uniform } from "three/tsl";
+import { pass, uniform, mix, step } from "three/tsl";
 import OutlineNode, { outline } from "three/examples/jsm/tsl/display/OutlineNode.js";
 import { OrbitControls, TransformControls, type TransformControlsMode } from "three/examples/jsm/Addons.js";
 import { SelectionController } from "@/pages/editor/utils/SelectionController";
@@ -9,6 +9,7 @@ import { convertEulerToVec3Degrees, convertTVector3ToVec3 } from "./utils";
 import type { Vec3 } from "./Types";
 import { DEFAULT_SCENE_COLOR } from "./Global";
 import { AddListener, RemoveAllListeners } from "./AddListener";
+import { ViewHelper } from "./objects/ViewHelper";
 
 const InitRenderer = () => {
     const canvasRef = useRef<HTMLDivElement | null>(null);
@@ -54,8 +55,18 @@ const InitRenderer = () => {
         const gizmo = control.getHelper();
         scene.add(gizmo);
 
+        // Posprocessing outline and viewhelper
         const outlinePass = createOutlinePass(scene, camera, selectionController);
-        const postProcessing = createPostProcessingOutline(renderer, scene, camera, outlinePass);
+        const pass = createOutlineColor(scene, camera, outlinePass);
+
+        const viewhelper = new ViewHelper(camera, renderer.domElement);
+        const postProcessing = new THREE.PostProcessing(renderer);
+        const gizmoNode = viewhelper.getTexture();
+
+        postProcessing.outputNode = mix(pass, gizmoNode, step(0.000001, gizmoNode));
+        AddListener(window, "click", (event: Event) => {
+            viewhelper.handleClick(event);
+        });
 
         // Rendering
         let startTime = 0;
@@ -67,6 +78,9 @@ const InitRenderer = () => {
             if (renderer) {
 
                 renderer.clearAsync();
+
+                viewhelper.render(renderer);
+
                 postProcessing.renderAsync();
 
             }
@@ -99,6 +113,7 @@ const InitRenderer = () => {
             selectionController.destroy();
             RemoveAllListeners();
             editorEventBus.off(EDITOR_EVENT.SetControlMode, handleControlMode);
+            renderer.dispose();
 
         };
     }, [renderer, scene, selectionController]);
@@ -244,7 +259,7 @@ function createOutlinePass(scene: THREE.Scene, camera: THREE.Camera, selectionCo
     return outlinePass;
 }
 
-function createPostProcessingOutline(renderer: THREE.Renderer, scene: THREE.Scene, camera: THREE.Camera,
+function createOutlineColor(scene: THREE.Scene, camera: THREE.Camera,
     outlinePass: THREE.TSL.ShaderNodeObject<OutlineNode>) {
     const edgeStrength = uniform(4.0);
     const visibleEdgeColor = uniform(new THREE.Color(0xffffff));
@@ -256,8 +271,5 @@ function createPostProcessingOutline(renderer: THREE.Renderer, scene: THREE.Scen
 
     const scenePass = pass(scene, camera);
 
-    const postProcessing = new THREE.PostProcessing(renderer);
-    postProcessing.outputNode = outlineColor.add(scenePass);
-
-    return postProcessing;
+    return outlineColor.add(scenePass);
 }
