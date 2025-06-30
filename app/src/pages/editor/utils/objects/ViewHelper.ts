@@ -1,5 +1,6 @@
 import { texture, uv, vec2 } from "three/tsl";
 import * as THREE from "three/webgpu";
+import { EDITOR_EVENT, editorEventBus } from "../EditorEvents";
 
 type optionsType = {
   font: string,
@@ -50,6 +51,8 @@ export class ViewHelper extends THREE.Object3D {
   private radius: number;
   private dummy: THREE.Object3D;
 
+  private handleViewChange: CallableFunction | null;
+
   constructor(camera: THREE.Camera, domElement: HTMLElement) {
     super();
     this.center = new THREE.Vector3();
@@ -68,7 +71,7 @@ export class ViewHelper extends THREE.Object3D {
     this.point = new THREE.Vector3();
 
     this.options = {
-      font: "24px Arial", color: "#ffffff", radius: 16,
+      font: "Bold 24px Arial ", color: "#ffffff", radius: 16,
       labelX: "X", labelY: "Y", labelZ: "Z"
     };
 
@@ -89,8 +92,11 @@ export class ViewHelper extends THREE.Object3D {
 
     this.dummy = new THREE.Object3D();
 
+    this.handleViewChange = null;
+
     this.init();
     this.initRenderTarget();
+    this.initEventListeners();
   }
 
   init() {
@@ -163,6 +169,20 @@ export class ViewHelper extends THREE.Object3D {
 
   }
 
+  private initRenderTarget() {
+    const dimension = this.calculateDimension();
+    const x = dimension.width;
+    const y = dimension.height;
+    this.renderTarget = new THREE.RenderTarget(x, y);
+  }
+
+  initEventListeners() {
+    this.handleViewChange = (viewType: string) => {
+      this.changeView(viewType, this.center);
+    };
+    editorEventBus.on(EDITOR_EVENT.ChangeViewport, this.handleViewChange);
+  }
+
   render(renderer: THREE.Renderer) {
 
     this.quaternion.copy(this.camera.quaternion).invert();
@@ -192,13 +212,6 @@ export class ViewHelper extends THREE.Object3D {
 
     return { x: x, y: y, width: width, height: height };
 
-  }
-
-  private initRenderTarget() {
-    const dimension = this.calculateDimension();
-    const x = dimension.width;
-    const y = dimension.height;
-    this.renderTarget = new THREE.RenderTarget(x, y);
   }
 
   getTexture() {
@@ -236,7 +249,7 @@ export class ViewHelper extends THREE.Object3D {
       const intersection = intersects[0];
       const object = intersection.object;
       if (object instanceof THREE.Sprite)
-        this.changeView(object, this.center);
+        this.changeView(object.userData.type, this.center);
 
       return true;
 
@@ -265,11 +278,15 @@ export class ViewHelper extends THREE.Object3D {
 
     this.renderTarget?.dispose();
 
+    if (this.handleViewChange) {
+      editorEventBus.off(EDITOR_EVENT.ChangeViewport, this.handleViewChange);
+    }
+
   };
 
-  changeView(object: THREE.Sprite, focusPoint: THREE.Vector3) {
+  changeView(viewType: string, focusPoint: THREE.Vector3) {
 
-    switch (object.userData.type) {
+    switch (viewType) {
 
       case "posX":
         this.targetPosition.set(1, 0, 0);
@@ -347,7 +364,7 @@ export class ViewHelper extends THREE.Object3D {
 
   private getSpriteMaterial(color: THREE.Color, text?: string): THREE.SpriteMaterial {
 
-    const { font = "24px Consolas", color: labelColor = "#ababab", radius = 16 } = this.options;
+    const { font = "Bold 24px Arial", color: labelColor = "#ababab", radius = 16 } = this.options;
 
     const canvas = document.createElement("canvas");
     canvas.width = 64;

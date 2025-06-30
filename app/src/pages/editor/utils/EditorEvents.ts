@@ -104,6 +104,12 @@ export const EDITOR_EVENT = {
   ChangeSceneColor: "ChangeSceneColor",
 
   /**
+   * Signal for setting a predefined viewport
+   * @returns {string} viewType - type of predefined view
+   */
+  ChangeViewport: "ChangeViewport",
+
+  /**
    * Signal for changing the transformsControl mode
    * @returns {string} mode - The transformation mode
    */
@@ -185,6 +191,10 @@ class EditorEventBus {
     if (this.listeners[event]) {
       this.listeners[event].forEach((listener) => listener(data));
     }
+  }
+
+  showAllListeners() {
+    console.log(this.listeners);
   }
 }
 

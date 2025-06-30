@@ -108,6 +108,7 @@ const InitRenderer = () => {
         editorEventBus.on(EDITOR_EVENT.SetControlMode, handleControlMode);
 
         return () => {
+            viewhelper.dispose();
             renderer?.setAnimationLoop(null);
             resizeObserver.disconnect();
             selectionController.destroy();

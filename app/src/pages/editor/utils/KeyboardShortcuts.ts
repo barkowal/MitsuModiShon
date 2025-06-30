@@ -13,6 +13,12 @@ export function HandleKeyboardPress(e: KeyboardEvent) {
   if (e.key === "g") { editorEventBus.emit(EDITOR_EVENT.SetControlMode, "translate"); };
   if (e.key === "s") { editorEventBus.emit(EDITOR_EVENT.SetControlMode, "scale"); };
   if (e.key === "r") { editorEventBus.emit(EDITOR_EVENT.SetControlMode, "rotate"); };
+  if (e.code === "Numpad1") { editorEventBus.emit(EDITOR_EVENT.ChangeViewport, "negX"); };
+  if (e.code === "Numpad3") { editorEventBus.emit(EDITOR_EVENT.ChangeViewport, "posX"); };
+  if (e.code === "Numpad4") { editorEventBus.emit(EDITOR_EVENT.ChangeViewport, "negZ"); };
+  if (e.code === "Numpad6") { editorEventBus.emit(EDITOR_EVENT.ChangeViewport, "posZ"); };
+  if (e.code === "Numpad7") { editorEventBus.emit(EDITOR_EVENT.ChangeViewport, "posY"); };
+  if (e.code === "Numpad9") { editorEventBus.emit(EDITOR_EVENT.ChangeViewport, "negY"); };
 }
 
 function handleCtrlShortcuts(e: KeyboardEvent) {

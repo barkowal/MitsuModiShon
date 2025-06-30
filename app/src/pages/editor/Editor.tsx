@@ -157,6 +157,7 @@ function Editor() {
 
     return () => {
       editorEventBus.off(EDITOR_EVENT.AddMesh, handleAddMesh);
+      editorEventBus.off(EDITOR_EVENT.RemoveMesh, handleRemoveMesh);
       editorEventBus.off(EDITOR_EVENT.SelectObject, handleSelectObject);
       editorEventBus.off(EDITOR_EVENT.AddSelection, handleAddSelection);
       editorEventBus.off(EDITOR_EVENT.AttachToObject, handleAttachToObject);
