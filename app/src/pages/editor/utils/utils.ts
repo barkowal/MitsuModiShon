@@ -1,5 +1,5 @@
 import * as THREE from "three/webgpu";
-import type { Vec3 } from "./Types";
+import type { Point2d, Vec3 } from "./Types";
 
 export function convertTVector3ToVec3(vec: THREE.Vector3): Vec3 {
   return {
@@ -31,7 +31,7 @@ export function convertEulerToVec3Degrees(euler: THREE.Euler): Vec3 {
   });
 }
 
-export function isArrayOfMeshes(array: Array<THREE.Object3D>) {
+export function isArrayOfMeshes(array: Array<THREE.Object3D>): boolean {
   let onlyMeshes = true;
   array.forEach((obj) => {
     if (!(obj instanceof THREE.Mesh)) {
@@ -50,4 +50,15 @@ export function disposeMesh(scene: THREE.Scene, object: THREE.Object3D) {
       object.geometry.dispose();
     }
   }
+}
+
+export function distanceFromLine(pointA: Point2d, pointB: Point2d, pointC: Point2d): number {
+  const numerator = Math.abs((pointB.y - pointA.y) * pointC.x - (pointB.x - pointA.x) * pointC.y + pointB.x * pointA.y - pointB.y * pointA.x);
+  const denominator = Math.sqrt(Math.pow(pointB.y - pointA.y, 2) + Math.pow(pointB.x - pointA.x, 2));
+
+  return numerator / denominator;
+}
+
+export function distanceBetweenPoints(pointA: Point2d, pointB: Point2d): number {
+  return Math.sqrt(Math.pow(pointA.y - pointB.y, 2) + Math.pow(pointA.x - pointB.x, 2));
 }

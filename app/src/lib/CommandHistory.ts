@@ -12,8 +12,10 @@ export class CommandHistory {
 
   }
 
-  addCommand(command: Command) {
-    command.execute();
+  addCommand(command: Command, shouldExecute: boolean = true) {
+    if (shouldExecute) {
+      command.execute();
+    }
     this.removeFirstIfFull();
     this.commandStack.push(command);
     this.clearRedoStack();

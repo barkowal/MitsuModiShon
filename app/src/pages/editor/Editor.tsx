@@ -8,20 +8,21 @@ import { GetMesh, type MeshType } from "./utils/GetMesh";
 import InitRenderer from "./utils/InitRenderer";
 import { UiController } from "./utils/UiController";
 import { EDITOR_EVENT, editorEventBus } from "./utils/EditorEvents";
-import type { Vec3 } from "./utils/Types";
+import { EDITOR_MODE } from "./utils/Types";
 import * as THREE from "three/webgpu";
 import { HandleKeyboardPress } from "./utils/KeyboardShortcuts";
 import { RemoveObjectsCommand } from "./commands/RemoveObjectsCommand";
-import { TranslateObjectsCommand } from "./commands/TranslateObjectsCommand";
-import { calculateVec3Difference, convertEulerToVec3Degrees, convertTVector3ToVec3, isArrayOfMeshes } from "./utils/utils";
-import { ScaleObjectsCommand } from "./commands/ScaleObjectsCommand";
-import { RotateObjectsCommand } from "./commands/RotateObjectsCommand";
+import { isArrayOfMeshes } from "./utils/utils";
 import { SetMeshesColorCommand } from "./commands/SetMeshesColorCommand";
 import { AttachObjectCommand } from "./commands/AttachObjectCommand";
 import { EditorUtils } from "./utils/EditorUtils";
 import { AddObjectsCommand } from "./commands/AddObjectsCommand";
 import RenderInfoPanel from "./ui/RenderInfoPanel";
 import ToolbarPanel from "./ui/ToolbarPanel";
+import { EditModeHandler } from "./utils/EditModeHandler";
+import { ObjectModeHandler } from "./utils/ObjectModeHandler";
+import ModellingMesh from "./utils/objects/ModellingMesh";
+import { ModellingHelper } from "./utils/ModellingHelper";
 
 
 function Editor() {
@@ -31,6 +32,12 @@ function Editor() {
     const commandHistory = new CommandHistory();
     const editorUtils = new EditorUtils(scene);
     const uiController = new UiController(scene);
+    const modellingHelper = new ModellingHelper();
+    const editModeHandler = new EditModeHandler(commandHistory, uiController, modellingHelper, scene);
+    const objectModeHandler = new ObjectModeHandler(commandHistory, uiController, selectionController, scene);
+
+    selectionController.onEditSelect((intersection: THREE.Intersection) => { modellingHelper.handleIntersectionChange(intersection); });
+    objectModeHandler.initEventHandlers();
     uiController.setRendererInfo(renderer.info.memory); // Only for testing if objects are disposed correctly
 
     const handleAddMesh = (meshType: MeshType) => {
@@ -65,33 +72,6 @@ function Editor() {
       selectionController.clearAllSelections();
     };
 
-    const handleChangePosition = (pos: Vec3) => {
-      const selectedMesh = selectionController.getCurrentSelection();
-      if (selectedMesh) {
-        const difference = calculateVec3Difference(pos, convertTVector3ToVec3(selectedMesh.position));
-        const allSelections = selectionController.getSelectedObjects();
-        commandHistory.addCommand(new TranslateObjectsCommand(allSelections, difference));
-      }
-    };
-
-    const handleChangeScale = (scale: Vec3) => {
-      const selection = selectionController.getCurrentSelection();
-      if (selection) {
-        const difference = calculateVec3Difference(scale, convertTVector3ToVec3(selection.scale));
-        const allSelections = selectionController.getSelectedObjects();
-        commandHistory.addCommand(new ScaleObjectsCommand(allSelections, difference));
-      }
-    };
-
-    const handleChangeRotation = (rotation: Vec3) => {
-      const selection = selectionController.getCurrentSelection();
-      if (selection) {
-        const difference = calculateVec3Difference(rotation, convertEulerToVec3Degrees(selection.rotation));
-        const allSelections = selectionController.getSelectedObjects();
-        commandHistory.addCommand(new RotateObjectsCommand(allSelections, difference));
-      }
-    };
-
     const handleChangeObjectName = (name: string) => {
       const selection = selectionController.getCurrentSelection();
       if (selection) {
@@ -113,6 +93,24 @@ function Editor() {
     const handleChangeSceneColor = (color: number) => {
       const background = new THREE.Color(color);
       scene.background = background;
+    };
+
+    const handleChangeEditorMode = (mode: string) => {
+      if (mode === EDITOR_MODE.ObjectMode) {
+        editModeHandler.disposeEventHandlers();
+        objectModeHandler.initEventHandlers();
+        modellingHelper.clearObject();
+        selectionController.setEditMode(false);
+      }
+      if (mode === EDITOR_MODE.EditMode) {
+        objectModeHandler.disposeEventHandlers();
+        editModeHandler.initEventHandlers();
+        const selection = selectionController.getCurrentSelection();
+        if (selection instanceof ModellingMesh) {
+          modellingHelper.setCurrentObject(selection);
+        }
+        selectionController.setEditMode(true);
+      }
     };
 
     const handleCopy = () => {
@@ -144,12 +142,10 @@ function Editor() {
     editorEventBus.on(EDITOR_EVENT.AddSelection, handleAddSelection);
     editorEventBus.on(EDITOR_EVENT.AttachToObject, handleAttachToObject);
     editorEventBus.on(EDITOR_EVENT.ClearSelections, handleClearSelections);
-    editorEventBus.on(EDITOR_EVENT.ChangePosition, handleChangePosition);
-    editorEventBus.on(EDITOR_EVENT.ChangeScale, handleChangeScale);
-    editorEventBus.on(EDITOR_EVENT.ChangeRotation, handleChangeRotation);
     editorEventBus.on(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
     editorEventBus.on(EDITOR_EVENT.ChangeMeshColor, handleChangeMeshColor);
     editorEventBus.on(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
+    editorEventBus.on(EDITOR_EVENT.ChangeEditorMode, handleChangeEditorMode);
     editorEventBus.on(EDITOR_EVENT.COPY, handleCopy);
     editorEventBus.on(EDITOR_EVENT.PASTE, handlePaste);
     editorEventBus.on(EDITOR_EVENT.UNDO, handleUndo);
@@ -162,16 +158,17 @@ function Editor() {
       editorEventBus.off(EDITOR_EVENT.AddSelection, handleAddSelection);
       editorEventBus.off(EDITOR_EVENT.AttachToObject, handleAttachToObject);
       editorEventBus.off(EDITOR_EVENT.ClearSelections, handleClearSelections);
-      editorEventBus.off(EDITOR_EVENT.ChangePosition, handleChangePosition);
-      editorEventBus.off(EDITOR_EVENT.ChangeScale, handleChangeScale);
-      editorEventBus.off(EDITOR_EVENT.ChangeRotation, handleChangeRotation);
       editorEventBus.off(EDITOR_EVENT.ChangeMeshColor, handleChangeMeshColor);
       editorEventBus.off(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
       editorEventBus.off(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
+      editorEventBus.off(EDITOR_EVENT.ChangeEditorMode, handleChangeEditorMode);
       editorEventBus.off(EDITOR_EVENT.COPY, handleCopy);
       editorEventBus.off(EDITOR_EVENT.PASTE, handlePaste);
       editorEventBus.off(EDITOR_EVENT.UNDO, handleUndo);
       editorEventBus.off(EDITOR_EVENT.REDO, handleRedo);
+
+      editModeHandler.disposeEventHandlers();
+      objectModeHandler.disposeEventHandlers();
     };
   }, [scene, selectionController, renderer]);
 

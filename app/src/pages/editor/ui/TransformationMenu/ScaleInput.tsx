@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
 import { compareVec3 } from "../../utils/utils";
-import { TRANSFORMATION_ARR, type Vec3 } from "../../utils/Types";
+import { TRANSFORM_CHANGE, TRANSFORMATION_ARR, type Vec3 } from "../../utils/Types";
 import DraggableInput from "@/components/DraggableInput";
 
 export function ScaleInput() {
@@ -13,19 +13,19 @@ export function ScaleInput() {
   const sendScale = () => {
     const newScale: Vec3 = { x: scaleX, y: scaleY, z: scaleZ };
     if (!compareVec3(oldScale, newScale)) {
-      editorEventBus.emit(EDITOR_EVENT.ChangeScale, newScale);
+      editorEventBus.emit(EDITOR_EVENT.ChangeScale, [oldScale, newScale]);
       setOldScale(newScale);
     }
   };
 
   useEffect(() => {
-    document.addEventListener('mouseup', sendScale);
+    document.addEventListener("mouseup", sendScale);
 
-    const handleChangeScale = (scale: Vec3) => {
-      setScaleX(scale.x);
-      setScaleY(scale.y);
-      setScaleZ(scale.z);
-      setOldScale(scale);
+    const handleChangeScale = (scales: Array<Vec3>) => {
+      setScaleX(scales[TRANSFORM_CHANGE.New].x);
+      setScaleY(scales[TRANSFORM_CHANGE.New].y);
+      setScaleZ(scales[TRANSFORM_CHANGE.New].z);
+      setOldScale(scales[TRANSFORM_CHANGE.New]);
     };
 
     const handleRefresh = (transform: Array<Vec3>) => {
@@ -43,7 +43,7 @@ export function ScaleInput() {
       editorEventBus.off(EDITOR_EVENT.ChangeScale, handleChangeScale);
       editorEventBus.off(EDITOR_EVENT.RefreshTransformationMenu, handleRefresh);
 
-      document.removeEventListener('mouseup', sendScale);
+      document.removeEventListener("mouseup", sendScale);
     });
 
   }, [scaleX, scaleY, scaleZ, oldScale]);

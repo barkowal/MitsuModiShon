@@ -68,20 +68,41 @@ export const EDITOR_EVENT = {
   RefreshSelections: "RefreshSelections",
 
   /**
-   * Signal for changing the object's position
+   * Signal for moving the object. Unlike 'ChangePosition' it should emit every time object's 
+   * position changes not only after releasing the mouse. It won't add a command.
    * @returns {Vec3} position - Vec3 position of currently selected object
+   */
+  MoveObject: "MoveObject",
+
+  /**
+   * Signal for changing the object's position
+   * @returns {Array<Vec3>} positions - Array containing old and new position of currently selected object
    */
   ChangePosition: "ChangePosition",
 
   /**
-   * Signal for changing the object's scale
+   * Signal for scaling the object. Unlike 'ChangeScale' it should emit every time object's 
+   * scale changes not only after releasing the mouse. It won't add a command.
    * @returns {Vec3} scale - Vec3 scale of currently selected object
+   */
+  ScaleObject: "ScaleObject",
+
+  /**
+   * Signal for changing the object's scale
+   * @returns {Array<Vec3>} scales - Array of old and new scale of currently selected object
    */
   ChangeScale: "ChangeScale",
 
   /**
-   * Signal for changing the object's rotation 
+   * Signal for rotating the object. Unlike 'ChangeRotation' it should emit every time object's 
+   * rotationchanges not only after releasing the mouse. It won't add a command.
    * @returns {Vec3} rotation - Vec3 rotation of currently selected object
+   */
+  RotateObject: "RotateObject",
+
+  /**
+   * Signal for changing the object's rotation 
+   * @returns {Array<Vec3>} rotation - Array of old and new rotation of currently selected object
    */
   ChangeRotation: "ChangeRotation",
 
@@ -128,6 +149,12 @@ export const EDITOR_EVENT = {
   SendRenderTime: "SendRenderTime",
 
   /**
+   * Signal for changing the editor mode
+   * @returns {string} editorMode - current mode of the editor
+   */
+  ChangeEditorMode: "ChangeEditorMode",
+
+  /**
    * Signal for copying object
    * @returns {void}
    */
@@ -154,7 +181,7 @@ export const EDITOR_EVENT = {
 
 type ObjectValues<T> = T[keyof T]
 
-type EditorEvent = ObjectValues<typeof EDITOR_EVENT>
+export type EditorEvent = ObjectValues<typeof EDITOR_EVENT>
 
 type eventData =
   | number

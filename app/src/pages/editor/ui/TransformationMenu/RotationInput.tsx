@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
 import { compareVec3 } from "../../utils/utils";
-import { TRANSFORMATION_ARR, type Vec3 } from "../../utils/Types";
+import { TRANSFORM_CHANGE, TRANSFORMATION_ARR, type Vec3 } from "../../utils/Types";
 import DraggableInput from "@/components/DraggableInput";
 
 export function RotationInput() {
@@ -13,19 +13,19 @@ export function RotationInput() {
   const sendRotation = () => {
     const newRotation: Vec3 = { x: rotationX, y: rotationY, z: rotationZ };
     if (!compareVec3(oldRotation, newRotation)) {
-      editorEventBus.emit(EDITOR_EVENT.ChangeRotation, newRotation);
+      editorEventBus.emit(EDITOR_EVENT.ChangeRotation, [oldRotation, newRotation]);
       setOldRotation(newRotation);
     }
   };
 
   useEffect(() => {
-    document.addEventListener('mouseup', sendRotation);
+    document.addEventListener("mouseup", sendRotation);
 
-    const handleChangeRotation = (rotation: Vec3) => {
-      setRotationX(rotation.x);
-      setRotationY(rotation.y);
-      setRotationZ(rotation.z);
-      setOldRotation(rotation);
+    const handleChangeRotation = (rotation: Array<Vec3>) => {
+      setRotationX(rotation[TRANSFORM_CHANGE.New].x);
+      setRotationY(rotation[TRANSFORM_CHANGE.New].y);
+      setRotationZ(rotation[TRANSFORM_CHANGE.New].z);
+      setOldRotation(rotation[TRANSFORM_CHANGE.New]);
     };
 
     const handleRefresh = (transform: Array<Vec3>) => {
@@ -43,7 +43,7 @@ export function RotationInput() {
       editorEventBus.off(EDITOR_EVENT.ChangeRotation, handleChangeRotation);
       editorEventBus.off(EDITOR_EVENT.RefreshTransformationMenu, handleRefresh);
 
-      document.removeEventListener('mouseup', sendRotation);
+      document.removeEventListener("mouseup", sendRotation);
     });
   }, [rotationX, rotationY, rotationZ, oldRotation]);
 

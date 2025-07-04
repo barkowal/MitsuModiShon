@@ -1,7 +1,14 @@
+import type { EditorEvent } from "./EditorEvents";
+
 export type TreeItem = {
     id: number,
     name: string,
     children?: Array<TreeItem>
+}
+
+export type Point2d = {
+    x: number,
+    y: number,
 }
 
 export type Vec3 = {
@@ -16,11 +23,32 @@ export const TRANSFORMATION_ARR = {
     Rotation: 2,
 } as const;
 
+export const TRANSFORM_CHANGE = {
+    Old: 0,
+    New: 1,
+} as const;
+
+export const EDITOR_MODE = {
+    ObjectMode: "Object Mode",
+    EditMode: "Edit Mode",
+} as const;
+
+export const EDITING_TYPE = {
+    Faces: 0,
+    Edges: 1,
+    Vertices: 2,
+} as const;
+
 export type ListenerHandler = {
     node: Node | Window,
     event: string,
     handler: EventListenerOrEventListenerObject,
     capture: boolean
+}
+
+export type EventHandlerType = {
+    event: EditorEvent,
+    callback: CallableFunction
 }
 
 export type RendererMemoryInfo = {

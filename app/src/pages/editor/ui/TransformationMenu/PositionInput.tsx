@@ -2,7 +2,7 @@ import DraggableInput from "@/components/DraggableInput";
 import { useEffect, useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
 import { compareVec3 } from "../../utils/utils";
-import { TRANSFORMATION_ARR, type Vec3 } from "../../utils/Types";
+import { TRANSFORM_CHANGE, TRANSFORMATION_ARR, type Vec3 } from "../../utils/Types";
 
 export function PositionInput() {
   const [oldPos, setOldPos] = useState({ x: 0, y: 0, z: 0 });
@@ -13,19 +13,19 @@ export function PositionInput() {
   const sendPosition = () => {
     const newPos: Vec3 = { x: posX, y: posY, z: posZ };
     if (!compareVec3(oldPos, newPos)) {
-      editorEventBus.emit(EDITOR_EVENT.ChangePosition, newPos);
+      editorEventBus.emit(EDITOR_EVENT.ChangePosition, [oldPos, newPos]);
       setOldPos(newPos);
     }
   };
 
   useEffect(() => {
-    document.addEventListener('mouseup', sendPosition);
+    document.addEventListener("mouseup", sendPosition);
 
-    const handleChangePosition = (pos: Vec3) => {
-      setPosX(pos.x);
-      setPosY(pos.y);
-      setPosZ(pos.z);
-      setOldPos(pos);
+    const handleChangePosition = (pos: Array<Vec3>) => {
+      setPosX(pos[TRANSFORM_CHANGE.New].x);
+      setPosY(pos[TRANSFORM_CHANGE.New].y);
+      setPosZ(pos[TRANSFORM_CHANGE.New].z);
+      setOldPos(pos[TRANSFORM_CHANGE.New]);
     };
 
     const handleRefresh = (transform: Array<Vec3>) => {
@@ -43,7 +43,7 @@ export function PositionInput() {
       editorEventBus.off(EDITOR_EVENT.ChangePosition, handleChangePosition);
       editorEventBus.off(EDITOR_EVENT.RefreshTransformationMenu, handleRefresh);
 
-      document.removeEventListener('mouseup', sendPosition);
+      document.removeEventListener("mouseup", sendPosition);
     });
 
   }, [posX, posY, posZ, oldPos]);

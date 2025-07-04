@@ -5,11 +5,12 @@ import OutlineNode, { outline } from "three/examples/jsm/tsl/display/OutlineNode
 import { OrbitControls, TransformControls, type TransformControlsMode } from "three/examples/jsm/Addons.js";
 import { SelectionController } from "@/pages/editor/utils/SelectionController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
-import { convertEulerToVec3Degrees, convertTVector3ToVec3 } from "./utils";
+import { compareVec3, convertEulerToVec3Degrees, convertTVector3ToVec3 } from "./utils";
 import type { Vec3 } from "./Types";
 import { DEFAULT_SCENE_COLOR } from "./Global";
 import { AddListener, RemoveAllListeners } from "./AddListener";
 import { ViewHelper } from "./objects/ViewHelper";
+import ModellingMesh from "./objects/ModellingMesh";
 
 const InitRenderer = () => {
     const canvasRef = useRef<HTMLDivElement | null>(null);
@@ -48,7 +49,14 @@ const InitRenderer = () => {
         selectionController.onSelect((obj: THREE.Object3D) => {
             control.attach(obj);
         });
-        selectionController.onDeselect(() => {
+        selectionController.onEditSelect((obj: THREE.Intersection) => {
+            if (obj.object instanceof ModellingMesh) {
+                const helper = obj.object.getTransformHelper();
+                if (helper)
+                    control.attach(helper);
+            }
+        });
+        selectionController.onClear(() => {
             control.detach();
         });
 
@@ -136,11 +144,12 @@ function createTransformControl(camera: THREE.Camera, renderer: THREE.Renderer, 
     control.setScaleSnap(0.001);
     control.setRotationSnap(0.001);
 
-    // Not great, Command is responsible for moving
-    // I move the object with transformcontrol, then set it back and move with command
     let oldPos: Vec3;
+    let movePos: Vec3;
     let oldScale: Vec3;
-    let oldRotation: THREE.Euler;
+    let moveScale: Vec3;
+    let oldRotation: Vec3;
+    let moveRotation: Vec3;
     control.addEventListener("mouseDown", (e) => {
         if (e.mode === "translate") {
             oldPos = convertTVector3ToVec3(control.object.position);
@@ -149,24 +158,61 @@ function createTransformControl(camera: THREE.Camera, renderer: THREE.Renderer, 
             oldScale = convertTVector3ToVec3(control.object.scale);
         }
         if (e.mode === "rotate") {
-            oldRotation = control.object.rotation.clone();
+            oldRotation = convertEulerToVec3Degrees(control.object.rotation);
+        }
+    });
+    control.addEventListener("axis-changed", () => {
+        if (control.object) {
+            movePos = convertTVector3ToVec3(control.object.position);
+            moveScale = convertTVector3ToVec3(control.object.scale);
+            moveRotation = convertEulerToVec3Degrees(control.object.rotation);
+        }
+    });
+    control.addEventListener("object-changed", () => {
+        if (control.object) {
+            movePos = convertTVector3ToVec3(control.object.position);
+            moveScale = convertTVector3ToVec3(control.object.scale);
+            moveRotation = convertEulerToVec3Degrees(control.object.rotation);
+        }
+    });
+    control.addEventListener("change", () => {
+        if (!control.object)
+            return;
+
+        if (!control.dragging)
+            return;
+
+        const objectPosition = control.object.position;
+        const objectScale = control.object.scale;
+        const objectRotation = convertEulerToVec3Degrees(control.object.rotation);
+
+        if (movePos && (!compareVec3(objectPosition, movePos))) {
+            editorEventBus.emit(EDITOR_EVENT.MoveObject, movePos);
+            movePos = convertTVector3ToVec3(control.object.position);
+        }
+
+        if (moveScale && (!compareVec3(objectScale, moveScale))) {
+            editorEventBus.emit(EDITOR_EVENT.ScaleObject, moveScale);
+            moveScale = convertTVector3ToVec3(control.object.scale);
+        }
+
+        if (moveRotation && (!compareVec3(objectRotation, moveRotation))) {
+            editorEventBus.emit(EDITOR_EVENT.RotateObject, moveRotation);
+            moveRotation = convertEulerToVec3Degrees(control.object.rotation);
         }
     });
     control.addEventListener("mouseUp", (e) => {
         if (e.mode === "translate") {
             const pos = convertTVector3ToVec3(control.object.position);
-            control.object.position.set(oldPos.x, oldPos.y, oldPos.z);
-            editorEventBus.emit(EDITOR_EVENT.ChangePosition, pos);
+            editorEventBus.emit(EDITOR_EVENT.ChangePosition, [oldPos, pos]);
         }
         if (e.mode === "scale") {
             const scale = convertTVector3ToVec3(control.object.scale);
-            control.object.scale.set(oldScale.x, oldScale.y, oldScale.z);
-            editorEventBus.emit(EDITOR_EVENT.ChangeScale, scale);
+            editorEventBus.emit(EDITOR_EVENT.ChangeScale, [oldScale, scale]);
         }
         if (e.mode === "rotate") {
             const rotation = convertEulerToVec3Degrees(control.object.rotation);
-            control.object.rotation.set(oldRotation.x, oldRotation.y, oldRotation.z);
-            editorEventBus.emit(EDITOR_EVENT.ChangeRotation, rotation);
+            editorEventBus.emit(EDITOR_EVENT.ChangeRotation, [oldRotation, rotation]);
         }
     });
 

@@ -6,17 +6,24 @@ export class SelectionController {
     private raycaster: THREE.Raycaster;
     private onSelectListeners: Array<CallableFunction>;
     private onClearListeners: Array<CallableFunction>;
-    private onDeselectListeners: Array<CallableFunction>;
+    private onEditListeners: Array<CallableFunction>;
     private currentSelection: THREE.Object3D | null;
     private selectedObjects: Array<THREE.Object3D>;
+    private editMode: boolean;
 
     constructor() {
         this.raycaster = new THREE.Raycaster();
         this.currentSelection = null;
         this.selectedObjects = [];
+        this.onEditListeners = [];
         this.onSelectListeners = [];
         this.onClearListeners = [];
-        this.onDeselectListeners = [];
+        this.editMode = false;
+    }
+
+    setEditMode(val: boolean) {
+        this.editMode = val;
+        this.clearAllSelections();
     }
 
     select(normalizedPosition: THREE.Vector2, scene: THREE.Scene, camera: THREE.Camera, multiSelect: boolean = false) {
@@ -29,7 +36,14 @@ export class SelectionController {
 
         if (intersectedObjects.length) {
 
+            if (this.editMode) {
+                const obj = intersectedObjects[0];
+                this.notifyEditListeners(obj);
+                return;
+            }
+
             for (const obj of intersectedObjects) {
+
 
                 if (this.currentSelection && this.currentSelection.id == obj.object.id) {
                     return;
@@ -40,6 +54,8 @@ export class SelectionController {
                 }
 
                 this.removeCurrentSelection();
+
+
                 this.setCurrentSelection(obj.object);
                 break;
 
@@ -63,6 +79,9 @@ export class SelectionController {
     }
 
     changeSelection(scene: THREE.Scene, id: number) {
+        if (this.editMode) {
+            return;
+        }
         if (this.currentSelection?.id === id) {
             return;
         }
@@ -102,25 +121,26 @@ export class SelectionController {
 
     destroy() {
         this.onSelectListeners = [];
-        this.onDeselectListeners = [];
+        this.onClearListeners = [];
+        this.onEditListeners = [];
     }
 
     checkIfSelectionExists(scene: THREE.Scene) {
         if (this.currentSelection != null) {
             const found = scene.getObjectById(this.currentSelection.id);
             if (found == undefined) {
-                this.notifyDeselectListeners(this.currentSelection);
                 this.currentSelection = null;
+                this.notifyClearListeners();
             }
         }
     }
 
-    onSelect(fn: CallableFunction) {
-        this.onSelectListeners.push(fn);
+    onEditSelect(fn: CallableFunction) {
+        this.onEditListeners.push(fn);
     }
 
-    onDeselect(fn: CallableFunction) {
-        this.onDeselectListeners.push(fn);
+    onSelect(fn: CallableFunction) {
+        this.onSelectListeners.push(fn);
     }
 
     onClear(fn: CallableFunction) {
@@ -133,15 +153,15 @@ export class SelectionController {
         });
     }
 
-    notifyDeselectListeners(obj: THREE.Object3D) {
-        this.onDeselectListeners.forEach((listener) => {
-            listener(obj);
-        });
-    }
-
     notifyClearListeners() {
         this.onClearListeners.forEach((listener) => {
             listener();
+        });
+    }
+
+    notifyEditListeners(intersection: THREE.Intersection) {
+        this.onEditListeners.forEach((listener) => {
+            listener(intersection);
         });
     }
 
@@ -165,7 +185,7 @@ export class SelectionController {
 
     private removeCurrentSelection() {
         if (this.currentSelection) {
-            this.notifyDeselectListeners(this.currentSelection);
+            this.notifyClearListeners();
             this.currentSelection = null;
         }
     }
