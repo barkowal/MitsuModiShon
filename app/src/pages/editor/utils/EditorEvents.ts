@@ -148,6 +148,14 @@ export const EDITOR_EVENT = {
    */
   SendRenderTime: "SendRenderTime",
 
+
+  /**
+   * Signal for switching to next editor mode. Unlike ChangeEditorMode it doesn't have a parameter.
+   * It's only a signal for key press.
+   * @returns {void}
+   */
+  SwtichEditorMode: "SwitchEditorMode",
+
   /**
    * Signal for changing the editor mode
    * @returns {string} editorMode - current mode of the editor

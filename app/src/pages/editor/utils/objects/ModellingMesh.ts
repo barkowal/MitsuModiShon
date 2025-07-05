@@ -25,6 +25,7 @@ export default class ModellingMesh extends THREE.Mesh {
     if ("dispose" in this.material)
       this.material.dispose();
 
+    this.clearHighlightedVertices();
     this.material = this.normalMaterial;
     this.disposeHelpers();
   }

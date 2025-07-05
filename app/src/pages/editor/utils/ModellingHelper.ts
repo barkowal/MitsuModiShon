@@ -18,8 +18,12 @@ export class ModellingHelper {
     object.changeToModelling();
   }
 
-  handleIntersectionChange(intersection: Intersection) {
-    const indices = GetSelectionIndices(intersection, 0);
+  handleIntersectionChange(intersections: Array<Intersection>) {
+    let indices: Array<number> = [];
+    intersections.forEach((intersection) => {
+      indices = indices.concat(GetSelectionIndices(intersection, 0));
+    });
+    indices = Array.from(new Set(indices));
     this.currentObject?.clearHighlightedVertices();
     this.currentObject?.highlightVertices(indices);
   }

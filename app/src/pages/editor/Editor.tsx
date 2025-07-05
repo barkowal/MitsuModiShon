@@ -36,7 +36,7 @@ function Editor() {
     const editModeHandler = new EditModeHandler(commandHistory, uiController, modellingHelper, scene);
     const objectModeHandler = new ObjectModeHandler(commandHistory, uiController, selectionController, scene);
 
-    selectionController.onEditSelect((intersection: THREE.Intersection) => { modellingHelper.handleIntersectionChange(intersection); });
+    selectionController.onEditSelect((intersections: Array<THREE.Intersection>) => { modellingHelper.handleIntersectionChange(intersections); });
     objectModeHandler.initEventHandlers();
     uiController.setRendererInfo(renderer.info.memory); // Only for testing if objects are disposed correctly
 

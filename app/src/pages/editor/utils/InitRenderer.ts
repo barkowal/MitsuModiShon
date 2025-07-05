@@ -49,9 +49,10 @@ const InitRenderer = () => {
         selectionController.onSelect((obj: THREE.Object3D) => {
             control.attach(obj);
         });
-        selectionController.onEditSelect((obj: THREE.Intersection) => {
-            if (obj.object instanceof ModellingMesh) {
-                const helper = obj.object.getTransformHelper();
+        selectionController.onEditSelect((obj: Array<THREE.Intersection>) => {
+            const lastIndex = obj.length - 1;
+            if (obj[lastIndex].object instanceof ModellingMesh) {
+                const helper = obj[lastIndex].object.getTransformHelper();
                 if (helper)
                     control.attach(helper);
             }

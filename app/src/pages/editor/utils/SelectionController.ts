@@ -1,14 +1,18 @@
 import * as THREE from "three/webgpu";
 import { INTERSECTION_LAYER } from "./Global";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
+import ModellingMesh from "./objects/ModellingMesh";
 
 export class SelectionController {
     private raycaster: THREE.Raycaster;
     private onSelectListeners: Array<CallableFunction>;
     private onClearListeners: Array<CallableFunction>;
-    private onEditListeners: Array<CallableFunction>;
     private currentSelection: THREE.Object3D | null;
     private selectedObjects: Array<THREE.Object3D>;
+
+    private editObject: ModellingMesh | null;
+    private editIntersections: Array<THREE.Intersection>;
+    private onEditListeners: Array<CallableFunction>;
     private editMode: boolean;
 
     constructor() {
@@ -18,11 +22,17 @@ export class SelectionController {
         this.onEditListeners = [];
         this.onSelectListeners = [];
         this.onClearListeners = [];
+
+        this.editIntersections = [];
+        this.editObject = null;
         this.editMode = false;
     }
 
     setEditMode(val: boolean) {
         this.editMode = val;
+        if (val === true && this.currentSelection instanceof ModellingMesh) {
+            this.editObject = this.currentSelection;
+        }
         this.clearAllSelections();
     }
 
@@ -30,20 +40,21 @@ export class SelectionController {
 
         this.raycaster.setFromCamera(normalizedPosition, camera);
         this.raycaster.layers.set(INTERSECTION_LAYER);
+
+        // If in edit mode intersect only the editable object
+        if (this.editMode) {
+            this.editModeSelect(multiSelect);
+            return;
+        }
+
         const intersectedObjects = this.raycaster.intersectObjects(scene.children);
 
         this.checkIfSelectionExists(scene);
 
         if (intersectedObjects.length) {
 
-            if (this.editMode) {
-                const obj = intersectedObjects[0];
-                this.notifyEditListeners(obj);
-                return;
-            }
 
             for (const obj of intersectedObjects) {
-
 
                 if (this.currentSelection && this.currentSelection.id == obj.object.id) {
                     return;
@@ -53,15 +64,41 @@ export class SelectionController {
                     this.clearSelectedObjects();
                 }
 
-                this.removeCurrentSelection();
-
-
                 this.setCurrentSelection(obj.object);
                 break;
 
             }
 
         }
+    }
+
+    editModeSelect(multiSelect: boolean) {
+        if (this.editObject) {
+            const intersectedObject = this.raycaster.intersectObject(this.editObject);
+            if (intersectedObject.length === 0) return;
+            if (!multiSelect) {
+                this.editIntersections = [];
+            }
+            if (!this.isAlreadySelectedIntersection(intersectedObject[0])) {
+                this.editIntersections.push(intersectedObject[0]);
+            }
+            this.notifyEditListeners(this.editIntersections);
+        }
+    }
+
+    isAlreadySelectedIntersection(selectedIntersection: THREE.Intersection) {
+        let isSelected = false;
+        this.editIntersections.forEach((intersection) => {
+            if (!intersection.face) { isSelected = true; return; }
+            if (!selectedIntersection.face) { isSelected = true; return; }
+            if (intersection.face.a == selectedIntersection.face.a &&
+                intersection.face.b == selectedIntersection.face.b &&
+                intersection.face.c == selectedIntersection.face.c) {
+                isSelected = true;
+                return;
+            }
+        });
+        return isSelected;
     }
 
     IsAlreadySelected(objectId: number) {
@@ -159,7 +196,7 @@ export class SelectionController {
         });
     }
 
-    notifyEditListeners(intersection: THREE.Intersection) {
+    notifyEditListeners(intersection: Array<THREE.Intersection>) {
         this.onEditListeners.forEach((listener) => {
             listener(intersection);
         });
