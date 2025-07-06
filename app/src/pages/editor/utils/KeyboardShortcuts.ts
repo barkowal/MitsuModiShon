@@ -14,6 +14,9 @@ export function HandleKeyboardPress(e: KeyboardEvent) {
   if (e.key === "g") { editorEventBus.emit(EDITOR_EVENT.SetControlMode, "translate"); };
   if (e.key === "s") { editorEventBus.emit(EDITOR_EVENT.SetControlMode, "scale"); };
   if (e.key === "r") { editorEventBus.emit(EDITOR_EVENT.SetControlMode, "rotate"); };
+  if (e.key === "1") { editorEventBus.emit(EDITOR_EVENT.NumberPressed, 1); };
+  if (e.key === "2") { editorEventBus.emit(EDITOR_EVENT.NumberPressed, 2); };
+  if (e.key === "3") { editorEventBus.emit(EDITOR_EVENT.NumberPressed, 3); };
   if (e.code === "Numpad1") { editorEventBus.emit(EDITOR_EVENT.ChangeViewport, "negX"); };
   if (e.code === "Numpad3") { editorEventBus.emit(EDITOR_EVENT.ChangeViewport, "posX"); };
   if (e.code === "Numpad4") { editorEventBus.emit(EDITOR_EVENT.ChangeViewport, "negZ"); };

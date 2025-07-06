@@ -1,12 +1,20 @@
 import type { Intersection } from "three/webgpu";
 import type ModellingMesh from "./objects/ModellingMesh";
 import { GetSelectionIndices } from "./GetSelectionIndices";
+import { EDITING_MODE } from "./Types";
+import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 
 export class ModellingHelper {
   private currentObject: ModellingMesh | null;
+  private editingMode: number;
 
   constructor() {
     this.currentObject = null;
+    this.editingMode = EDITING_MODE.Faces;
+  }
+
+  setEditingMode(mode: number) {
+    this.editingMode = mode;
   }
 
   getCurrentObject(): ModellingMesh | null {
@@ -19,13 +27,27 @@ export class ModellingHelper {
   }
 
   handleIntersectionChange(intersections: Array<Intersection>) {
+    if (!this.currentObject) {
+      return;
+    }
     let indices: Array<number> = [];
+
+    // more intersections means multi select
+    if (intersections.length > 1) {
+      indices = this.currentObject.getHighlightedIndices();
+    }
     intersections.forEach((intersection) => {
-      indices = indices.concat(GetSelectionIndices(intersection, 0));
+      indices = indices.concat(GetSelectionIndices(intersection, this.editingMode));
     });
     indices = Array.from(new Set(indices));
-    this.currentObject?.clearHighlightedVertices();
-    this.currentObject?.highlightVertices(indices);
+    this.currentObject.clearHighlightedVertices();
+    this.currentObject.highlightVertices(indices);
+    const helper = this.currentObject.getTransformHelper();
+    if (helper) {
+      // First I 'reset' the selection and then reselect the helper
+      editorEventBus.emit(EDITOR_EVENT.SelectObject, -1);
+      editorEventBus.emit(EDITOR_EVENT.SelectObject, helper.id);
+    }
   }
 
   clearObject() {
@@ -33,6 +55,7 @@ export class ModellingHelper {
       return;
     }
     this.currentObject.changeToNormalMode();
+    this.editingMode = EDITING_MODE.Faces;
     this.currentObject = null;
   }
 

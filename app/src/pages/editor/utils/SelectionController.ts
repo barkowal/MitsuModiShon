@@ -33,6 +33,9 @@ export class SelectionController {
         if (val === true && this.currentSelection instanceof ModellingMesh) {
             this.editObject = this.currentSelection;
         }
+        if (val === false) {
+            this.editObject = null;
+        }
         this.clearAllSelections();
     }
 

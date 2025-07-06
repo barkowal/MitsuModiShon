@@ -33,7 +33,7 @@ export const EDITOR_MODE = {
     EditMode: "Edit Mode",
 } as const;
 
-export const EDITING_TYPE = {
+export const EDITING_MODE = {
     Faces: 0,
     Edges: 1,
     Vertices: 2,

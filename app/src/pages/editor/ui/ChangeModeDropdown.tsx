@@ -2,23 +2,24 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { Dot, Minus, Square, SquarePen } from "lucide-react";
-import { EDITING_TYPE, EDITOR_MODE } from "../utils/Types";
+import { EDITING_MODE, EDITOR_MODE } from "../utils/Types";
 import { useEffect, useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 function ChangeModeDropdown() {
   const [currentMode, setCurrentMode] = useState<string>(EDITOR_MODE.ObjectMode);
-  const [editingType, setEditingType] = useState<number>(EDITING_TYPE.Faces);
+  const [editingMode, setEditingMode] = useState<number>(EDITING_MODE.Faces);
 
   const handleModeChange = (val: string) => {
     editorEventBus.emit(EDITOR_EVENT.ChangeEditorMode, val);
     setCurrentMode(val);
-    setEditingType(0);
+    setEditingMode(0);
   };
 
   const handleEditingChange = (val: string) => {
-    const type = Number(val);
-    setEditingType(type);
+    const mode = Number(val);
+    editorEventBus.emit(EDITOR_EVENT.ChangeEditingMode, mode);
+    setEditingMode(mode);
   };
 
   useEffect(() => {
@@ -39,9 +40,32 @@ function ChangeModeDropdown() {
       }
     };
 
+
+    const handleNumberPress = (nb: number) => {
+      if (currentMode !== EDITOR_MODE.EditMode) return;
+      switch (nb) {
+        case 1: {
+          handleEditingChange(EDITING_MODE.Vertices.toString());
+          break;
+        }
+        case 2: {
+          handleEditingChange(EDITING_MODE.Edges.toString());
+          break;
+        }
+        case 3: {
+          handleEditingChange(EDITING_MODE.Faces.toString());
+          break;
+        }
+        default:
+          handleEditingChange(EDITING_MODE.Faces.toString());
+      }
+    };
+
     editorEventBus.on(EDITOR_EVENT.SwtichEditorMode, handleSwitchMode);
+    editorEventBus.on(EDITOR_EVENT.NumberPressed, handleNumberPress);
     return (() => {
       editorEventBus.off(EDITOR_EVENT.SwtichEditorMode, handleSwitchMode);
+      editorEventBus.off(EDITOR_EVENT.NumberPressed, handleNumberPress);
     });
   }, [currentMode]);
 
@@ -68,17 +92,17 @@ function ChangeModeDropdown() {
         currentMode === EDITOR_MODE.EditMode ?
 
           <ToggleGroup
-            value={editingType.toString()}
+            value={editingMode.toString()}
             onValueChange={handleEditingChange}
             variant="outline"
             type="single">
-            <ToggleGroupItem value={EDITING_TYPE.Vertices.toString()} aria-label="Toggle Vertices">
+            <ToggleGroupItem value={EDITING_MODE.Vertices.toString()} aria-label="Toggle Vertices">
               <Dot />
             </ToggleGroupItem>
-            <ToggleGroupItem value={EDITING_TYPE.Edges.toString()} aria-label="Toggle Edges">
+            <ToggleGroupItem value={EDITING_MODE.Edges.toString()} aria-label="Toggle Edges">
               <Minus />
             </ToggleGroupItem>
-            <ToggleGroupItem value={EDITING_TYPE.Faces.toString()} aria-label="Toggle Faces">
+            <ToggleGroupItem value={EDITING_MODE.Faces.toString()} aria-label="Toggle Faces">
               <Square />
             </ToggleGroupItem>
           </ToggleGroup>

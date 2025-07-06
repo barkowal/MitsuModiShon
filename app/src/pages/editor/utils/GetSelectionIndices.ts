@@ -1,6 +1,6 @@
 import { BufferGeometry, type Intersection } from "three/webgpu";
 import { distanceBetweenPoints, distanceFromLine } from "./utils";
-import { EDITING_TYPE } from "./Types";
+import { EDITING_MODE } from "./Types";
 
 export function GetSelectionIndices(intersection: Intersection, selectionType: number) {
 
@@ -25,7 +25,7 @@ export function GetSelectionIndices(intersection: Intersection, selectionType: n
   }
 
   const indices = [];
-  if (selectionType === EDITING_TYPE.Faces) {
+  if (selectionType === EDITING_MODE.Faces) {
     indices.push(tri.a, tri.b, tri.c);
     return indices;
   }
@@ -35,7 +35,7 @@ export function GetSelectionIndices(intersection: Intersection, selectionType: n
   const cPoint = { x: uvAttr.array[tri.c * 2], y: uvAttr.array[(tri.c * 2 + 1)] };
   const iPoint = { x: uv.x, y: uv.y };
 
-  if (selectionType === EDITING_TYPE.Edges) {
+  if (selectionType === EDITING_MODE.Edges) {
     if (distanceFromLine(aPoint, bPoint, iPoint) < 0.04999) {
       indices.push(tri.a, tri.b);
     }
@@ -47,18 +47,18 @@ export function GetSelectionIndices(intersection: Intersection, selectionType: n
     }
   }
 
-  if (selectionType === EDITING_TYPE.Vertices) {
+  if (selectionType === EDITING_MODE.Vertices) {
     if (distanceBetweenPoints(aPoint, iPoint) < 0.04999) {
       indices.push(tri.a);
       return indices;
     }
 
-    if (distanceBetweenPoints(aPoint, iPoint) < 0.04999) {
+    if (distanceBetweenPoints(bPoint, iPoint) < 0.04999) {
       indices.push(tri.b);
       return indices;
     }
 
-    if (distanceBetweenPoints(aPoint, iPoint) < 0.04999) {
+    if (distanceBetweenPoints(cPoint, iPoint) < 0.04999) {
       indices.push(tri.c);
       return indices;
     }

@@ -17,6 +17,10 @@ export default class ModellingMesh extends THREE.Mesh {
     this.indices = [];
   }
 
+  getHighlightedIndices() {
+    return this.indices;
+  }
+
   getTransformHelper() {
     return this.transformHelper;
   }
@@ -85,7 +89,7 @@ export default class ModellingMesh extends THREE.Mesh {
     }
   }
 
-  translateIntersection(distance: Vec3) {
+  translateVertices(distance: Vec3) {
     if (!this.verticesHelper) {
       return;
     }
@@ -109,6 +113,37 @@ export default class ModellingMesh extends THREE.Mesh {
       positionAttribute.needsUpdate = true;
     }
     this.geometry.computeBoundingSphere();
+  }
+
+  repositionTransformHelper() {
+    if (!this.verticesHelper) {
+      return;
+    }
+    if (!this.transformHelper) {
+      return;
+    }
+
+    const positions = [];
+    const vertiPos = new THREE.Vector3();
+    const vertiMatrix = new THREE.Matrix4();
+
+    for (let i = 0; i <= this.indices.length; i++) {
+      const i2 = this.indices[i];
+
+      this.verticesHelper.getMatrixAt(i2, vertiMatrix);
+      vertiPos.setFromMatrixPosition(vertiMatrix);
+
+      if (vertiPos.x !== undefined &&
+        vertiPos.y !== undefined &&
+        vertiPos.z !== undefined
+      ) {
+        positions.push({ x: vertiPos.x, y: vertiPos.y, z: vertiPos.z });
+      }
+
+    }
+
+    const avgPos = this.calculateAvgPos(positions);
+    this.transformHelper.position.set(avgPos.x, avgPos.y, avgPos.z);
   }
 
   getIndicesPosition() {

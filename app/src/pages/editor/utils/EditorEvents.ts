@@ -163,6 +163,19 @@ export const EDITOR_EVENT = {
   ChangeEditorMode: "ChangeEditorMode",
 
   /**
+   * Signal for changing the editing selection mode while the editor is in edit mode.
+   * @returns {number} editingMode - mode for changing. Possible values: 0-faces, 1-edges, 2-vertices
+   */
+  ChangeEditingMode: "ChangeEditingMode",
+
+  /**
+   * Signal for user pressing the 1 on keyboard.
+   * It should change editing mode while in edit mode.
+   * @returns {number} nb - the number key that user pressed
+   */
+  NumberPressed: "NumberPressed",
+
+  /**
    * Signal for copying object
    * @returns {void}
    */
