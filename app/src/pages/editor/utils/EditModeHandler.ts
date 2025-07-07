@@ -7,6 +7,7 @@ import type { ModellingHelper } from "./ModellingHelper";
 import ModellingMesh from "./objects/ModellingMesh";
 import { calculateVec3Difference, compareVec3, convertTVector3ToVec3 } from "./utils";
 import { TranslateModellingVertices } from "../commands/TranslateModellingVertices";
+import { ScaleModellingVertices } from "../commands/ScaleModellingVertices";
 
 export class EditModeHandler {
   eventHandlers: Array<EventHandlerType>;
@@ -29,6 +30,8 @@ export class EditModeHandler {
     this.handleChangePosition();
     this.handleMovePosition();
     this.handleChangeEditingMode();
+    this.handleChangeScale();
+    this.handleScaleObject();
   }
 
   disposeEventHandlers() {
@@ -83,6 +86,55 @@ export class EditModeHandler {
     };
     editorEventBus.on(EDITOR_EVENT.ChangeEditingMode, handle);
     this.eventHandlers.push({ event: EDITOR_EVENT.ChangeEditingMode, callback: handle });
+  }
+
+
+  private handleScaleObject() {
+
+    const handle = (scale: Vec3) => {
+
+      const obj = this.modellingHelper.getCurrentObject();
+      if (obj instanceof ModellingMesh) {
+        const transform = obj.getTransformHelper();
+        if (!transform) return;
+        const difference = calculateVec3Difference(convertTVector3ToVec3(transform.scale), scale);
+        obj.scaleVertices(difference);
+      }
+
+    };
+
+    editorEventBus.on(EDITOR_EVENT.ScaleObject, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.ScaleObject, callback: handle });
+
+  }
+
+  private handleChangeScale() {
+
+    const handle = (scales: Array<Vec3>) => {
+      const obj = this.modellingHelper.getCurrentObject();
+
+      if (obj instanceof ModellingMesh) {
+
+        const indices = obj.getHighlightedIndices();
+        const transform = obj.getTransformHelper();
+        if (!transform) return;
+
+        if (compareVec3(scales[TRANSFORM_CHANGE.New], convertTVector3ToVec3(transform.scale))) {
+          const difference = calculateVec3Difference(convertTVector3ToVec3(transform.scale), scales[TRANSFORM_CHANGE.Old]);
+          this.commandHistory.addCommand(new ScaleModellingVertices(obj, difference, indices), false);
+        }
+        else {
+          const difference = calculateVec3Difference(scales[TRANSFORM_CHANGE.New], convertTVector3ToVec3(transform.scale));
+          this.commandHistory.addCommand(new ScaleModellingVertices(obj, difference, indices));
+          transform.scale.set(transform.scale.x + difference.x,
+            transform.scale.y + difference.y,
+            transform.scale.z + difference.z);
+        }
+      }
+    };
+
+    editorEventBus.on(EDITOR_EVENT.ChangeScale, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.ChangeScale, callback: handle });
   }
 
 }

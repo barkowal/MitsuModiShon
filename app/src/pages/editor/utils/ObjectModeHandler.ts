@@ -135,7 +135,7 @@ export class ObjectModeHandler {
 
     editorEventBus.on(EDITOR_EVENT.ChangeScale, handle);
     this.eventHandlers.push({ event: EDITOR_EVENT.ChangeScale, callback: handle });
-  };
+  }
 
   private handleChangeRotation() {
     const handle = (rotation: Array<Vec3>) => {

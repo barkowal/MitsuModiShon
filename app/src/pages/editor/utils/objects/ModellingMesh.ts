@@ -1,6 +1,7 @@
 import * as THREE from "three/webgpu";
 import type { Vec3 } from "../Types";
 import { CreateModellingMaterial } from "./Custom/ModellingMaterial";
+import { calculateVec3Difference, convertTVector3ToVec3 } from "../utils";
 
 export default class ModellingMesh extends THREE.Mesh {
   private verticesHelper: THREE.InstancedMesh | null;
@@ -63,7 +64,7 @@ export default class ModellingMesh extends THREE.Mesh {
     const vertiPos = new THREE.Vector3();
     const vertiMatrix = new THREE.Matrix4();
     const positions = [];
-    for (let i = 0; i <= indices.length; i++) {
+    for (let i = 0; i < indices.length; i++) {
       const i2 = indices[i];
       colorAttr.setX(i2, 1);
       colorAttr.setY(i2, 1);
@@ -79,9 +80,9 @@ export default class ModellingMesh extends THREE.Mesh {
 
     }
 
-
     const avgPos = this.calculateAvgPos(positions);
     this.transformHelper.position.set(avgPos.x, avgPos.y, avgPos.z);
+    this.transformHelper.scale.set(1, 1, 1);
 
     colorAttr.needsUpdate = true;
     if (this.verticesHelper.instanceColor) {
@@ -90,24 +91,15 @@ export default class ModellingMesh extends THREE.Mesh {
   }
 
   translateVertices(distance: Vec3) {
-    if (!this.verticesHelper) {
-      return;
-    }
     const positionAttribute = this.geometry.getAttribute("position");
-    const vertiMatrix = new THREE.Matrix4();
 
     const vertex = new THREE.Vector3();
 
-    for (let i = 0; i <= this.indices.length; i++) {
+    for (let i = 0; i < this.indices.length; i++) {
       const i2 = this.indices[i];
       vertex.fromBufferAttribute(positionAttribute, i2);
-      vertex.setX(vertex.x + distance.x);
-      vertex.setY(vertex.y + distance.y);
-      vertex.setZ(vertex.z + distance.z);
 
-      this.verticesHelper.getMatrixAt(i2, vertiMatrix);
-      vertiMatrix.setPosition(vertex);
-      this.verticesHelper.setMatrixAt(i2, vertiMatrix);
+      this.translateVertex(vertex, i2, distance);
 
       positionAttribute.setXYZ(i2, vertex.x, vertex.y, vertex.z);
       positionAttribute.needsUpdate = true;
@@ -115,19 +107,15 @@ export default class ModellingMesh extends THREE.Mesh {
     this.geometry.computeBoundingSphere();
   }
 
-  repositionTransformHelper() {
+  calculateCenter(): Vec3 | null {
     if (!this.verticesHelper) {
-      return;
+      return null;
     }
-    if (!this.transformHelper) {
-      return;
-    }
-
     const positions = [];
     const vertiPos = new THREE.Vector3();
     const vertiMatrix = new THREE.Matrix4();
 
-    for (let i = 0; i <= this.indices.length; i++) {
+    for (let i = 0; i < this.indices.length; i++) {
       const i2 = this.indices[i];
 
       this.verticesHelper.getMatrixAt(i2, vertiMatrix);
@@ -143,7 +131,66 @@ export default class ModellingMesh extends THREE.Mesh {
     }
 
     const avgPos = this.calculateAvgPos(positions);
-    this.transformHelper.position.set(avgPos.x, avgPos.y, avgPos.z);
+    return avgPos;
+  }
+
+  scaleVertices(scaleDistance: Vec3) {
+    if (!this.transformHelper) {
+      return;
+    }
+    const center = this.calculateCenter();
+    if (!center) {
+      return;
+    }
+
+    const positionAttribute = this.geometry.getAttribute("position");
+    const vertex = new THREE.Vector3();
+
+    for (let i = 0; i < this.indices.length; i++) {
+      const i2 = this.indices[i];
+      vertex.fromBufferAttribute(positionAttribute, i2);
+
+      const pos = convertTVector3ToVec3(vertex);
+      const diff = calculateVec3Difference(center, pos);
+
+      const distance = {
+        x: scaleDistance.x * -1 * Math.sign(diff.x),
+        y: scaleDistance.y * -1 * Math.sign(diff.y),
+        z: scaleDistance.z * -1 * Math.sign(diff.z)
+      };
+
+      this.translateVertex(vertex, i2, distance);
+
+      positionAttribute.setXYZ(i2, vertex.x, vertex.y, vertex.z);
+      positionAttribute.needsUpdate = true;
+    }
+
+    this.geometry.computeBoundingSphere();
+  }
+
+  private translateVertex(vertex: THREE.Vector3, index: number, distance: Vec3) {
+    if (!this.verticesHelper) {
+      return;
+    }
+    const vertiMatrix = new THREE.Matrix4();
+
+    vertex.setX(vertex.x + distance.x);
+    vertex.setY(vertex.y + distance.y);
+    vertex.setZ(vertex.z + distance.z);
+
+    this.verticesHelper.getMatrixAt(index, vertiMatrix);
+    vertiMatrix.setPosition(vertex);
+    this.verticesHelper.setMatrixAt(index, vertiMatrix);
+  }
+
+  repositionTransformHelper() {
+    if (!this.transformHelper) {
+      return;
+    }
+    const center = this.calculateCenter();
+    if (!center)
+      return;
+    this.transformHelper.position.set(center.x, center.y, center.z);
   }
 
   getIndicesPosition() {
@@ -213,8 +260,7 @@ export default class ModellingMesh extends THREE.Mesh {
     return transformHelper;
   }
 
-  // TODO
-  private calculateAvgPos(positions) {
+  private calculateAvgPos(positions: Array<Vec3>): Vec3 {
     let posX = 0;
     let posY = 0;
     let posZ = 0;
