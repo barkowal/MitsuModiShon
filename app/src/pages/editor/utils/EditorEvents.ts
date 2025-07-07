@@ -148,6 +148,12 @@ export const EDITOR_EVENT = {
    */
   SendRenderTime: "SendRenderTime",
 
+  /**
+   * Signal for sending warning to the screen
+   * @returns {string} warning - message to show
+   */
+  SendWarningLog: "SendWarningLog",
+
 
   /**
    * Signal for switching to next editor mode. Unlike ChangeEditorMode it doesn't have a parameter.

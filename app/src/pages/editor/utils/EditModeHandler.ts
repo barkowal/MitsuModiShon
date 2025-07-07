@@ -32,6 +32,8 @@ export class EditModeHandler {
     this.handleChangeEditingMode();
     this.handleChangeScale();
     this.handleScaleObject();
+    this.handleRemoveMesh();
+    this.handleChangeRotation();
   }
 
   disposeEventHandlers() {
@@ -135,6 +137,30 @@ export class EditModeHandler {
 
     editorEventBus.on(EDITOR_EVENT.ChangeScale, handle);
     this.eventHandlers.push({ event: EDITOR_EVENT.ChangeScale, callback: handle });
+  }
+
+  private handleRemoveMesh() {
+    const handle = () => {
+      editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "You cannot delete vertices.");
+    };
+
+    editorEventBus.on(EDITOR_EVENT.RemoveMesh, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.RemoveMesh, callback: handle });
+  }
+
+  private handleChangeRotation() {
+    const handle = () => {
+      editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "There is no rotation in edit mode.");
+      const obj = this.modellingHelper.getCurrentObject();
+      if (obj instanceof ModellingMesh) {
+        const transform = obj.getTransformHelper();
+        if (!transform) return;
+        transform.rotation.set(0, 0, 0);
+      }
+    };
+
+    editorEventBus.on(EDITOR_EVENT.ChangeRotation, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.ChangeRotation, callback: handle });
   }
 
 }

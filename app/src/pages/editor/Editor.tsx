@@ -11,7 +11,6 @@ import { EDITOR_EVENT, editorEventBus } from "./utils/EditorEvents";
 import { EDITOR_MODE } from "./utils/Types";
 import * as THREE from "three/webgpu";
 import { HandleKeyboardPress } from "./utils/KeyboardShortcuts";
-import { RemoveObjectsCommand } from "./commands/RemoveObjectsCommand";
 import { isArrayOfMeshes } from "./utils/utils";
 import { SetMeshesColorCommand } from "./commands/SetMeshesColorCommand";
 import { AttachObjectCommand } from "./commands/AttachObjectCommand";
@@ -23,6 +22,7 @@ import { EditModeHandler } from "./utils/EditModeHandler";
 import { ObjectModeHandler } from "./utils/ObjectModeHandler";
 import ModellingMesh from "./utils/objects/ModellingMesh";
 import { ModellingHelper } from "./utils/ModellingHelper";
+import WarningLogPanel from "./ui/WarningLogPanel";
 
 
 function Editor() {
@@ -44,13 +44,6 @@ function Editor() {
       const mesh = GetMesh(meshType);
       commandHistory.addCommand(new AddMeshCommand(scene, mesh));
       uiController.refreshTree();
-    };
-
-    const handleRemoveMesh = () => {
-      const selections = selectionController.getSelectedObjects();
-      commandHistory.addCommand(new RemoveObjectsCommand(scene, selections));
-      uiController.refreshTree();
-      selectionController.checkIfSelectionExists(scene); // Only for now -_o . In the future add something to reduce repeating, maybe event for refreshing?
     };
 
     const handleSelectObject = (id: number) => {
@@ -108,6 +101,9 @@ function Editor() {
         const selection = selectionController.getCurrentSelection();
         if (selection instanceof ModellingMesh) {
           modellingHelper.setCurrentObject(selection);
+        } else {
+          editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Please select a modelling object in object mode before editing.");
+
         }
         selectionController.setEditMode(true);
       }
@@ -137,7 +133,6 @@ function Editor() {
     };
 
     editorEventBus.on(EDITOR_EVENT.AddMesh, handleAddMesh);
-    editorEventBus.on(EDITOR_EVENT.RemoveMesh, handleRemoveMesh);
     editorEventBus.on(EDITOR_EVENT.SelectObject, handleSelectObject);
     editorEventBus.on(EDITOR_EVENT.AddSelection, handleAddSelection);
     editorEventBus.on(EDITOR_EVENT.AttachToObject, handleAttachToObject);
@@ -153,7 +148,6 @@ function Editor() {
 
     return () => {
       editorEventBus.off(EDITOR_EVENT.AddMesh, handleAddMesh);
-      editorEventBus.off(EDITOR_EVENT.RemoveMesh, handleRemoveMesh);
       editorEventBus.off(EDITOR_EVENT.SelectObject, handleSelectObject);
       editorEventBus.off(EDITOR_EVENT.AddSelection, handleAddSelection);
       editorEventBus.off(EDITOR_EVENT.AttachToObject, handleAttachToObject);
@@ -187,6 +181,7 @@ function Editor() {
               </div>
               <ToolbarPanel />
               <RenderInfoPanel />
+              <WarningLogPanel />
             </div>
           </ResizablePanel>
           <ResizableHandle />

@@ -8,6 +8,7 @@ import { calculateVec3Difference, compareVec3, convertEulerToVec3Degrees, conver
 import { TranslateObjectsCommand } from "../commands/TranslateObjectsCommand";
 import { ScaleObjectsCommand } from "../commands/ScaleObjectsCommand";
 import { RotateObjectsCommand } from "../commands/RotateObjectsCommand";
+import { RemoveObjectsCommand } from "../commands/RemoveObjectsCommand";
 
 export class ObjectModeHandler {
   eventHandlers: Array<EventHandlerType>;
@@ -27,6 +28,7 @@ export class ObjectModeHandler {
   initEventHandlers() {
     if (this.eventHandlers.length > 0) this.disposeEventHandlers();
 
+    this.handleRemoveMesh();
     this.handleChangePosition();
     this.handleMoveObject();
     this.handleChangeScale();
@@ -39,6 +41,20 @@ export class ObjectModeHandler {
     this.eventHandlers.forEach((handler) => {
       editorEventBus.off(handler.event, handler.callback);
     });
+  }
+
+
+
+  private handleRemoveMesh() {
+    const handle = () => {
+      const selections = this.selectionController.getSelectedObjects();
+      this.commandHistory.addCommand(new RemoveObjectsCommand(this.scene, selections));
+      this.uiController.refreshTree();
+      this.selectionController.checkIfSelectionExists(this.scene); // Only for now -_o . In the future add something to reduce repeating, maybe event for refreshing?
+    };
+
+    editorEventBus.on(EDITOR_EVENT.RemoveMesh, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.RemoveMesh, callback: handle });
   }
 
   private handleChangePosition() {
