@@ -3,6 +3,7 @@ import { INTERSECTION_LAYER } from "./Global";
 import { CreateModellingPlaneGeometry } from "./objects/Custom/ModellingPlaneGeometry";
 import ModellingMesh from "./objects/ModellingMesh";
 import { CreateModellingBoxGeometry } from "./objects/Custom/ModellingBoxGeometry";
+import { CreateModellingCircleGeometry } from "./objects/Custom/ModellingCircleGeometry";
 
 export const MESH_TYPE = {
     BOX: "box",
@@ -14,6 +15,7 @@ export const MESH_TYPE = {
     SPHERE: "sphere",
     MODELLING_PLANE: "ModellingPlane",
     MODELLING_BOX: "ModellingBox",
+    MODELLING_CIRCLE: "ModellingCircle",
 } as const;
 
 type MeshValues<T> = T[keyof T]
@@ -45,6 +47,13 @@ export function GetMesh(objType: MeshType): THREE.Mesh {
             box.layers.enable(INTERSECTION_LAYER);
             box.name = "Modelling Mesh";
             return box;
+        }
+        case "ModellingCircle": {
+            const mGeom = CreateModellingCircleGeometry(5, 16);
+            const circle = new ModellingMesh(mGeom, material);
+            circle.layers.enable(INTERSECTION_LAYER);
+            circle.name = "Modelling Mesh";
+            return circle;
         }
         default: geom = new THREE.BoxGeometry(1, 1, 1);
     }
