@@ -2,6 +2,7 @@ import * as THREE from "three/webgpu";
 import { smoothstep, attribute, fwidth, min, positionGeometry, vec3, mul, sub, cameraProjectionMatrix, modelViewMatrix, vec4, step, length, max, add } from "three/tsl";
 import { Fn } from "three/src/nodes/TSL.js";
 
+// TODO Make a wireframe shader for indexed geometries
 export function CreateModellingMaterial(): THREE.MeshBasicNodeMaterial {
   const material = new THREE.MeshBasicNodeMaterial();
   const thickness = 1.499;

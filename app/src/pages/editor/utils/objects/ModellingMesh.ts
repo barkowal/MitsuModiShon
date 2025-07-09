@@ -6,7 +6,8 @@ import { calculateVec3Difference, convertTVector3ToVec3 } from "../utils";
 export default class ModellingMesh extends THREE.Mesh {
   private verticesHelper: THREE.InstancedMesh | null;
   private transformHelper: THREE.Mesh | null;
-  private indices: Array<number>;
+  private selectedVertices: Array<number>;
+  private groupedVertices: Map<number, Array<number>>;
   private normalMaterial: THREE.Material;
 
   constructor(geometry: THREE.BufferGeometry, material: THREE.Material) {
@@ -15,11 +16,12 @@ export default class ModellingMesh extends THREE.Mesh {
 
     this.verticesHelper = null;
     this.transformHelper = null;
-    this.indices = [];
+    this.selectedVertices = [];
+    this.groupedVertices = this.groupVertices();
   }
 
   getHighlightedIndices() {
-    return this.indices;
+    return this.selectedVertices;
   }
 
   getTransformHelper() {
@@ -27,12 +29,14 @@ export default class ModellingMesh extends THREE.Mesh {
   }
 
   changeToNormalMode() {
+    this.clearHighlightedVertices();
+
     if ("dispose" in this.material)
       this.material.dispose();
 
-    this.clearHighlightedVertices();
-    this.material = this.normalMaterial;
     this.disposeHelpers();
+
+    this.material = this.normalMaterial;
   }
 
   changeToModelling() {
@@ -44,16 +48,14 @@ export default class ModellingMesh extends THREE.Mesh {
   }
 
   highlightVertices(indices: Array<number>) {
-    this.indices = indices;
-    const indexAttr = this.geometry.index;
     const colorAttr = this.geometry.getAttribute("color");
-
     if (indices.length === 0) {
       return;
     }
 
+    this.selectedVertices = this.getGroupedVertices(indices);
+
     if (
-      !indexAttr ||
       !colorAttr ||
       !this.transformHelper ||
       !this.verticesHelper) {
@@ -64,8 +66,8 @@ export default class ModellingMesh extends THREE.Mesh {
     const vertiPos = new THREE.Vector3();
     const vertiMatrix = new THREE.Matrix4();
     const positions = [];
-    for (let i = 0; i < indices.length; i++) {
-      const i2 = indices[i];
+    for (let i = 0; i < this.selectedVertices.length; i++) {
+      const i2 = this.selectedVertices[i];
       colorAttr.setX(i2, 1);
       colorAttr.setY(i2, 1);
       colorAttr.setZ(i2, 1);
@@ -95,8 +97,8 @@ export default class ModellingMesh extends THREE.Mesh {
 
     const vertex = new THREE.Vector3();
 
-    for (let i = 0; i < this.indices.length; i++) {
-      const i2 = this.indices[i];
+    for (let i = 0; i < this.selectedVertices.length; i++) {
+      const i2 = this.selectedVertices[i];
       vertex.fromBufferAttribute(positionAttribute, i2);
 
       this.translateVertex(vertex, i2, distance);
@@ -105,6 +107,7 @@ export default class ModellingMesh extends THREE.Mesh {
       positionAttribute.needsUpdate = true;
     }
     this.geometry.computeBoundingSphere();
+    this.geometry.computeVertexNormals();
   }
 
   calculateCenter(): Vec3 | null {
@@ -115,8 +118,8 @@ export default class ModellingMesh extends THREE.Mesh {
     const vertiPos = new THREE.Vector3();
     const vertiMatrix = new THREE.Matrix4();
 
-    for (let i = 0; i < this.indices.length; i++) {
-      const i2 = this.indices[i];
+    for (let i = 0; i < this.selectedVertices.length; i++) {
+      const i2 = this.selectedVertices[i];
 
       this.verticesHelper.getMatrixAt(i2, vertiMatrix);
       vertiPos.setFromMatrixPosition(vertiMatrix);
@@ -146,8 +149,8 @@ export default class ModellingMesh extends THREE.Mesh {
     const positionAttribute = this.geometry.getAttribute("position");
     const vertex = new THREE.Vector3();
 
-    for (let i = 0; i < this.indices.length; i++) {
-      const i2 = this.indices[i];
+    for (let i = 0; i < this.selectedVertices.length; i++) {
+      const i2 = this.selectedVertices[i];
       vertex.fromBufferAttribute(positionAttribute, i2);
 
       const pos = convertTVector3ToVec3(vertex);
@@ -168,21 +171,6 @@ export default class ModellingMesh extends THREE.Mesh {
     this.geometry.computeBoundingSphere();
   }
 
-  private translateVertex(vertex: THREE.Vector3, index: number, distance: Vec3) {
-    if (!this.verticesHelper) {
-      return;
-    }
-    const vertiMatrix = new THREE.Matrix4();
-
-    vertex.setX(vertex.x + distance.x);
-    vertex.setY(vertex.y + distance.y);
-    vertex.setZ(vertex.z + distance.z);
-
-    this.verticesHelper.getMatrixAt(index, vertiMatrix);
-    vertiMatrix.setPosition(vertex);
-    this.verticesHelper.setMatrixAt(index, vertiMatrix);
-  }
-
   repositionTransformHelper() {
     if (!this.transformHelper) {
       return;
@@ -198,8 +186,8 @@ export default class ModellingMesh extends THREE.Mesh {
     const vertex = new THREE.Vector3();
     const pos = [];
 
-    for (let i = 0; i <= this.indices.length; i++) {
-      const i2 = this.indices[i];
+    for (let i = 0; i < this.selectedVertices.length; i++) {
+      const i2 = this.selectedVertices[i];
       vertex.fromBufferAttribute(positionAttribute, i2);
       pos.push({ x: vertex.x, y: vertex.y, z: vertex.z });
 
@@ -208,21 +196,21 @@ export default class ModellingMesh extends THREE.Mesh {
   }
 
   clearHighlightedVertices() {
-    const indexAttr = this.geometry.index;
     const colorAttr = this.geometry.getAttribute("color");
 
     if (
-      !indexAttr ||
       !colorAttr ||
       !this.verticesHelper) {
       return;
     }
 
-    for (let j = 0; j <= indexAttr.count; j++) {
-      colorAttr.setX(j, 0);
-      colorAttr.setY(j, 0);
-      colorAttr.setZ(j, 0);
+    for (let i = 0; i < this.selectedVertices.length; i++) {
+      const i2 = this.selectedVertices[i];
+      colorAttr.setX(i2, 0);
+      colorAttr.setY(i2, 0);
+      colorAttr.setZ(i2, 0);
     }
+    colorAttr.needsUpdate = true;
 
     const threeColor = new THREE.Color(0x000000);
     for (let j = 0; j < this.verticesHelper.count; j++) {
@@ -232,6 +220,29 @@ export default class ModellingMesh extends THREE.Mesh {
       this.verticesHelper.instanceColor.needsUpdate = true;
     }
   }
+
+  dispose() {
+    if ("id" in this.material && this.material.id !== this.normalMaterial.id)
+      if ("dispose" in this.material)
+        this.material.dispose();
+    this.disposeHelpers();
+  }
+
+  private translateVertex(vertex: THREE.Vector3, index: number, distance: Vec3) {
+    if (!this.verticesHelper) {
+      return;
+    }
+    const vertiMatrix = new THREE.Matrix4();
+
+    vertex.setX(vertex.x + distance.x);
+    vertex.setY(vertex.y + distance.y);
+    vertex.setZ(vertex.z + distance.z);
+
+    this.verticesHelper.getMatrixAt(index, vertiMatrix);
+    vertiMatrix.setPosition(vertex);
+    this.verticesHelper.setMatrixAt(index, vertiMatrix);
+  }
+
 
   private createVerticesHelper() {
     const posAttr = this.geometry.getAttribute("position");
@@ -260,6 +271,51 @@ export default class ModellingMesh extends THREE.Mesh {
     return transformHelper;
   }
 
+  private groupVertices() {
+    const positionAttribute = this.geometry.getAttribute("position");
+    const map = new Map();
+    const vertex = new THREE.Vector3();
+
+    for (let i = 0; i < positionAttribute.array.length / 3; i++) {
+
+      vertex.fromBufferAttribute(positionAttribute, i);
+      if (vertex.x === undefined)
+        break;
+
+      // Unique key for the same positions
+      const key = vertex.x * 100 + vertex.y * 10 + vertex.z;
+
+      let group: Array<number> = map.get(key);
+      if (group) {
+        group.push(i);
+      } else {
+        group = [i];
+      }
+
+      map.set(key, group);
+    }
+
+    // Reverse map for fast lookups
+    const lookupVertices = new Map();
+    map.forEach((values) => {
+      lookupVertices.set(values[0], values);
+      lookupVertices.set(values[1], values);
+      lookupVertices.set(values[2], values);
+    });
+    return lookupVertices;
+  }
+
+  private getGroupedVertices(indices: Array<number>) {
+    let group: Array<number> = [];
+    indices.forEach((indice) => {
+      const same = this.groupedVertices.get(indice);
+      if (!same) return;
+      group = group.concat(same);
+    });
+    group = Array.from(new Set(group));
+    return group;
+  }
+
   private calculateAvgPos(positions: Array<Vec3>): Vec3 {
     let posX = 0;
     let posY = 0;
@@ -272,13 +328,27 @@ export default class ModellingMesh extends THREE.Mesh {
     return { x: posX / positions.length, y: posY / positions.length, z: posZ / positions.length };
   }
 
-  // TODO dispose properly modelling material, transformHelper and verticesHelper
   private disposeHelpers() {
-    if (this.transformHelper)
+
+    if (this.transformHelper) {
       this.remove(this.transformHelper);
 
-    if (this.verticesHelper)
-      this.remove(this.verticesHelper);
-  }
+      if ("dispose" in this.transformHelper.material)
+        this.transformHelper.material.dispose();
 
+      this.transformHelper.geometry.dispose();
+      this.transformHelper = null;
+    }
+
+    if (this.verticesHelper) {
+      this.remove(this.verticesHelper);
+      this.verticesHelper.geometry.dispose();
+
+      if ("dispose" in this.verticesHelper.material)
+        this.verticesHelper.material.dispose();
+
+      this.verticesHelper.dispose();
+      this.verticesHelper = null;
+    }
+  }
 }
