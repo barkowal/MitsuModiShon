@@ -11,8 +11,6 @@ import { EDITOR_EVENT, editorEventBus } from "./utils/EditorEvents";
 import { EDITOR_MODE } from "./utils/Types";
 import * as THREE from "three/webgpu";
 import { HandleKeyboardPress } from "./utils/KeyboardShortcuts";
-import { isArrayOfMeshes } from "./utils/utils";
-import { SetMeshesColorCommand } from "./commands/SetMeshesColorCommand";
 import { AttachObjectCommand } from "./commands/AttachObjectCommand";
 import { EditorUtils } from "./utils/EditorUtils";
 import { AddObjectsCommand } from "./commands/AddObjectsCommand";
@@ -73,16 +71,6 @@ function Editor() {
       uiController.refreshTree();
     };
 
-
-    const handleChangeMeshColor = (color: number) => {
-      const meshColor = new THREE.Color(color);
-      const selection = selectionController.getSelectedObjects();
-      if (isArrayOfMeshes(selection)) {
-        //@ts-expect-error Checked for meshes
-        commandHistory.addCommand(new SetMeshesColorCommand(selection, meshColor));
-      }
-    };
-
     const handleChangeSceneColor = (color: number) => {
       const background = new THREE.Color(color);
       scene.background = background;
@@ -138,7 +126,6 @@ function Editor() {
     editorEventBus.on(EDITOR_EVENT.AttachToObject, handleAttachToObject);
     editorEventBus.on(EDITOR_EVENT.ClearSelections, handleClearSelections);
     editorEventBus.on(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
-    editorEventBus.on(EDITOR_EVENT.ChangeMeshColor, handleChangeMeshColor);
     editorEventBus.on(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
     editorEventBus.on(EDITOR_EVENT.ChangeEditorMode, handleChangeEditorMode);
     editorEventBus.on(EDITOR_EVENT.COPY, handleCopy);
@@ -152,7 +139,6 @@ function Editor() {
       editorEventBus.off(EDITOR_EVENT.AddSelection, handleAddSelection);
       editorEventBus.off(EDITOR_EVENT.AttachToObject, handleAttachToObject);
       editorEventBus.off(EDITOR_EVENT.ClearSelections, handleClearSelections);
-      editorEventBus.off(EDITOR_EVENT.ChangeMeshColor, handleChangeMeshColor);
       editorEventBus.off(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
       editorEventBus.off(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
       editorEventBus.off(EDITOR_EVENT.ChangeEditorMode, handleChangeEditorMode);

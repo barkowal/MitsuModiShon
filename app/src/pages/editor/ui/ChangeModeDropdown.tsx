@@ -6,12 +6,15 @@ import { EDITING_MODE, EDITOR_MODE } from "../utils/Types";
 import { useEffect, useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
+let EditorMode: string = EDITOR_MODE.ObjectMode;
+
 function ChangeModeDropdown() {
-  const [currentMode, setCurrentMode] = useState<string>(EDITOR_MODE.ObjectMode);
+  const [currentMode, setCurrentMode] = useState<string>(EditorMode);
   const [editingMode, setEditingMode] = useState<number>(EDITING_MODE.Faces);
 
   const handleModeChange = (val: string) => {
     editorEventBus.emit(EDITOR_EVENT.ChangeEditorMode, val);
+    EditorMode = val;
     setCurrentMode(val);
     setEditingMode(0);
   };
@@ -115,3 +118,7 @@ function ChangeModeDropdown() {
 }
 
 export default ChangeModeDropdown;
+
+export function GetCurrentEditorMode() {
+  return EditorMode;
+}

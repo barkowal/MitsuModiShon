@@ -1,6 +1,6 @@
 import * as THREE from "three/webgpu";
 import { INTERSECTION_LAYER, ROOT_ID } from "./Global";
-import type { RendererMemoryInfo, TreeItem } from "./Types";
+import type { MaterialItem, RendererMemoryInfo, TreeItem } from "./Types";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 
 export class UiController {
@@ -21,7 +21,7 @@ export class UiController {
     refreshPanel() {
         this.refreshTree();
         this.refreshTransformation();
-        this.refreshColorMenu();
+        this.refreshMaterial();
     }
 
     refreshTree() {
@@ -34,6 +34,25 @@ export class UiController {
         const root = [{ id: ROOT_ID, name: "scene", children: items }];
         editorEventBus.emit(EDITOR_EVENT.RefreshTreeView, root);
         this.RefreshSceneInfo();
+    }
+
+    refreshMaterial() {
+        const mesh = this.scene.getObjectById(this.selectedMeshId);
+        if (mesh == undefined || !(mesh instanceof THREE.Mesh)) {
+            return;
+        };
+
+        if (!("color" in mesh.material) ||
+            !(mesh.material.color instanceof THREE.Color)) {
+            return;
+        }
+        const color = "#" + mesh.material.color.getHexString();
+        const materialItem: MaterialItem = {
+            id: mesh.material.id,
+            type: mesh.material.type,
+            color: color
+        };
+        editorEventBus.emit(EDITOR_EVENT.RefreshMeshMaterial, materialItem);
     }
 
     refreshTransformation() {
@@ -60,20 +79,6 @@ export class UiController {
         editorEventBus.emit(EDITOR_EVENT.RefreshTransformationMenu, transform);
     }
 
-    refreshColorMenu() {
-        const mesh = this.scene.getObjectById(this.selectedMeshId);
-        if (mesh == undefined || !(mesh instanceof THREE.Mesh)) {
-            return;
-        };
-
-        if (!("color" in mesh.material) ||
-            !(mesh.material.color instanceof THREE.Color)) {
-            return;
-        }
-        const color = "#" + mesh.material.color.getHexString();
-        editorEventBus.emit(EDITOR_EVENT.RefreshColorMenu, color);
-    }
-
     refreshNameMenu() {
         const obj = this.scene.getObjectById(this.selectedMeshId);
         if (obj == undefined) {
@@ -88,8 +93,8 @@ export class UiController {
         }
         this.selectedMeshId = id;
         this.refreshTransformation();
-        this.refreshColorMenu();
         this.refreshNameMenu();
+        this.refreshMaterial();
     }
 
     // Could be util function, if used more

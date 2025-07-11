@@ -2,13 +2,15 @@ import * as THREE from "three/webgpu";
 import { CommandHistory } from "@/lib/CommandHistory";
 import type { UiController } from "./UiController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
-import { TRANSFORM_CHANGE, type EventHandlerType, type Vec3 } from "./Types";
+import { MATERIAL_TYPES, TRANSFORM_CHANGE, type EventHandlerType, type MaterialItem, type Vec3 } from "./Types";
 import type { SelectionController } from "./SelectionController";
-import { calculateVec3Difference, compareVec3, convertEulerToVec3Degrees, convertTVector3ToVec3 } from "./utils";
+import { calculateVec3Difference, compareVec3, convertEulerToVec3Degrees, convertTVector3ToVec3, isArrayOfMeshes } from "./utils";
 import { TranslateObjectsCommand } from "../commands/TranslateObjectsCommand";
 import { ScaleObjectsCommand } from "../commands/ScaleObjectsCommand";
 import { RotateObjectsCommand } from "../commands/RotateObjectsCommand";
 import { RemoveObjectsCommand } from "../commands/RemoveObjectsCommand";
+import { SetMeshesColorCommand } from "../commands/SetMeshesColorCommand";
+import { ChangeMeshesMaterialCommand } from "../commands/ChangeMeshesMaterialCommand";
 
 export class ObjectModeHandler {
   eventHandlers: Array<EventHandlerType>;
@@ -35,6 +37,7 @@ export class ObjectModeHandler {
     this.handleScaleObject();
     this.handleChangeRotation();
     this.handleRotateObject();
+    this.handleChangeMaterial();
   }
 
   disposeEventHandlers() {
@@ -43,7 +46,57 @@ export class ObjectModeHandler {
     });
   }
 
+  /*
+   * ////////////////////////
+   * HANDLE MATERIAL CHANGE
+   * ////////////////////////
+   * */
 
+  private handleChangeMaterial() {
+    const handle = (materialItem: MaterialItem) => {
+      const selection = this.selectionController.getCurrentSelection();
+      if (selection && selection instanceof THREE.Mesh) {
+
+        const hex_col = Number("0x" + materialItem.color.slice(1));
+        const meshColor = new THREE.Color(hex_col);
+
+        if (selection.material.color.getHex() != meshColor.getHex()) {
+          this.changeMaterialColor(meshColor);
+          return;
+        }
+
+        if (selection.material.type != materialItem.type) {
+          this.changeMaterialType(materialItem);
+          return;
+        }
+
+      }
+    };
+
+    editorEventBus.on(EDITOR_EVENT.ChangeMeshMaterial, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.ChangeMeshMaterial, callback: handle });
+  }
+
+  private changeMaterialColor(color: THREE.Color) {
+    const selection = this.selectionController.getSelectedObjects();
+    if (isArrayOfMeshes(selection)) {
+      //@ts-expect-error Checked for meshes
+      this.commandHistory.addCommand(new SetMeshesColorCommand(selection, color));
+    }
+  }
+
+  private changeMaterialType(materialItem: MaterialItem) {
+    const selection = this.selectionController.getSelectedObjects();
+    if (isArrayOfMeshes(selection)) {
+      //@ts-expect-error Checked for meshes
+      this.commandHistory.addCommand(new ChangeMeshesMaterialCommand(selection, materialItem));
+    }
+  }
+
+  /*
+   * ////////////////////////
+   * ////////////////////////
+   * */
 
   private handleRemoveMesh() {
     const handle = () => {

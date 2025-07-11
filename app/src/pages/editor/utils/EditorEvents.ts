@@ -1,4 +1,4 @@
-import type { TreeItem, Vec3 } from "@/pages/editor/utils/Types";
+import type { MaterialItem, TreeItem, Vec3 } from "@/pages/editor/utils/Types";
 
 export const EDITOR_EVENT = {
   /**
@@ -24,12 +24,6 @@ export const EDITOR_EVENT = {
    * @returns {Array<Vec3>} transformations - array of position, scale, rotation
    */
   RefreshTransformationMenu: "RefreshTransformationMenu",
-
-  /**
-   * Signal for refreshing the selected color of the object in the ui
-   * @returns {string} color - hex string of color
-   */
-  RefreshColorMenu: "RefreshColorMenu",
 
   /**
    * Signal for refreshing the selected name of the object in the ui
@@ -113,10 +107,16 @@ export const EDITOR_EVENT = {
   ChangeObjectName: "ChangeObjectName",
 
   /**
-   * Signal for changing the object's color 
-   * @returns {number} color - hex color of currently selected object
+   * Signal for changing the material of the object
+   * @returns {MaterialItem} materialItem - data about the material
    */
-  ChangeMeshColor: "ChangeMeshColor",
+  ChangeMeshMaterial: "ChangeMeshMaterial",
+
+  /**
+   * Signal for refreshing the material menu in the ui
+   * @returns {MaterialItem} materialItem - data about the material
+   */
+  RefreshMeshMaterial: "RefreshMeshMaterial",
 
   /**
    * Signal for changing the scene's color 
@@ -215,6 +215,7 @@ type eventData =
   | string
   | boolean
   | Vec3
+  | MaterialItem
   | Array<number>
   | Array<Vec3>
   | Array<TreeItem>;

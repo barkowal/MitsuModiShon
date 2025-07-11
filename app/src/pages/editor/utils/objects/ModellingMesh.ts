@@ -40,6 +40,10 @@ export default class ModellingMesh extends THREE.Mesh {
   }
 
   changeToModelling() {
+    if (this.material instanceof THREE.Material) {
+      if (this.material.id !== this.normalMaterial.id)
+        this.normalMaterial = this.material;
+    }
     this.material = CreateModellingMaterial();
     this.verticesHelper = this.createVerticesHelper();
     this.transformHelper = this.createTransformHelper();

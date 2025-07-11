@@ -1,9 +1,9 @@
 import { TreeSceneView } from "./TreeView/TreeSceneView";
 import { TransformationMenu } from "./TransformationMenu/TransformationMenu";
 import { SceneBackgroundMenu } from "./SceneBackgroundMenu";
-import { MeshColorMenu } from "./MeshColorMenu";
 import { ObjectNameMenu } from "./ObjectNameMenu";
 import { Separator } from "@/components/ui/separator";
+import { MaterialView } from "./MaterialMenu/MaterialView";
 
 function EditorPanel() {
 
@@ -13,10 +13,9 @@ function EditorPanel() {
         <TreeSceneView />
         <TransformationMenu />
         <ObjectNameMenu />
-        <Separator orientation="horizontal" />
-        <MeshColorMenu />
-        <Separator orientation="horizontal" />
         <SceneBackgroundMenu />
+        <Separator orientation="horizontal" />
+        <MaterialView />
       </div>
     </>
   );

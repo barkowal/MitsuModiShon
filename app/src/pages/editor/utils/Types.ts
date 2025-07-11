@@ -6,6 +6,12 @@ export type TreeItem = {
     children?: Array<TreeItem>
 }
 
+export type MaterialItem = {
+    id: number,
+    type: string,
+    color: string,
+}
+
 export type Point2d = {
     x: number,
     y: number,
@@ -62,4 +68,10 @@ export const SCENE_INFO = {
     Vertices: 2,
     RendererGeometries: 3,
     RendererTextures: 4,
+} as const;
+
+export const MATERIAL_TYPES = {
+    Basic: "MeshBasicMaterial",
+    Standard: "MeshStandardMaterial",
+    Toon: "MeshToonMaterial",
 } as const;
