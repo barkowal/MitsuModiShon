@@ -54,13 +54,13 @@ export class ChangeMeshesMaterialCommand implements Command {
 
     private createNewMaterial(type: string, meshColor: Color): Material {
         if (type === MATERIAL_TYPES.Basic)
-            return new MeshBasicMaterial({ color: meshColor, side: DoubleSide });
+            return new MeshBasicMaterial({ color: meshColor, side: DoubleSide, vertexColors: true });
         if (type === MATERIAL_TYPES.Standard)
-            return new MeshStandardMaterial({ color: meshColor, side: DoubleSide });
+            return new MeshStandardMaterial({ color: meshColor, side: DoubleSide, vertexColors: true });
         if (type === MATERIAL_TYPES.Toon)
-            return new MeshToonMaterial({ color: meshColor, side: DoubleSide });
+            return new MeshToonMaterial({ color: meshColor, side: DoubleSide, vertexColors: true });
         else
-            return new MeshBasicMaterial({ color: meshColor, side: DoubleSide });
+            return new MeshBasicMaterial({ color: meshColor, side: DoubleSide, vertexColors: true });
     }
 
 }

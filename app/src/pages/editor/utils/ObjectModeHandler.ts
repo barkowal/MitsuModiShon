@@ -2,7 +2,7 @@ import * as THREE from "three/webgpu";
 import { CommandHistory } from "@/lib/CommandHistory";
 import type { UiController } from "./UiController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
-import { MATERIAL_TYPES, TRANSFORM_CHANGE, type EventHandlerType, type MaterialItem, type Vec3 } from "./Types";
+import { TRANSFORM_CHANGE, type EventHandlerType, type MaterialItem, type Vec3 } from "./Types";
 import type { SelectionController } from "./SelectionController";
 import { calculateVec3Difference, compareVec3, convertEulerToVec3Degrees, convertTVector3ToVec3, isArrayOfMeshes } from "./utils";
 import { TranslateObjectsCommand } from "../commands/TranslateObjectsCommand";

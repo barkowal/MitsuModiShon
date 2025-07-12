@@ -47,15 +47,15 @@ export function CreateModellingCircleGeometry(radius = 1, segments = 32, thetaSt
 
     uvs.push(uv.x, uv.y);
 
-    colors.push(171 / 255);
-    colors.push(171 / 255);
-    colors.push(171 / 255);
+    colors.push(1);
+    colors.push(1);
+    colors.push(1);
   }
 
   // Colors for last vertex
-  colors.push(171 / 255);
-  colors.push(171 / 255);
-  colors.push(171 / 255);
+  colors.push(1);
+  colors.push(1);
+  colors.push(1);
 
   // Center vertice is always 001
   vectors[0].toArray(centers, 0);

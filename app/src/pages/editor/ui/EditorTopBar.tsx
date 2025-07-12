@@ -3,7 +3,7 @@ import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { Redo, Undo } from "lucide-react";
 import AddMeshDropdown from "./AddMeshDropdown";
 import RemoveMeshButton from "./RemoveMeshButton";
-import ChangeModeDropdown from "./ChangeModeDropdown";
+import ChangeModeDropdown from "./EditorModeMenu/ChangeModeDropdown";
 
 function EditorTopBar() {
 

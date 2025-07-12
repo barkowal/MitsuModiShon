@@ -175,6 +175,12 @@ export const EDITOR_EVENT = {
   ChangeEditingMode: "ChangeEditingMode",
 
   /**
+   * Signal for changing the 'brush' color for vertex painting.
+   * @returns {number} color - hex color of the brush.
+   */
+  ChangeBrushColor: "ChangeBrushColor",
+
+  /**
    * Signal for user pressing the 1 on keyboard.
    * It should change editing mode while in edit mode.
    * @returns {number} nb - the number key that user pressed

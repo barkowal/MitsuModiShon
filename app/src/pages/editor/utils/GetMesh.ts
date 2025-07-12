@@ -23,7 +23,7 @@ type MeshValues<T> = T[keyof T]
 export type MeshType = MeshValues<typeof MESH_TYPE>
 
 export function GetMesh(objType: MeshType): THREE.Mesh {
-    const material = new THREE.MeshBasicMaterial({ color: 0xa5a5a5, side: THREE.DoubleSide });
+    const material = new THREE.MeshBasicMaterial({ color: 0xa5a5a5, side: THREE.DoubleSide, vertexColors: true });
     let geom;
 
     switch (objType) {

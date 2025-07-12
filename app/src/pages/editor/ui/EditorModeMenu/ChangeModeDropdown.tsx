@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
+import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
 import { Dot, Minus, Square, SquarePen } from "lucide-react";
-import { EDITING_MODE, EDITOR_MODE } from "../utils/Types";
+import { EDITING_MODE, EDITOR_MODE } from "../../utils/Types";
 import { useEffect, useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { PaintModeMenu } from "./PaintModeMenu";
 
 let EditorMode: string = EDITOR_MODE.ObjectMode;
 
@@ -42,7 +43,6 @@ function ChangeModeDropdown() {
         }
       }
     };
-
 
     const handleNumberPress = (nb: number) => {
       if (currentMode !== EDITOR_MODE.EditMode) return;
@@ -112,6 +112,11 @@ function ChangeModeDropdown() {
           :
           null
       }
+
+      {currentMode === EDITOR_MODE.PaintMode ?
+        <PaintModeMenu />
+        : null}
+
     </DropdownMenu >
 
   );

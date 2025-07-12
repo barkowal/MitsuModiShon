@@ -9,6 +9,7 @@ export default class ModellingMesh extends THREE.Mesh {
   private selectedVertices: Array<number>;
   private groupedVertices: Map<number, Array<number>>;
   private normalMaterial: THREE.Material;
+  private vertexColor: Map<number, Vec3>;
 
   constructor(geometry: THREE.BufferGeometry, material: THREE.Material) {
     super(geometry, material);
@@ -18,6 +19,8 @@ export default class ModellingMesh extends THREE.Mesh {
     this.transformHelper = null;
     this.selectedVertices = [];
     this.groupedVertices = this.groupVertices();
+
+    this.vertexColor = new Map();
   }
 
   getHighlightedIndices() {
@@ -31,12 +34,20 @@ export default class ModellingMesh extends THREE.Mesh {
   changeToNormalMode() {
     this.clearHighlightedVertices();
 
+    this.disposeHelpers();
+
+    if (this.material instanceof THREE.Material) {
+      if (this.material.id === this.normalMaterial.id) {
+        this.normalMaterial = this.material;
+        return;
+      }
+    }
+
     if ("dispose" in this.material)
       this.material.dispose();
 
-    this.disposeHelpers();
-
     this.material = this.normalMaterial;
+    this.setNormalColors();
   }
 
   changeToModelling() {
@@ -49,6 +60,63 @@ export default class ModellingMesh extends THREE.Mesh {
     this.transformHelper = this.createTransformHelper();
     this.add(this.transformHelper);
     this.add(this.verticesHelper);
+    this.setEditingColors();
+  }
+
+  private setEditingColors() {
+    const colorAttr = this.geometry.getAttribute("color");
+    if (!colorAttr)
+      return;
+
+    for (let i = 0; i < colorAttr.array.length / 3; i++) {
+
+      const x = colorAttr.getX(i);
+      const y = colorAttr.getY(i);
+      const z = colorAttr.getZ(i);
+
+      this.vertexColor.set(i, { x: x, y: y, z: z });
+      colorAttr.setXYZ(i, 0.7, 0.7, 0.7);
+    }
+
+    colorAttr.needsUpdate = true;
+  }
+
+  private setNormalColors() {
+    const colorAttr = this.geometry.getAttribute("color");
+    if (!colorAttr)
+      return;
+
+    this.vertexColor.forEach((val, key) => {
+      colorAttr.setXYZ(key, val.x, val.y, val.z);
+    });
+
+    colorAttr.needsUpdate = true;
+  }
+
+  changeToPainting() {
+    console.log("TODO line material");
+  }
+
+  colorVertices(indices: Array<number>, color: Vec3) {
+    const colorAttr = this.geometry.getAttribute("color");
+    if (indices.length === 0) {
+      return;
+    }
+
+    this.selectedVertices = this.getGroupedVertices(indices);
+
+    if (!colorAttr)
+      return;
+
+    for (let i = 0; i < this.selectedVertices.length; i++) {
+      const i2 = this.selectedVertices[i];
+
+      colorAttr.setXYZ(i2, color.x, color.y, color.z);
+
+      this.vertexColor.set(i2, color);
+    }
+
+    colorAttr.needsUpdate = true;
   }
 
   highlightVertices(indices: Array<number>) {
@@ -72,6 +140,7 @@ export default class ModellingMesh extends THREE.Mesh {
     const positions = [];
     for (let i = 0; i < this.selectedVertices.length; i++) {
       const i2 = this.selectedVertices[i];
+
       colorAttr.setX(i2, 1);
       colorAttr.setY(i2, 1);
       colorAttr.setZ(i2, 1);
@@ -210,9 +279,11 @@ export default class ModellingMesh extends THREE.Mesh {
 
     for (let i = 0; i < this.selectedVertices.length; i++) {
       const i2 = this.selectedVertices[i];
-      colorAttr.setX(i2, 0);
-      colorAttr.setY(i2, 0);
-      colorAttr.setZ(i2, 0);
+
+      colorAttr.setX(i2, 0.7);
+      colorAttr.setY(i2, 0.7);
+      colorAttr.setZ(i2, 0.7);
+
     }
     colorAttr.needsUpdate = true;
 

@@ -64,6 +64,12 @@ const InitRenderer = () => {
         const gizmo = control.getHelper();
         scene.add(gizmo);
 
+        //TODO temporary light, make adding light in the editor
+        const color = 0xFFFFFF;
+        const intensity = 1;
+        const light = new THREE.AmbientLight(color, intensity);
+        scene.add(light);
+
         // Posprocessing outline and viewhelper
         const outlinePass = createOutlinePass(scene, camera, selectionController);
         const pass = createOutlineColor(scene, camera, outlinePass);

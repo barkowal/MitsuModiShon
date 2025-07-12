@@ -37,6 +37,7 @@ export const TRANSFORM_CHANGE = {
 export const EDITOR_MODE = {
     ObjectMode: "Object Mode",
     EditMode: "Edit Mode",
+    PaintMode: "Paint Mode",
 } as const;
 
 export const EDITING_MODE = {
@@ -74,4 +75,5 @@ export const MATERIAL_TYPES = {
     Basic: "MeshBasicMaterial",
     Standard: "MeshStandardMaterial",
     Toon: "MeshToonMaterial",
+    Drawing: "MeshBasicNodeMaterial",
 } as const;

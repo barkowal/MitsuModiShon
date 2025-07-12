@@ -1,12 +1,10 @@
 import * as THREE from "three/webgpu";
-import { smoothstep, attribute, fwidth, min, positionGeometry, vec3, mul, sub, cameraProjectionMatrix, modelViewMatrix, vec4, step, length, max, add } from "three/tsl";
+import { smoothstep, attribute, fwidth, min, positionGeometry, vec3, mul, sub, cameraProjectionMatrix, modelViewMatrix, vec4, max, oneMinus } from "three/tsl";
 import { Fn } from "three/src/nodes/TSL.js";
 
-// TODO Make a wireframe shader for indexed geometries
-export function CreateModellingMaterial(): THREE.MeshBasicNodeMaterial {
+export function CreateLineSelectMaterial(): THREE.MeshBasicNodeMaterial {
   const material = new THREE.MeshBasicNodeMaterial();
-  const thickness = 1.499;
-  const disabledFace = false;
+  const thickness = 2.99;
 
   //@ts-expect-error tsl error
   const Wireframe = Fn(([center, thickness]) => {
@@ -14,15 +12,6 @@ export function CreateModellingMaterial(): THREE.MeshBasicNodeMaterial {
     const edge3 = vec3(smoothstep(mul(sub(thickness, 1.0), afwidth), mul(thickness, afwidth), center.xyz)).toVar();
     const edges = vec3(min(min(edge3.x, edge3.y), edge3.z));
     return edges;
-  });
-
-  //@ts-expect-error tsl error
-  const CenterCross = Fn(([center]) => {
-    const xLine = length(center.x.sub(0.325));
-    const centerLine = xLine;
-    const circleCon = step(0.0, length(mul(center, 0.333)).sub(0.1925)); // circle for displaying only on center
-    const centerCross = smoothstep(0.96, 0.97, mul(max(circleCon, centerLine), 20));
-    return add(centerCross, 0.12); // brighter colors
   });
 
   const fragmentFunction = Fn(() => {
@@ -36,16 +25,13 @@ export function CreateModellingMaterial(): THREE.MeshBasicNodeMaterial {
 
     const finalColor = max(min(color, edges), selection);
 
-    //@ts-expect-error tsl error
-    const middle = add(max(CenterCross(vCenter), selection), disabledFace);
-
-    return min(finalColor, middle);
+    return max(finalColor, oneMinus(edges));
   });
   material.vertexNode = mul(cameraProjectionMatrix, modelViewMatrix, vec4(positionGeometry, 1.0));
   material.fragmentNode = fragmentFunction();
   material.side = THREE.DoubleSide;
-  // material.vertexColors = true;
-  material.name = "ModellingMaterial";
+  material.vertexColors = true;
+  material.name = "DrawingMaterial";
 
   return material;
 }

@@ -76,9 +76,9 @@ export function CreateModellingBoxGeometry(width = 1, height = 1, depth = 1, wid
         uvs.push(ix / gridX);
         uvs.push(1 - (iy / gridY));
 
-        colors.push(171 / 255);
-        colors.push(171 / 255);
-        colors.push(171 / 255);
+        colors.push(1);
+        colors.push(1);
+        colors.push(1);
 
         vertexCounter += 1;
       }
