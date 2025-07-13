@@ -9,7 +9,7 @@ export default class ModellingMesh extends THREE.Mesh {
   private selectedVertices: Array<number>;
   private groupedVertices: Map<number, Array<number>>;
   private normalMaterial: THREE.Material;
-  private vertexColor: Map<number, Vec3>;
+  private currentVerticesColors: Map<number, Vec3>;
 
   constructor(geometry: THREE.BufferGeometry, material: THREE.Material) {
     super(geometry, material);
@@ -20,7 +20,7 @@ export default class ModellingMesh extends THREE.Mesh {
     this.selectedVertices = [];
     this.groupedVertices = this.groupVertices();
 
-    this.vertexColor = new Map();
+    this.currentVerticesColors = this.initCurrentColors();
   }
 
   getHighlightedIndices() {
@@ -29,6 +29,10 @@ export default class ModellingMesh extends THREE.Mesh {
 
   getTransformHelper() {
     return this.transformHelper;
+  }
+
+  getCurrentVerticesColors() {
+    return this.currentVerticesColors;
   }
 
   changeToNormalMode() {
@@ -74,7 +78,7 @@ export default class ModellingMesh extends THREE.Mesh {
       const y = colorAttr.getY(i);
       const z = colorAttr.getZ(i);
 
-      this.vertexColor.set(i, { x: x, y: y, z: z });
+      this.currentVerticesColors.set(i, { x: x, y: y, z: z });
       colorAttr.setXYZ(i, 0.7, 0.7, 0.7);
     }
 
@@ -86,11 +90,28 @@ export default class ModellingMesh extends THREE.Mesh {
     if (!colorAttr)
       return;
 
-    this.vertexColor.forEach((val, key) => {
+    this.currentVerticesColors.forEach((val, key) => {
       colorAttr.setXYZ(key, val.x, val.y, val.z);
     });
 
     colorAttr.needsUpdate = true;
+  }
+
+  private initCurrentColors(): Map<number, Vec3> {
+    const colorMap = new Map();
+    const colorAttr = this.geometry.getAttribute("color");
+    if (!colorAttr)
+      return colorMap;
+
+    for (let i = 0; i < colorAttr.array.length / 3; i++) {
+
+      const x = colorAttr.getX(i);
+      const y = colorAttr.getY(i);
+      const z = colorAttr.getZ(i);
+
+      colorMap.set(i, { x: x, y: y, z: z });
+    }
+    return colorMap;
   }
 
   changeToPainting() {
@@ -113,7 +134,7 @@ export default class ModellingMesh extends THREE.Mesh {
 
       colorAttr.setXYZ(i2, color.x, color.y, color.z);
 
-      this.vertexColor.set(i2, color);
+      this.currentVerticesColors.set(i2, color);
     }
 
     colorAttr.needsUpdate = true;

@@ -6,11 +6,12 @@ import { OrbitControls, TransformControls, type TransformControlsMode } from "th
 import { SelectionController } from "@/pages/editor/utils/SelectionController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import { compareVec3, convertEulerToVec3Degrees, convertTVector3ToVec3 } from "./utils";
-import type { Vec3 } from "./Types";
+import { EDITOR_MODE, type Vec3 } from "./Types";
 import { DEFAULT_SCENE_COLOR } from "./Global";
-import { AddListener, RemoveAllListeners } from "./AddListener";
+import { AddListener, RemoveAllListeners, RemoveListener } from "./AddListener";
 import { ViewHelper } from "./objects/ViewHelper";
 import ModellingMesh from "./objects/ModellingMesh";
+import { GetCurrentEditorMode } from "../ui/EditorModeMenu/ChangeModeDropdown";
 
 const InitRenderer = () => {
     const canvasRef = useRef<HTMLDivElement | null>(null);
@@ -40,10 +41,24 @@ const InitRenderer = () => {
         camera.position.setZ(5);
         scene.add(camera);
 
+        // Setting up orbit controls
         const orbitControls = new OrbitControls(camera, renderer.domElement);
         const control = createTransformControl(camera, renderer, orbitControls);
         const handleControlMode = (mode: TransformControlsMode) => {
             control.setMode(mode);
+        };
+        const handleEditorModeChange = (mode: string) => {
+            if (mode === EDITOR_MODE.PaintMode) {
+                orbitControls.mouseButtons.LEFT = null;
+                orbitControls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+                const obj = selectionController.getCurrentSelection();
+                if (obj) {
+                    orbitControls.target.copy(obj.position);
+                }
+            } else {
+                orbitControls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
+                orbitControls.mouseButtons.RIGHT = THREE.MOUSE.PAN;
+            }
         };
 
         selectionController.onSelect((obj: THREE.Object3D) => {
@@ -114,6 +129,7 @@ const InitRenderer = () => {
         };
         orbitControls.addEventListener("change", requestRenderIfNotRequested);
         control.addEventListener("change", requestRenderIfNotRequested);
+        selectionController.onPaintSelect(requestRenderIfNotRequested);
         AddListener(window, "keyup", requestRenderIfNotRequested);
         AddListener(window, "click", requestRenderIfNotRequested);
 
@@ -121,6 +137,7 @@ const InitRenderer = () => {
         handlePicking(canvas, scene, camera, selectionController);
 
         editorEventBus.on(EDITOR_EVENT.SetControlMode, handleControlMode);
+        editorEventBus.on(EDITOR_EVENT.ChangeEditorMode, handleEditorModeChange);
 
         return () => {
             viewhelper.dispose();
@@ -129,6 +146,7 @@ const InitRenderer = () => {
             selectionController.destroy();
             RemoveAllListeners();
             editorEventBus.off(EDITOR_EVENT.SetControlMode, handleControlMode);
+            editorEventBus.off(EDITOR_EVENT.ChangeEditorMode, handleEditorModeChange);
             renderer.dispose();
 
         };
@@ -255,27 +273,14 @@ function handleResizing(renderer: THREE.Renderer, camera: THREE.PerspectiveCamer
 function handlePicking(canvas: HTMLElement, scene: THREE.Scene, camera: THREE.Camera, selectionController: SelectionController) {
     const mouse = new THREE.Vector2();
     let mouseDownTime = 0;
+    let mouseMoveID = -1;
 
     const clearMouse = () => {
         mouse.x = -100000;
         mouse.y = -100000;
     };
 
-    const handleMouseDown = (e: Event) => {
-        if (!(e instanceof MouseEvent)) {
-            return;
-        }
-        mouseDownTime = Date.now();
-    };
-
-    const handlePickEvent = (e: Event) => {
-        // Only fast click will allow selecting objects
-        if ((Date.now() - mouseDownTime > 100)) {
-            return;
-        }
-        if (!(e instanceof MouseEvent)) {
-            return;
-        }
+    const emitSelect = (e: MouseEvent) => {
         const offsetX = canvas.offsetLeft;
         const offsetY = canvas.offsetTop;
         mouse.x = ((e.clientX - offsetX) / canvas.clientWidth) * 2 - 1;
@@ -286,6 +291,42 @@ function handlePicking(canvas: HTMLElement, scene: THREE.Scene, camera: THREE.Ca
         } else {
             selectionController.select(mouse, scene, camera);
         }
+    };
+
+    const handleMouseDown = (e: Event) => {
+        if (!(e instanceof MouseEvent)) {
+            return;
+        }
+        if (e.buttons !== 1) {
+            return;
+        }
+        mouseDownTime = Date.now();
+
+        if (GetCurrentEditorMode() === EDITOR_MODE.PaintMode)
+            mouseMoveID = AddListener(window, "mousemove", handleMouseMove);
+    };
+
+    const handleMouseMove = (e: Event) => {
+        if (!(e instanceof MouseEvent)) {
+            return;
+        }
+        emitSelect(e);
+    };
+
+    const handlePickEvent = (e: Event) => {
+        if (mouseMoveID != -1) {
+            RemoveListener(mouseMoveID);
+            mouseMoveID = -1;
+        }
+
+        // Only fast click will allow selecting objects
+        if ((Date.now() - mouseDownTime > 100)) {
+            return;
+        }
+        if (!(e instanceof MouseEvent)) {
+            return;
+        }
+        emitSelect(e);
     };
 
     AddListener(window, "mousedown", handleMouseDown);

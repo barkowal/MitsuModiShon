@@ -37,6 +37,8 @@ function Editor() {
     const paintModeHandler = new PaintModeHandler(commandHistory, uiController, modellingHelper, scene);
 
     selectionController.onEditSelect((intersections: Array<THREE.Intersection>) => { modellingHelper.handleIntersectionChange(intersections); });
+    selectionController.onPaintSelect((intersection: THREE.Intersection) => { modellingHelper.handleIntersectionChange([intersection]); });
+
     objectModeHandler.initEventHandlers();
     uiController.setRendererInfo(renderer.info.memory); // Only for testing if objects are disposed correctly
 
@@ -81,12 +83,14 @@ function Editor() {
     const handleChangeEditorMode = (mode: string) => {
       if (mode === EDITOR_MODE.ObjectMode) {
         editModeHandler.disposeEventHandlers();
+        paintModeHandler.disposeEventHandlers();
         objectModeHandler.initEventHandlers();
         modellingHelper.clearObject();
-        selectionController.setEditMode(false);
+        selectionController.setEditorMode(EDITOR_MODE.ObjectMode);
       }
       if (mode === EDITOR_MODE.EditMode) {
         objectModeHandler.disposeEventHandlers();
+        paintModeHandler.disposeEventHandlers();
         editModeHandler.initEventHandlers();
         const selection = selectionController.getCurrentSelection();
         if (selection instanceof ModellingMesh) {
@@ -95,10 +99,11 @@ function Editor() {
           editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Please select a modelling object in object mode before editing.");
 
         }
-        selectionController.setEditMode(true);
+        selectionController.setEditorMode(EDITOR_MODE.EditMode);
       }
       if (mode === EDITOR_MODE.PaintMode) {
         objectModeHandler.disposeEventHandlers();
+        editModeHandler.disposeEventHandlers();
         paintModeHandler.initEventHandlers();
         const selection = selectionController.getCurrentSelection();
         if (selection instanceof ModellingMesh) {
@@ -106,7 +111,7 @@ function Editor() {
         } else {
           editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Please select a modelling object in object mode before painting.");
         }
-        selectionController.setEditMode(true);
+        selectionController.setEditorMode(EDITOR_MODE.PaintMode);
       }
     };
 

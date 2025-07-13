@@ -2,6 +2,7 @@ import * as THREE from "three/webgpu";
 import { INTERSECTION_LAYER } from "./Global";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import ModellingMesh from "./objects/ModellingMesh";
+import { EDITOR_MODE } from "./Types";
 
 export class SelectionController {
     private raycaster: THREE.Raycaster;
@@ -10,31 +11,34 @@ export class SelectionController {
     private currentSelection: THREE.Object3D | null;
     private selectedObjects: Array<THREE.Object3D>;
 
-    private editObject: ModellingMesh | null;
+    private modellingObject: ModellingMesh | null;
     private editIntersections: Array<THREE.Intersection>;
     private onEditListeners: Array<CallableFunction>;
-    private editMode: boolean;
+    private editorMode: string;
+
+    private onPaintListeners: Array<CallableFunction>;
 
     constructor() {
         this.raycaster = new THREE.Raycaster();
         this.currentSelection = null;
         this.selectedObjects = [];
         this.onEditListeners = [];
+        this.onPaintListeners = [];
         this.onSelectListeners = [];
         this.onClearListeners = [];
 
         this.editIntersections = [];
-        this.editObject = null;
-        this.editMode = false;
+        this.modellingObject = null;
+        this.editorMode = EDITOR_MODE.ObjectMode;
     }
 
-    setEditMode(val: boolean) {
-        this.editMode = val;
-        if (val === true && this.currentSelection instanceof ModellingMesh) {
-            this.editObject = this.currentSelection;
+    setEditorMode(val: string) {
+        this.editorMode = val;
+        if (val !== EDITOR_MODE.ObjectMode && this.currentSelection instanceof ModellingMesh) {
+            this.modellingObject = this.currentSelection;
         }
-        if (val === false) {
-            this.editObject = null;
+        if (val === EDITOR_MODE.ObjectMode) {
+            this.modellingObject = null;
         }
         this.clearAllSelections();
     }
@@ -45,8 +49,12 @@ export class SelectionController {
         this.raycaster.layers.set(INTERSECTION_LAYER);
 
         // If in edit mode intersect only the editable object
-        if (this.editMode) {
+        if (this.editorMode === EDITOR_MODE.EditMode) {
             this.editModeSelect(multiSelect);
+            return;
+        }
+        if (this.editorMode === EDITOR_MODE.PaintMode) {
+            this.paintModeSelect();
             return;
         }
 
@@ -76,8 +84,8 @@ export class SelectionController {
     }
 
     editModeSelect(multiSelect: boolean) {
-        if (this.editObject) {
-            const intersectedObject = this.raycaster.intersectObject(this.editObject);
+        if (this.modellingObject) {
+            const intersectedObject = this.raycaster.intersectObject(this.modellingObject);
             if (intersectedObject.length === 0) return;
             if (!multiSelect) {
                 this.editIntersections = [];
@@ -86,6 +94,14 @@ export class SelectionController {
                 this.editIntersections.push(intersectedObject[0]);
             }
             this.notifyEditListeners(this.editIntersections);
+        }
+    }
+
+    paintModeSelect() {
+        if (this.modellingObject) {
+            const intersectedObject = this.raycaster.intersectObject(this.modellingObject);
+            if (intersectedObject.length === 0) return;
+            this.notifyPaintListeners(intersectedObject[0]);
         }
     }
 
@@ -119,7 +135,7 @@ export class SelectionController {
     }
 
     changeSelection(scene: THREE.Scene, id: number) {
-        if (this.editMode) {
+        if (this.editorMode !== EDITOR_MODE.ObjectMode) {
             return;
         }
         if (this.currentSelection?.id === id) {
@@ -163,6 +179,7 @@ export class SelectionController {
         this.onSelectListeners = [];
         this.onClearListeners = [];
         this.onEditListeners = [];
+        this.onPaintListeners = [];
     }
 
     checkIfSelectionExists(scene: THREE.Scene) {
@@ -175,12 +192,16 @@ export class SelectionController {
         }
     }
 
+    onSelect(fn: CallableFunction) {
+        this.onSelectListeners.push(fn);
+    }
+
     onEditSelect(fn: CallableFunction) {
         this.onEditListeners.push(fn);
     }
 
-    onSelect(fn: CallableFunction) {
-        this.onSelectListeners.push(fn);
+    onPaintSelect(fn: CallableFunction) {
+        this.onPaintListeners.push(fn);
     }
 
     onClear(fn: CallableFunction) {
@@ -201,6 +222,12 @@ export class SelectionController {
 
     notifyEditListeners(intersection: Array<THREE.Intersection>) {
         this.onEditListeners.forEach((listener) => {
+            listener(intersection);
+        });
+    }
+
+    notifyPaintListeners(intersection: THREE.Intersection) {
+        this.onPaintListeners.forEach((listener) => {
             listener(intersection);
         });
     }

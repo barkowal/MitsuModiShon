@@ -9,16 +9,17 @@ export class ModellingHelper {
   private currentObject: ModellingMesh | null;
   private editingMode: number;
   private currentBrushColor: Vec3;
+  private coloredVertices: Array<number>;
 
   constructor() {
     this.currentObject = null;
     this.editingMode = EDITING_MODE.Faces;
     this.currentBrushColor = { x: 0, y: 0, z: 0 };
+    this.coloredVertices = [];
   }
 
   setEditingMode(mode: number) {
     this.editingMode = mode;
-    this.currentBrushColor = { x: 0, y: 0, z: 0 };
   }
 
   getCurrentObject(): ModellingMesh | null {
@@ -37,6 +38,18 @@ export class ModellingHelper {
 
   setBrushColor(color: Vec3) {
     this.currentBrushColor = color;
+  }
+
+  getBrushColor() {
+    return this.currentBrushColor;
+  }
+
+  getColoredVertices() {
+    return this.coloredVertices;
+  }
+
+  resetColoredVertices() {
+    this.coloredVertices = [];
   }
 
   handleIntersectionChange(intersections: Array<Intersection>) {
@@ -87,6 +100,12 @@ export class ModellingHelper {
     });
     indices = Array.from(new Set(indices));
 
+    if (indices.length === 0) return;
+
+    const latestVertex = this.coloredVertices[this.coloredVertices.length - 1];
+    if (latestVertex === indices[0]) return;
+
+    this.coloredVertices = this.coloredVertices.concat(indices);
     this.currentObject.colorVertices(indices, this.currentBrushColor);
   }
 
@@ -95,8 +114,14 @@ export class ModellingHelper {
       return;
     }
     this.currentObject.changeToNormalMode();
-    this.editingMode = EDITING_MODE.Faces;
     this.currentObject = null;
+    this.clearAllSettings();
+  }
+
+
+  private clearAllSettings() {
+    this.currentBrushColor = { x: 0, y: 0, z: 0 };
+    this.editingMode = EDITING_MODE.Faces;
   }
 
 }
