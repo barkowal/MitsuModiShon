@@ -42,7 +42,6 @@ export default class ModellingMesh extends THREE.Mesh {
 
     if (this.material instanceof THREE.Material) {
       if (this.material.id === this.normalMaterial.id) {
-        this.normalMaterial = this.material;
         return;
       }
     }
@@ -115,7 +114,11 @@ export default class ModellingMesh extends THREE.Mesh {
   }
 
   changeToPainting() {
-    console.log("TODO line material");
+    // for now it's the same material as in object mode
+    // later maybe add line material for adding outlines
+    if (this.material instanceof THREE.Material) {
+      this.normalMaterial = this.material;
+    }
   }
 
   colorVertices(indices: Array<number>, color: Vec3) {
