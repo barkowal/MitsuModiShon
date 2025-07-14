@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuGroup, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
-import { Dot, Minus, Square, SquarePen } from "lucide-react";
+import { Dot, Slash, Square, SquarePen } from "lucide-react";
 import { EDITING_MODE, EDITOR_MODE } from "../../utils/Types";
 import { useEffect, useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -103,7 +103,7 @@ function ChangeModeDropdown() {
               <Dot />
             </ToggleGroupItem>
             <ToggleGroupItem value={EDITING_MODE.Edges.toString()} aria-label="Toggle Edges">
-              <Minus />
+              <Slash />
             </ToggleGroupItem>
             <ToggleGroupItem value={EDITING_MODE.Faces.toString()} aria-label="Toggle Faces">
               <Square />

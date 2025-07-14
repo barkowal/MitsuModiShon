@@ -328,15 +328,14 @@ export default class ModellingMesh extends THREE.Mesh {
   }
 
   private translateVertex(vertex: THREE.Vector3, index: number, distance: Vec3) {
-    if (!this.verticesHelper) {
-      return;
-    }
-    const vertiMatrix = new THREE.Matrix4();
-
     vertex.setX(vertex.x + distance.x);
     vertex.setY(vertex.y + distance.y);
     vertex.setZ(vertex.z + distance.z);
 
+    if (!this.verticesHelper) {
+      return;
+    }
+    const vertiMatrix = new THREE.Matrix4();
     this.verticesHelper.getMatrixAt(index, vertiMatrix);
     vertiMatrix.setPosition(vertex);
     this.verticesHelper.setMatrixAt(index, vertiMatrix);

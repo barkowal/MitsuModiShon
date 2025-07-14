@@ -1,3 +1,5 @@
 export const INTERSECTION_LAYER = 1;
 export const DEFAULT_SCENE_COLOR = "#050505";
 export const ROOT_ID = -1000;
+export const DEFAULT_LINE_WIDTH = 10;
+export const DEFAULT_LINE_OFFSET = 0.05;

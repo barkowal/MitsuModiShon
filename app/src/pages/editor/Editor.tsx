@@ -22,6 +22,7 @@ import ModellingMesh from "./utils/objects/ModellingMesh";
 import { ModellingHelper } from "./utils/ModellingHelper";
 import WarningLogPanel from "./ui/WarningLogPanel";
 import { PaintModeHandler } from "./utils/PaintModeHandler";
+import { PaintingHelper } from "./utils/PaintingHelper";
 
 
 function Editor() {
@@ -32,12 +33,14 @@ function Editor() {
     const editorUtils = new EditorUtils(scene);
     const uiController = new UiController(scene);
     const modellingHelper = new ModellingHelper();
+    const paintingHelper = new PaintingHelper();
+
     const objectModeHandler = new ObjectModeHandler(commandHistory, uiController, selectionController, scene);
     const editModeHandler = new EditModeHandler(commandHistory, uiController, modellingHelper, scene);
-    const paintModeHandler = new PaintModeHandler(commandHistory, uiController, modellingHelper, scene);
+    const paintModeHandler = new PaintModeHandler(commandHistory, uiController, paintingHelper, scene);
 
     selectionController.onEditSelect((intersections: Array<THREE.Intersection>) => { modellingHelper.handleIntersectionChange(intersections); });
-    selectionController.onPaintSelect((intersection: THREE.Intersection) => { modellingHelper.handleIntersectionChange([intersection]); });
+    selectionController.onPaintSelect((intersection: THREE.Intersection) => { paintingHelper.handleIntersectionChange(intersection); });
 
     objectModeHandler.initEventHandlers();
     uiController.setRendererInfo(renderer.info.memory); // Only for testing if objects are disposed correctly
@@ -86,6 +89,7 @@ function Editor() {
         paintModeHandler.disposeEventHandlers();
         objectModeHandler.initEventHandlers();
         modellingHelper.clearObject();
+        paintingHelper.clearObject();
         selectionController.setEditorMode(EDITOR_MODE.ObjectMode);
       }
       if (mode === EDITOR_MODE.EditMode) {
@@ -107,7 +111,7 @@ function Editor() {
         paintModeHandler.initEventHandlers();
         const selection = selectionController.getCurrentSelection();
         if (selection instanceof ModellingMesh) {
-          modellingHelper.setCurrentObjectToPaintMode(selection);
+          paintingHelper.setCurrentObjectToPaintMode(selection);
         } else {
           editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Please select a modelling object in object mode before painting.");
         }

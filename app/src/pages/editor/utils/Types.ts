@@ -46,6 +46,17 @@ export const EDITING_MODE = {
     Vertices: 2,
 } as const;
 
+export const PAINTING_MODE = {
+    VertexColor: 0,
+    DrawLine: 1,
+} as const;
+
+export const PAINTING_SETTINGS = {
+    HexColor: 0,
+    LineWidth: 1,
+    LineOffset: 2,
+} as const;
+
 export type ListenerHandler = {
     node: Node | Window,
     event: string,

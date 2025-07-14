@@ -31,6 +31,19 @@ export function convertEulerToVec3Degrees(euler: THREE.Euler): Vec3 {
   });
 }
 
+export function convertVec3ToHexColor(vecColor: Vec3): number {
+  const hexColor = (vecColor.x * 255 << 16) + (vecColor.y * 255 << 8) + (vecColor.z * 255);
+  return hexColor;
+}
+
+export function convertHexColorToVec3(hexColor: number): Vec3 {
+  const r = ((hexColor >> 16) & 255) / 255;
+  const g = ((hexColor >> 8) & 255) / 255;
+  const b = (hexColor & 255) / 255;
+
+  return { x: r, y: g, z: b };
+}
+
 export function isArrayOfMeshes(array: Array<THREE.Object3D>): boolean {
   let onlyMeshes = true;
   array.forEach((obj) => {
@@ -41,6 +54,7 @@ export function isArrayOfMeshes(array: Array<THREE.Object3D>): boolean {
   return onlyMeshes;
 }
 
+// TODO dispose all childs
 export function disposeMesh(scene: THREE.Scene, object: THREE.Object3D) {
   if (object && !scene.getObjectById(object.id)) {
     if (object instanceof THREE.Mesh) {
