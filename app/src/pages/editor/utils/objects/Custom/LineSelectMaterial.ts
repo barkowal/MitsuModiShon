@@ -16,14 +16,11 @@ export function CreateLineSelectMaterial(): THREE.MeshBasicNodeMaterial {
 
   const fragmentFunction = Fn(() => {
     const vCenter = attribute("barycentric");
-    const colors = attribute("color");
-    const color = vec4(0.49999, 0.49999, 0.49999, 1).toVar();
+    const color = vec4(0.29999, 0.24999, 0.56999, 1).toVar();
 
-    const selection = mul(smoothstep(0.98, 1, colors), vec3(0.05, 0.2, 0.9));
     //@ts-expect-error tsl error
     const edges = Wireframe(vCenter, thickness);
-
-    const finalColor = max(min(color, edges), selection);
+    const finalColor = min(color, edges);
 
     return max(finalColor, oneMinus(edges));
   });

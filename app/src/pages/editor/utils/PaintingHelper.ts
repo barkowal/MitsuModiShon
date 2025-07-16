@@ -1,9 +1,10 @@
-import type { Intersection, Vector3 } from "three/webgpu";
+import { Vector3, type Intersection } from "three/webgpu";
 import type ModellingMesh from "./objects/ModellingMesh";
 import { EDITING_MODE, EDITOR_MODE, PAINTING_MODE, type Vec3 } from "./Types";
 import { GetCurrentEditorMode } from "../ui/EditorModeMenu/ChangeModeDropdown";
 import { GetSelectionIndices } from "./GetSelectionIndices";
-import { DEFAULT_LINE_OFFSET } from "./Global";
+import { DEFAULT_LINE_OFFSET, DEFAULT_LINE_WIDTH } from "./Global";
+import { convertHexColorToVec3, convertVec3ToHexColor } from "./utils";
 
 export class PaintingHelper {
   private currentObject: ModellingMesh | null;
@@ -13,6 +14,8 @@ export class PaintingHelper {
   private linePoints: Array<Vector3>;
   private currentBrushColor: Vec3;
   private lineOffset: number;
+  private outlineWidth: number;
+  private shouldClearLines: boolean;
 
   constructor() {
     this.currentObject = null;
@@ -23,6 +26,8 @@ export class PaintingHelper {
     this.linePoints = [];
     this.currentBrushColor = { x: 0, y: 0, z: 0 };
     this.lineOffset = DEFAULT_LINE_OFFSET;
+    this.outlineWidth = DEFAULT_LINE_WIDTH;
+    this.shouldClearLines = false;
   }
 
   handleIntersectionChange(intersection: Intersection) {
@@ -39,8 +44,11 @@ export class PaintingHelper {
       this.handleDrawLineModeIntersectionChange(intersection);
     }
 
-  }
+    if (this.paintingMode === PAINTING_MODE.DrawOutline) {
+      this.handleOutlineModeIntersectionChange(intersection);
+    }
 
+  }
 
   private handleVertexColorModeIntersectionChange(intersection: Intersection) {
     if (!this.currentObject) {
@@ -80,13 +88,42 @@ export class PaintingHelper {
     }
   }
 
+  private handleOutlineModeIntersectionChange(intersection: Intersection) {
+    if (!this.currentObject) {
+      return;
+    }
+
+    let indices: Array<number> = [];
+
+    indices = indices.concat(GetSelectionIndices(intersection, EDITING_MODE.Edges));
+    indices = Array.from(new Set(indices));
+
+    if (indices.length === 0) return;
+
+    const modellingOutline = this.currentObject.getModellingOutline();
+    if (!modellingOutline) return;
+
+    if (this.shouldClearLines) {
+      modellingOutline.clearHighligtedEdge(indices);
+    } else {
+      modellingOutline.highlightEdge(indices);
+    }
+  }
+
   getCurrentObject(): ModellingMesh | null {
     return this.currentObject;
   }
 
   setCurrentObjectToPaintMode(object: ModellingMesh) {
     this.currentObject = object;
-    object.changeToPainting();
+
+    const modellingOutline = object.getModellingOutline();
+    if (modellingOutline) {
+      const hexColor = convertHexColorToVec3(modellingOutline.getLineColor());
+      this.setBrushColor(hexColor);
+      this.outlineWidth = modellingOutline.getLineWidth();
+      this.lineOffset = DEFAULT_LINE_OFFSET;
+    }
   }
 
   getPaintingMode() {
@@ -95,18 +132,56 @@ export class PaintingHelper {
 
   setPaintingMode(mode: number) {
     this.paintingMode = mode;
+
+    if (!this.currentObject) return;
+
+    this.currentObject.changeToNormalMode();
+
+    if (mode === PAINTING_MODE.DrawOutline) {
+      this.currentObject.changeToOutlinePainting();
+    }
   }
 
   setBrushColor(color: Vec3) {
     this.currentBrushColor = color;
+    if (this.paintingMode === PAINTING_MODE.DrawOutline) {
+      if (!this.currentObject) return;
+      const modellingOutline = this.currentObject.getModellingOutline();
+      modellingOutline?.setLineColor(convertVec3ToHexColor(color));
+    }
   }
 
   getBrushColor() {
     return this.currentBrushColor;
   }
 
+  getLineOffset() {
+    return this.lineOffset;
+  }
+
   setLineOffset(offset: number) {
     this.lineOffset = offset;
+  }
+
+  setOutlineWidth(width: number) {
+    this.outlineWidth = width;
+    if (this.paintingMode === PAINTING_MODE.DrawOutline) {
+      if (!this.currentObject) return;
+      const modellingOutline = this.currentObject.getModellingOutline();
+      modellingOutline?.setLineWidth(width);
+    }
+  }
+
+  getOutlineWidth() {
+    return this.outlineWidth;
+  }
+
+  setShouldClearLines(val: boolean) {
+    this.shouldClearLines = val;
+  }
+
+  getShouldClearLines() {
+    return this.shouldClearLines;
   }
 
   getColoredVertices() {

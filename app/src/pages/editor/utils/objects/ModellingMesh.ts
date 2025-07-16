@@ -2,6 +2,8 @@ import * as THREE from "three/webgpu";
 import type { Vec3 } from "../Types";
 import { CreateModellingMaterial } from "./Custom/ModellingMaterial";
 import { calculateVec3Difference, convertTVector3ToVec3 } from "../utils";
+import { CreateLineSelectMaterial } from "./Custom/LineSelectMaterial";
+import { ModellingOutline } from "./ModellingOutline";
 
 export default class ModellingMesh extends THREE.Mesh {
   private verticesHelper: THREE.InstancedMesh | null;
@@ -10,6 +12,7 @@ export default class ModellingMesh extends THREE.Mesh {
   private groupedVertices: Map<number, Array<number>>;
   private normalMaterial: THREE.Material;
   private currentVerticesColors: Map<number, Vec3>;
+  private modellingOutline: ModellingOutline | null;
 
   constructor(geometry: THREE.BufferGeometry, material: THREE.Material) {
     super(geometry, material);
@@ -21,6 +24,7 @@ export default class ModellingMesh extends THREE.Mesh {
     this.groupedVertices = this.groupVertices();
 
     this.currentVerticesColors = this.initCurrentColors();
+    this.modellingOutline = null;
   }
 
   getHighlightedIndices() {
@@ -33,6 +37,15 @@ export default class ModellingMesh extends THREE.Mesh {
 
   getCurrentVerticesColors() {
     return this.currentVerticesColors;
+  }
+
+  setModellingOutline(modellingOutline: ModellingOutline) {
+    this.modellingOutline = modellingOutline;
+    this.add(modellingOutline);
+  }
+
+  getModellingOutline() {
+    return this.modellingOutline;
   }
 
   changeToNormalMode() {
@@ -113,12 +126,18 @@ export default class ModellingMesh extends THREE.Mesh {
     return colorMap;
   }
 
-  changeToPainting() {
-    // for now it's the same material as in object mode
-    // later maybe add line material for adding outlines
+  changeToOutlinePainting() {
     if (this.material instanceof THREE.Material) {
-      this.normalMaterial = this.material;
+      if (this.material.id !== this.normalMaterial.id)
+        this.normalMaterial = this.material;
     }
+    this.material = CreateLineSelectMaterial();
+
+    if (!this.modellingOutline) {
+      const modellingOutline = new ModellingOutline(this.geometry);
+      this.setModellingOutline(modellingOutline);
+    }
+    this.modellingOutline?.makeOutlineEditable();
   }
 
   colorVertices(indices: Array<number>, color: Vec3) {
@@ -208,18 +227,16 @@ export default class ModellingMesh extends THREE.Mesh {
   }
 
   calculateCenter(): Vec3 | null {
-    if (!this.verticesHelper) {
-      return null;
-    }
     const positions = [];
     const vertiPos = new THREE.Vector3();
-    const vertiMatrix = new THREE.Matrix4();
+    const posAttr = this.geometry.getAttribute("position");
 
     for (let i = 0; i < this.selectedVertices.length; i++) {
       const i2 = this.selectedVertices[i];
 
-      this.verticesHelper.getMatrixAt(i2, vertiMatrix);
-      vertiPos.setFromMatrixPosition(vertiMatrix);
+      vertiPos.x = posAttr.getX(i2);
+      vertiPos.y = posAttr.getY(i2);
+      vertiPos.z = posAttr.getZ(i2);
 
       if (vertiPos.x !== undefined &&
         vertiPos.y !== undefined &&
@@ -235,9 +252,6 @@ export default class ModellingMesh extends THREE.Mesh {
   }
 
   scaleVertices(scaleDistance: Vec3) {
-    if (!this.transformHelper) {
-      return;
-    }
     const center = this.calculateCenter();
     if (!center) {
       return;

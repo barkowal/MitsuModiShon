@@ -187,6 +187,12 @@ export const EDITOR_EVENT = {
   ChangePaintingSettings: "ChangePaintingSettings",
 
   /**
+   * Signal for refreshing the setting of painting mode in the ui
+   * @returns {Array<number>} settings - Possible values: 0-hex color, 1- line width, 2-line offset
+   */
+  RefreshPaintingSettings: "RefreshPaintingSettings",
+
+  /**
    * Signal for user pressing the 1 on keyboard.
    * It should change editing mode while in edit mode.
    * @returns {number} nb - the number key that user pressed

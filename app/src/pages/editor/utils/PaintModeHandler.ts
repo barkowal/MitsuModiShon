@@ -10,6 +10,7 @@ import type { PaintingHelper } from "./PaintingHelper";
 import { convertHexColorToVec3, convertVec3ToHexColor } from "./utils";
 import { DrawLineCommand } from "../commands/DrawLineCommand";
 import { DEFAULT_LINE_WIDTH } from "./Global";
+import { CreateModellingOutlineCommand } from "../commands/CreateModellingOutlineCommand";
 
 export class PaintModeHandler {
   eventHandlers: Array<EventHandlerType>;
@@ -45,6 +46,10 @@ export class PaintModeHandler {
   }
 
   disposeEventHandlers() {
+
+    // Create outline command when leaving the paint mode 
+    this.addOutlineCommand();
+
     this.eventHandlers.forEach((handler) => {
       editorEventBus.off(handler.event, handler.callback);
     });
@@ -56,7 +61,30 @@ export class PaintModeHandler {
   private handleChangePaintingMode() {
     const handle = (mode: number) => {
       this.paintingHelper.setPaintingMode(mode);
-      this.lineWidth = DEFAULT_LINE_WIDTH;
+
+      if (mode !== PAINTING_MODE.DrawOutline) {
+        // Create outline command when leaving the draw outline
+        this.addOutlineCommand();
+      }
+
+      // Sending settings to the ui
+      if (mode === PAINTING_MODE.DrawOutline) {
+
+        this.lineWidth = this.paintingHelper.getOutlineWidth();
+        const color = convertVec3ToHexColor(this.paintingHelper.getBrushColor());
+        this.paintingHelper.setShouldClearLines(false);
+
+        const settings = [
+          color,
+          this.lineWidth,
+          this.paintingHelper.getLineOffset(),
+          0,
+        ];
+
+        editorEventBus.emit(EDITOR_EVENT.RefreshPaintingSettings, settings);
+
+      }
+
     };
     editorEventBus.on(EDITOR_EVENT.ChangePaintingMode, handle);
     this.eventHandlers.push({ event: EDITOR_EVENT.ChangePaintingMode, callback: handle });
@@ -68,9 +96,12 @@ export class PaintModeHandler {
       const hexColor = settings[PAINTING_SETTINGS.HexColor];
       const lineWidth = settings[PAINTING_SETTINGS.LineWidth];
       const lineOffset = settings[PAINTING_SETTINGS.LineOffset];
+      const shouldClearLines = settings[PAINTING_SETTINGS.ClearLine] === 0 ? false : true;
 
       this.paintingHelper.setBrushColor(convertHexColorToVec3(hexColor));
       this.paintingHelper.setLineOffset(lineOffset);
+      this.paintingHelper.setOutlineWidth(lineWidth);
+      this.paintingHelper.setShouldClearLines(shouldClearLines);
       this.lineWidth = lineWidth;
 
     };
@@ -95,7 +126,7 @@ export class PaintModeHandler {
     this.listenerHandlers.push(AddListener(window, "mousedown", handle));
   }
 
-  addPaintCommand() {
+  private addPaintCommand() {
     const handle = (e: Event) => {
       if (this.paintingHelper.getPaintingMode() !== PAINTING_MODE.VertexColor) return;
 
@@ -121,7 +152,7 @@ export class PaintModeHandler {
     this.listenerHandlers.push(AddListener(window, "mouseup", handle));
   }
 
-  addLineCommand() {
+  private addLineCommand() {
     const handle = (e: Event) => {
       if (this.paintingHelper.getPaintingMode() !== PAINTING_MODE.DrawLine) return;
 
@@ -144,6 +175,18 @@ export class PaintModeHandler {
     };
 
     this.listenerHandlers.push(AddListener(window, "mouseup", handle));
+  }
+
+  private addOutlineCommand() {
+    const obj = this.paintingHelper.getCurrentObject();
+    if (!obj) return;
+
+    const outlineObj = obj.getModellingOutline();
+    if (!outlineObj) return;
+
+    if (!outlineObj.shouldOutlineBeCreated()) return;
+
+    this.commandHistory.addCommand(new CreateModellingOutlineCommand(outlineObj));
   }
 
 }

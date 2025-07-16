@@ -2,7 +2,7 @@ import type ModellingMesh from "../utils/objects/ModellingMesh";
 import type { Vec3 } from "../utils/Types";
 import type { Command } from "./CommandInterface";
 
-export class ScaleModellingVertices implements Command {
+export class ScaleModellingVerticesCommand implements Command {
     private object: ModellingMesh;
     private indices: Array<number>;
     private scale: Vec3;

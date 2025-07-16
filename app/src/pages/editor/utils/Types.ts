@@ -49,12 +49,14 @@ export const EDITING_MODE = {
 export const PAINTING_MODE = {
     VertexColor: 0,
     DrawLine: 1,
+    DrawOutline: 2,
 } as const;
 
 export const PAINTING_SETTINGS = {
     HexColor: 0,
     LineWidth: 1,
     LineOffset: 2,
+    ClearLine: 3,
 } as const;
 
 export type ListenerHandler = {

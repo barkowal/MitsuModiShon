@@ -7,7 +7,7 @@ import type { ModellingHelper } from "./ModellingHelper";
 import ModellingMesh from "./objects/ModellingMesh";
 import { calculateVec3Difference, compareVec3, convertTVector3ToVec3 } from "./utils";
 import { TranslateModellingVertices } from "../commands/TranslateModellingVertices";
-import { ScaleModellingVertices } from "../commands/ScaleModellingVertices";
+import { ScaleModellingVerticesCommand } from "../commands/ScaleModellingVerticesCommand";
 
 export class EditModeHandler {
   eventHandlers: Array<EventHandlerType>;
@@ -123,11 +123,11 @@ export class EditModeHandler {
 
         if (compareVec3(scales[TRANSFORM_CHANGE.New], convertTVector3ToVec3(transform.scale))) {
           const difference = calculateVec3Difference(convertTVector3ToVec3(transform.scale), scales[TRANSFORM_CHANGE.Old]);
-          this.commandHistory.addCommand(new ScaleModellingVertices(obj, difference, indices), false);
+          this.commandHistory.addCommand(new ScaleModellingVerticesCommand(obj, difference, indices), false);
         }
         else {
           const difference = calculateVec3Difference(scales[TRANSFORM_CHANGE.New], convertTVector3ToVec3(transform.scale));
-          this.commandHistory.addCommand(new ScaleModellingVertices(obj, difference, indices));
+          this.commandHistory.addCommand(new ScaleModellingVerticesCommand(obj, difference, indices));
           transform.scale.set(transform.scale.x + difference.x,
             transform.scale.y + difference.y,
             transform.scale.z + difference.z);
