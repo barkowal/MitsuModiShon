@@ -18,6 +18,7 @@ export class AddMeshCommand implements Command {
         this.scene.remove(this.mesh);
     }
 
+    // TODO dispose all children
     destroy(): void {
         if (this.mesh && !this.scene.getObjectById(this.mesh.id)) {
 

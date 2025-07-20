@@ -193,6 +193,18 @@ export const EDITOR_EVENT = {
   RefreshPaintingSettings: "RefreshPaintingSettings",
 
   /**
+   * Signal for saving the object as a json file
+   * @returns {void}
+   */
+  SaveObject: "SaveObject",
+
+  /**
+   * Signal for Uploading the object to the scene
+   * @returns {string} fileData - contents of the file
+   */
+  UploadObject: "UploadObject",
+
+  /**
    * Signal for user pressing the 1 on keyboard.
    * It should change editing mode while in edit mode.
    * @returns {number} nb - the number key that user pressed

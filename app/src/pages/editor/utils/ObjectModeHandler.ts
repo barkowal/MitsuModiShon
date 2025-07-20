@@ -11,6 +11,9 @@ import { RotateObjectsCommand } from "../commands/RotateObjectsCommand";
 import { RemoveObjectsCommand } from "../commands/RemoveObjectsCommand";
 import { SetMeshesColorCommand } from "../commands/SetMeshesColorCommand";
 import { ChangeMeshesMaterialCommand } from "../commands/ChangeMeshesMaterialCommand";
+import { ModellingObjectLoader } from "./objects/Custom/ModellingObjectLoader";
+import { AddMeshCommand } from "../commands/AddMeshCommand";
+import { DownloadJSON } from "@/lib/DownloadJSON";
 
 export class ObjectModeHandler {
   eventHandlers: Array<EventHandlerType>;
@@ -38,6 +41,8 @@ export class ObjectModeHandler {
     this.handleChangeRotation();
     this.handleRotateObject();
     this.handleChangeMaterial();
+    this.handleSaveObject();
+    this.handleUploadObject();
   }
 
   disposeEventHandlers() {
@@ -253,6 +258,56 @@ export class ObjectModeHandler {
     editorEventBus.on(EDITOR_EVENT.RotateObject, handle);
     this.eventHandlers.push({ event: EDITOR_EVENT.RotateObject, callback: handle });
 
+  }
+
+  private handleSaveObject() {
+
+    const handle = () => {
+      const selection = this.selectionController.getCurrentSelection();
+      if (selection && selection instanceof THREE.Mesh) {
+
+        DownloadJSON(selection.toJSON(), selection.name);
+
+      }
+    };
+
+    editorEventBus.on(EDITOR_EVENT.SaveObject, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.SaveObject, callback: handle });
+  }
+
+  // TODO maybe this should be in all modes?
+  private handleUploadObject() {
+
+    const handle = (file: string) => {
+      const loader = new THREE.ObjectLoader();
+      const jsonData = JSON.parse(file);
+      let object;
+
+      if (!("object" in jsonData)) {
+        editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Error uploading a file. Please upload json of type Object3d.");
+        return;
+      }
+
+      if (jsonData.object.type === "ModellingMesh") {
+        const modellingLoader = new ModellingObjectLoader(loader);
+        object = modellingLoader.parse(jsonData);
+      } else {
+        object = loader.parse(jsonData);
+      }
+
+      if (object) {
+
+        if (object instanceof THREE.Mesh) {
+          this.commandHistory.addCommand(new AddMeshCommand(this.scene, object));
+          this.uiController.refreshTree();
+        }
+
+      }
+
+    };
+
+    editorEventBus.on(EDITOR_EVENT.UploadObject, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.UploadObject, callback: handle });
   }
 
 }

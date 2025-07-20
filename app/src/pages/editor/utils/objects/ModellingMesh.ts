@@ -16,6 +16,10 @@ export default class ModellingMesh extends THREE.Mesh {
 
   constructor(geometry: THREE.BufferGeometry, material: THREE.Material) {
     super(geometry, material);
+
+    //@ts-expect-error override
+    this.type = "ModellingMesh";
+
     this.normalMaterial = material;
 
     this.verticesHelper = null;
@@ -40,12 +44,22 @@ export default class ModellingMesh extends THREE.Mesh {
   }
 
   setModellingOutline(modellingOutline: ModellingOutline) {
+    if (this.getModellingOutline() !== null) {
+      this.modellingOutline?.dispose();
+    }
     this.modellingOutline = modellingOutline;
     this.add(modellingOutline);
   }
 
   getModellingOutline() {
-    return this.modellingOutline;
+    if (this.modellingOutline) return this.modellingOutline;
+
+    const mod = this.getObjectByProperty("type", "ModellingOutline");
+    if (mod instanceof ModellingOutline) {
+      this.modellingOutline = mod;
+    } else {
+      return null;
+    }
   }
 
   changeToNormalMode() {

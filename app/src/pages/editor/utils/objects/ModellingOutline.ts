@@ -1,24 +1,32 @@
 import { Line2, LineGeometry, LineSegments2, LineSegmentsGeometry } from "three/examples/jsm/Addons.js";
-import { type BufferGeometry, Line2NodeMaterial, Vector3, Object3D, Line3 } from "three/webgpu";
+import { type BufferGeometry, Line2NodeMaterial, Vector3, Object3D, Line3, type JSONMeta, type Object3DJSON } from "three/webgpu";
 import { DEFAULT_LINE_WIDTH } from "../Global";
 
 export class ModellingOutline extends Object3D {
   private objectsGeometry: BufferGeometry;
   private lineMaterial: Line2NodeMaterial | null;
   private lineWidth: number;
+  private lineColor: number;
   private outline: LineSegments2 | null;
-  private edges: Set<string>;
-  private linePositions: Array<Line3>;
+
+  private currentLines: Array<Array<number>>;
+  private lineSet: Set<string>;
+
   private highlightedLines: Array<Line2>;
 
   constructor(objectsGeometry: BufferGeometry) {
     super();
+
+    //@ts-expect-error override
+    this.type = "ModellingOutline";
+
     this.objectsGeometry = objectsGeometry;
     this.lineMaterial = null;
     this.lineWidth = DEFAULT_LINE_WIDTH;
+    this.lineColor = 0x000000;
     this.outline = null;
-    this.edges = new Set();
-    this.linePositions = [];
+    this.lineSet = new Set();
+    this.currentLines = [];
     this.highlightedLines = [];
     this.name = "ModellingOutline";
   }
@@ -55,7 +63,7 @@ export class ModellingOutline extends Object3D {
     this.remove(this.outline);
     this.outline.geometry.dispose();
     this.outline = null;
-    this.edges.clear();
+    this.lineSet.clear();
   }
 
   dispose() {
@@ -67,47 +75,44 @@ export class ModellingOutline extends Object3D {
   makeOutlineEditable() {
     this.disposeOutline();
 
-    this.linePositions.forEach((line) => {
-      this.createLine(line);
+    this.currentLines.forEach((verticesGroup) => {
+      this.createLine(verticesGroup);
     });
 
   }
 
-  highlightEdge(vertices: Array<number>) {
-    if (!this.lineMaterial) {
-      this.lineMaterial = new Line2NodeMaterial({ color: 0x000000, linewidth: this.lineWidth, dashed: false });
-    }
-
-    const line = this.getLineFromVertices(vertices);
-
-    if (!this.isUniqueEdge(line.start, line.end)) {
-      return;
-    }
-
-    this.linePositions.push(line);
-
-    this.createLine(line);
-  }
-
-
-  clearHighligtedEdge(vertices: Array<number>) {
-    const line = this.getLineFromVertices(vertices);
-    let lineIndex: number = -1;
-
-
-    this.linePositions.forEach(
-      (linePos, i) => {
-        if (linePos.start.equals(line.start) && linePos.end.equals(line.end)) {
-          lineIndex = i;
-        }
+  createOutlineFromVerticesGroups(verticesGroups: Array<Array<number>>) {
+    verticesGroups.forEach(
+      (vertices) => {
+        this.highlightEdge(vertices);
       }
     );
 
+    this.createOutline();
+    this.addOutline();
+  }
+
+  highlightEdge(vertices: Array<number>) {
+    if (!this.lineMaterial) {
+      this.lineMaterial = new Line2NodeMaterial({ color: this.lineColor, linewidth: this.lineWidth, dashed: false });
+    }
+
+    this.createLine(vertices);
+  }
+
+  clearHighligtedEdge(vertices: Array<number>) {
+    let lineIndex: number = -1;
+
+    this.currentLines.forEach((verticesGroup, i) => {
+      if (verticesGroup[0] === vertices[0] && verticesGroup[1] === vertices[1]) {
+        lineIndex = i;
+      }
+    });
+
     if (lineIndex === -1) return;
 
-    this.removeLineFromSet(line);
-
-    this.linePositions.splice(lineIndex, 1);
+    this.removeLineFromSet(vertices);
+    this.currentLines.splice(lineIndex, 1);
 
     const highlightedLine = this.highlightedLines.at(lineIndex);
     this.highlightedLines.splice(lineIndex, 1);
@@ -134,17 +139,16 @@ export class ModellingOutline extends Object3D {
   }
 
   setLineColor(hexColor: number) {
+    this.lineColor = hexColor;
     if (!this.lineMaterial) {
-      this.lineMaterial = new Line2NodeMaterial({ color: 0x000000, linewidth: this.lineWidth, dashed: false });
+      this.lineMaterial = new Line2NodeMaterial({ color: hexColor, linewidth: this.lineWidth, dashed: false });
+    } else {
+      this.lineMaterial.color.setHex(hexColor);
     }
-    this.lineMaterial.color.setHex(hexColor);
   }
 
   getLineColor() {
-    if (this.lineMaterial) {
-      return this.lineMaterial.color.getHex();
-    }
-    return 0x000000;
+    return this.lineColor;
   }
 
   setLineWidth(width: number) {
@@ -165,31 +169,34 @@ export class ModellingOutline extends Object3D {
     return false;
   }
 
-  private createLine(line: Line3) {
+  private createLine(vertices: Array<number>) {
+    if (!this.isLineUnique(vertices)) return;
+
+    const line = this.getLineFromVertices(vertices);
     const geometry = new LineGeometry();
     geometry.setFromPoints([line.start, line.end]);
 
     // @ts-expect-error type error
     const highlightedLine = new Line2(geometry, this.lineMaterial);
 
-    this.addLineToSet(line);
     this.highlightedLines.push(highlightedLine);
     this.add(highlightedLine);
+    this.addLineToSet(vertices);
+    this.currentLines.push(vertices);
   }
 
   private createLineSegments() {
     if (!this.lineMaterial) {
-      this.lineMaterial = new Line2NodeMaterial({ color: 0x000000, linewidth: this.lineWidth, dashed: false });
+      this.lineMaterial = new Line2NodeMaterial({ color: this.lineColor, linewidth: this.lineWidth, dashed: false });
     }
 
     const positions: Array<number> = [];
 
-    this.linePositions.forEach(
-      (line) => {
-        positions.push(line.start.x, line.start.y, line.start.z);
-        positions.push(line.end.x, line.end.y, line.end.z);
-      }
-    );
+    this.currentLines.forEach((verticesGroup) => {
+      const line = this.getLineFromVertices(verticesGroup);
+      positions.push(line.start.x, line.start.y, line.start.z);
+      positions.push(line.end.x, line.end.y, line.end.z);
+    });
 
     const segmentsGeometry = new LineSegmentsGeometry();
     segmentsGeometry.setPositions(positions);
@@ -215,32 +222,61 @@ export class ModellingOutline extends Object3D {
     return new Line3(start, end);
   }
 
-  private addLineToSet(line: Line3) {
-    const hash1 = `${line.start.x},${line.start.y},${line.start.z}-${line.end.x},${line.end.y},${line.end.z}`;
-    const hash2 = `${line.end.x},${line.end.y},${line.end.z}-${line.start.x},${line.start.y},${line.start.z}`;
+  private addLineToSet(vertices: Array<number>) {
+    const hash1 = `${vertices[0]}-${vertices[1]}`;
+    const hash2 = `${vertices[1]}-${vertices[0]}`;
 
-    this.edges.add(hash1);
-    this.edges.add(hash2);
+    this.lineSet.add(hash1);
+    this.lineSet.add(hash2);
   }
 
-  private removeLineFromSet(line: Line3) {
-    const hash1 = `${line.start.x},${line.start.y},${line.start.z}-${line.end.x},${line.end.y},${line.end.z}`;
-    const hash2 = `${line.end.x},${line.end.y},${line.end.z}-${line.start.x},${line.start.y},${line.start.z}`;
-    this.edges.delete(hash1);
-    this.edges.delete(hash2);
+  private removeLineFromSet(vertices: Array<number>) {
+    const hash1 = `${vertices[0]}-${vertices[1]}`;
+    const hash2 = `${vertices[1]}-${vertices[0]}`;
+
+    this.lineSet.delete(hash1);
+    this.lineSet.delete(hash2);
   }
 
+  private isLineUnique(vertices: Array<number>) {
+    const hash1 = `${vertices[0]}-${vertices[1]}`;
+    const hash2 = `${vertices[1]}-${vertices[0]}`;
 
-  private isUniqueEdge(start: Vector3, end: Vector3) {
-
-    const hash1 = `${start.x},${start.y},${start.z}-${end.x},${end.y},${end.z}`;
-    const hash2 = `${end.x},${end.y},${end.z}-${start.x},${start.y},${start.z}`;
-
-    if (this.edges.has(hash1) === true || this.edges.has(hash2) === true) {
+    if (this.lineSet.has(hash1) === true || this.lineSet.has(hash2) === true) {
       return false;
     } else {
       return true;
     }
+
+  }
+
+  // Custom to json for only mandatory things for modelling outline
+  // Modelling Outline should always be a child to modelling mesh, so meta is mandatory
+  // Modelling Outline shouldn't have any children except line segment, so data doesn't contain any children
+  toJSON(meta: JSONMeta): Object3DJSON {
+    const objectGeometryJSON = meta.geometries[this.objectsGeometry.uuid] ? this.objectsGeometry.uuid : this.objectsGeometry.toJSON();
+
+    const data = {
+      metadata: {
+        version: 4.7,
+        type: "ModellingOutline",
+        generator: "ModellingOutline.toJSON"
+      },
+      object: {
+        uuid: this.uuid,
+        type: this.type,
+        up: this.up.toArray(),
+        layers: this.layers.mask,
+        matrix: this.matrix.toArray(),
+        objectsGeometry: objectGeometryJSON,
+        name: this.name,
+        lineWidth: this.lineWidth,
+        currentLines: this.currentLines,
+        lineColor: this.lineColor,
+      }
+    };
+
+    return data;
   }
 
 

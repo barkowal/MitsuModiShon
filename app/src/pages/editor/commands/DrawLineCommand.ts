@@ -1,7 +1,8 @@
 import { Line2NodeMaterial, type Vector3 } from "three/webgpu";
 import ModellingMesh from "../utils/objects/ModellingMesh";
 import type { Command } from "./CommandInterface";
-import { Line2, LineGeometry } from "three/examples/jsm/Addons.js";
+import { Line2 } from "three/examples/jsm/Addons.js";
+import { ModellingLineGeometry } from "../utils/objects/Custom/ModellingLineGeometry";
 
 export class DrawLineCommand implements Command {
     private modellingMesh: ModellingMesh;
@@ -38,7 +39,7 @@ export class DrawLineCommand implements Command {
 
     private createLine() {
         const material = new Line2NodeMaterial({ color: this.hexColor, linewidth: this.lineWidth });
-        const geometry = new LineGeometry();
+        const geometry = new ModellingLineGeometry();
         geometry.setFromPoints(this.linePoints);
 
         // @ts-expect-error type error
