@@ -7,7 +7,7 @@ import { SelectionController } from "@/pages/editor/utils/SelectionController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import { compareVec3, convertEulerToVec3Degrees, convertTVector3ToVec3 } from "./utils";
 import { EDITOR_MODE, type Vec3 } from "./Types";
-import { DEFAULT_SCENE_COLOR } from "./Global";
+import { BACKGROUND_LAYER, DEFAULT_SCENE_COLOR } from "./Global";
 import { AddListener, RemoveAllListeners, RemoveListener } from "./AddListener";
 import { ViewHelper } from "./objects/ViewHelper";
 import ModellingMesh from "./objects/ModellingMesh";
@@ -33,12 +33,14 @@ const InitRenderer = () => {
         scene.background = new THREE.Color(defaultBg);
 
         const axesHelper = new THREE.AxesHelper(10);
+        axesHelper.layers.enable(BACKGROUND_LAYER);
         scene.add(axesHelper);
 
         addGridHelper(scene);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.setZ(5);
+        camera.layers.enable(BACKGROUND_LAYER);
         scene.add(camera);
 
         // Setting up orbit controls
@@ -77,12 +79,14 @@ const InitRenderer = () => {
         });
 
         const gizmo = control.getHelper();
+        gizmo.layers.enable(BACKGROUND_LAYER);
         scene.add(gizmo);
 
         //TODO temporary light, make adding light in the editor
         const color = 0xFFFFFF;
         const intensity = 1;
         const light = new THREE.AmbientLight(color, intensity);
+        light.layers.enable(BACKGROUND_LAYER);
         scene.add(light);
 
         // Posprocessing outline and viewhelper
@@ -160,6 +164,7 @@ function addGridHelper(scene: THREE.Scene) {
     const size = 20;
     const divisions = 40;
     const gridHelper = new THREE.GridHelper(size, divisions);
+    gridHelper.layers.enable(BACKGROUND_LAYER);
     scene.add(gridHelper);
 }
 

@@ -125,6 +125,18 @@ export const EDITOR_EVENT = {
   ChangeSceneColor: "ChangeSceneColor",
 
   /**
+   * Signal for setting the objects layers
+   * @returns {number} layerMask - binary mask for selected object layers
+   */
+  SetObjectLayers: "SetObjectLayers",
+
+  /**
+   * Signal for changing the objects layers in the ui
+   * @returns {number} layerMask - binary mask for selected object layers
+   */
+  RefreshObjectLayers: "RefreshObjectLayers",
+
+  /**
    * Signal for setting a predefined viewport
    * @returns {string} viewType - type of predefined view
    */

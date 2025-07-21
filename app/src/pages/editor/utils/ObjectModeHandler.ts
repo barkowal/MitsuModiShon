@@ -40,6 +40,7 @@ export class ObjectModeHandler {
     this.handleScaleObject();
     this.handleChangeRotation();
     this.handleRotateObject();
+    this.handleSetLayers();
     this.handleChangeMaterial();
     this.handleSaveObject();
     this.handleUploadObject();
@@ -257,6 +258,33 @@ export class ObjectModeHandler {
 
     editorEventBus.on(EDITOR_EVENT.RotateObject, handle);
     this.eventHandlers.push({ event: EDITOR_EVENT.RotateObject, callback: handle });
+
+  }
+
+  private handleSetLayers() {
+
+    const handle = (layerMask: number) => {
+      const selectedObjects = this.selectionController.getSelectedObjects();
+
+      if (isArrayOfMeshes(selectedObjects)) {
+        selectedObjects.forEach(
+          (obj) => {
+            obj.layers.mask = layerMask;
+
+            if (obj.children.length === 0) return;
+
+            obj.traverse((child) => {
+              child.layers.mask = layerMask;
+            });
+
+          }
+        );
+        this.selectionController.clearAllSelections();
+      }
+    };
+
+    editorEventBus.on(EDITOR_EVENT.SetObjectLayers, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.SetObjectLayers, callback: handle });
 
   }
 

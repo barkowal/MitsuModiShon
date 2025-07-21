@@ -1,5 +1,5 @@
 import * as THREE from "three/webgpu";
-import { INTERSECTION_LAYER, ROOT_ID } from "./Global";
+import { BACKGROUND_LAYER, INTERSECTION_LAYER, ROOT_ID } from "./Global";
 import type { MaterialItem, RendererMemoryInfo, TreeItem } from "./Types";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 
@@ -27,7 +27,7 @@ export class UiController {
     refreshTree() {
         const items = [];
         for (const child of this.scene.children) {
-            if (child.layers.isEnabled(INTERSECTION_LAYER)) {
+            if (!child.layers.isEnabled(BACKGROUND_LAYER)) {
                 items.push(this.convertSceneObjToTreeItem(child));
             }
         }
@@ -95,6 +95,7 @@ export class UiController {
         this.refreshTransformation();
         this.refreshNameMenu();
         this.refreshMaterial();
+        this.refreshVisibilityMenu();
     }
 
     // Could be util function, if used more
@@ -143,6 +144,13 @@ export class UiController {
         editorEventBus.emit(EDITOR_EVENT.SendSceneInfo, info);
     }
 
+    refreshVisibilityMenu() {
+        const obj = this.scene.getObjectById(this.selectedMeshId);
+        if (obj == undefined) {
+            return;
+        };
+        editorEventBus.emit(EDITOR_EVENT.RefreshObjectLayers, obj.layers.mask);
+    }
 
 
 }

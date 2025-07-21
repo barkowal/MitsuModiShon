@@ -4,6 +4,7 @@ import { SceneBackgroundMenu } from "./SceneBackgroundMenu";
 import { ObjectNameMenu } from "./ObjectNameMenu";
 import { Separator } from "@/components/ui/separator";
 import { MaterialView } from "./MaterialMenu/MaterialView";
+import { LayersMenu } from "./LayersMenu";
 
 function EditorPanel() {
 
@@ -16,6 +17,7 @@ function EditorPanel() {
         <SceneBackgroundMenu />
         <Separator orientation="horizontal" />
         <MaterialView />
+        <LayersMenu />
       </div>
     </>
   );
