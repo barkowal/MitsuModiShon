@@ -334,10 +334,10 @@ function handlePicking(canvas: HTMLElement, scene: THREE.Scene, camera: THREE.Ca
         emitSelect(e);
     };
 
-    AddListener(window, "mousedown", handleMouseDown);
-    AddListener(window, "mouseup", handlePickEvent);
-    AddListener(window, "mouseout", clearMouse);
-    AddListener(window, "mouseleave", clearMouse);
+    AddListener(canvas, "mousedown", handleMouseDown);
+    AddListener(canvas, "mouseup", handlePickEvent);
+    AddListener(canvas, "mouseout", clearMouse);
+    AddListener(canvas, "mouseleave", clearMouse);
 
 }
 
