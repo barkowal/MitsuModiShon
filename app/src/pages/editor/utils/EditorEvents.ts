@@ -205,6 +205,12 @@ export const EDITOR_EVENT = {
   RefreshPaintingSettings: "RefreshPaintingSettings",
 
   /**
+   * Signal for changing the rendering view
+   * @returns {boolean} isRendering - if true editor should be in rendering view.
+   */
+  SwitchRendering: "SwitchRendering",
+
+  /**
    * Signal for saving the object as a json file
    * @returns {void}
    */

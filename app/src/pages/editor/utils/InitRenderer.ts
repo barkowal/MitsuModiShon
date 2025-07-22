@@ -7,7 +7,7 @@ import { SelectionController } from "@/pages/editor/utils/SelectionController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import { compareVec3, convertEulerToVec3Degrees, convertTVector3ToVec3 } from "./utils";
 import { EDITOR_MODE, type Vec3 } from "./Types";
-import { BACKGROUND_LAYER, DEFAULT_SCENE_COLOR } from "./Global";
+import { BACKGROUND_LAYER, DEFAULT_SCENE_COLOR, EDITOR_LAYER, INTERSECTION_LAYER, RENDER_LAYER } from "./Global";
 import { AddListener, RemoveAllListeners, RemoveListener } from "./AddListener";
 import { ViewHelper } from "./objects/ViewHelper";
 import ModellingMesh from "./objects/ModellingMesh";
@@ -43,12 +43,17 @@ const InitRenderer = () => {
         camera.layers.enable(BACKGROUND_LAYER);
         scene.add(camera);
 
+        const secondCamera = addSecondCamera(scene);
+        let isRenderingView = false;
+
         // Setting up orbit controls
         const orbitControls = new OrbitControls(camera, renderer.domElement);
         const control = createTransformControl(camera, renderer, orbitControls);
+
         const handleControlMode = (mode: TransformControlsMode) => {
             control.setMode(mode);
         };
+
         const handleEditorModeChange = (mode: string) => {
             if (mode === EDITOR_MODE.PaintMode) {
                 orbitControls.mouseButtons.LEFT = null;
@@ -63,7 +68,13 @@ const InitRenderer = () => {
             }
         };
 
+        const handleRenderingSwitch = (isRendering: boolean) => {
+            isRenderingView = isRendering;
+        };
+
         selectionController.onSelect((obj: THREE.Object3D) => {
+            if (!obj.layers.isEnabled(INTERSECTION_LAYER)) return;
+            if (!obj.layers.isEnabled(EDITOR_LAYER)) return;
             control.attach(obj);
         });
         selectionController.onEditSelect((obj: Array<THREE.Intersection>) => {
@@ -111,12 +122,19 @@ const InitRenderer = () => {
             startTime = performance.now();
             if (renderer) {
 
-                renderer.clearAsync();
+                if (isRenderingView) {
 
-                viewhelper.render(renderer);
+                    renderer.renderAsync(scene, secondCamera);
 
-                postProcessing.renderAsync();
+                } else {
 
+                    renderer.clearAsync();
+
+                    viewhelper.render(renderer);
+
+                    postProcessing.renderAsync();
+
+                }
             }
             renderTime = performance.now() - startTime;
             editorEventBus.emit(EDITOR_EVENT.SendRenderTime, renderTime);
@@ -131,9 +149,11 @@ const InitRenderer = () => {
             }
             return true;
         };
+
         orbitControls.addEventListener("change", requestRenderIfNotRequested);
         control.addEventListener("change", requestRenderIfNotRequested);
         selectionController.onPaintSelect(requestRenderIfNotRequested);
+
         AddListener(window, "keyup", requestRenderIfNotRequested);
         AddListener(window, "click", requestRenderIfNotRequested);
 
@@ -142,6 +162,7 @@ const InitRenderer = () => {
 
         editorEventBus.on(EDITOR_EVENT.SetControlMode, handleControlMode);
         editorEventBus.on(EDITOR_EVENT.ChangeEditorMode, handleEditorModeChange);
+        editorEventBus.on(EDITOR_EVENT.SwitchRendering, handleRenderingSwitch);
 
         return () => {
             viewhelper.dispose();
@@ -151,6 +172,7 @@ const InitRenderer = () => {
             RemoveAllListeners();
             editorEventBus.off(EDITOR_EVENT.SetControlMode, handleControlMode);
             editorEventBus.off(EDITOR_EVENT.ChangeEditorMode, handleEditorModeChange);
+            editorEventBus.off(EDITOR_EVENT.SwitchRendering, handleRenderingSwitch);
             renderer.dispose();
 
         };
@@ -167,6 +189,37 @@ function addGridHelper(scene: THREE.Scene) {
     gridHelper.layers.enable(BACKGROUND_LAYER);
     scene.add(gridHelper);
 }
+
+
+function addSecondCamera(scene: THREE.Scene) {
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.name = "Renderer";
+    camera.layers.disable(EDITOR_LAYER);
+    camera.layers.enable(RENDER_LAYER);
+    camera.userData.removable = false;
+    camera.userData.attachable = false;
+    camera.userData.changeableLayers = false;
+
+    const cameraHelper = new THREE.CameraHelper(camera);
+    cameraHelper.userData.removable = false;
+    cameraHelper.userData.attachable = false;
+    cameraHelper.name = "Visualizer";
+    cameraHelper.matrix = new THREE.Matrix4();
+
+    const cameraBox = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({ color: 0x44aa44, wireframe: true }));
+    scene.add(cameraBox);
+    cameraBox.layers.enable(INTERSECTION_LAYER);
+    cameraBox.name = "Camera";
+    cameraBox.scale.setScalar(0.4);
+    cameraBox.userData.removable = false;
+    cameraBox.userData.attachable = false;
+
+    cameraBox.add(camera);
+    cameraBox.add(cameraHelper);
+
+    return camera;
+}
+
 
 function createTransformControl(camera: THREE.Camera, renderer: THREE.Renderer, controls: OrbitControls): TransformControls {
     const control = new TransformControls(camera, renderer.domElement);

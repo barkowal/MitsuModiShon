@@ -5,6 +5,7 @@ import AddMeshDropdown from "./AddMeshDropdown";
 import RemoveMeshButton from "./RemoveMeshButton";
 import ChangeModeDropdown from "./EditorModeMenu/ChangeModeDropdown";
 import { SaveLoadDropdown } from "./SaveLoadDropdown";
+import { RenderingButton } from "./RenderingButton";
 
 function EditorTopBar() {
 
@@ -21,6 +22,7 @@ function EditorTopBar() {
         <AddMeshDropdown />
         <RemoveMeshButton />
         <ChangeModeDropdown />
+        <RenderingButton />
       </div>
     </>
   );

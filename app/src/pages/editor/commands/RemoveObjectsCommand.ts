@@ -1,3 +1,4 @@
+import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import type { Command } from "./CommandInterface";
 import { Scene, Object3D, Mesh } from "three/webgpu";
 
@@ -14,6 +15,12 @@ export class RemoveObjectsCommand implements Command {
 
     execute() {
         this.objects.forEach((object: Object3D, i: number) => {
+
+            if (object.userData.removable === false) {
+                editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "You cannot remove this object.");
+                return;
+            }
+
             const parent = object.parent;
             object.removeFromParent();
             if (parent && parent.id != this.scene.id) {

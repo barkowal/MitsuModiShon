@@ -8,25 +8,32 @@ import { EDITOR_LAYER, INTERSECTION_LAYER, RENDER_LAYER } from "../utils/Global"
 export function LayersMenu() {
   const [showInEditor, setShowInEditor] = useState(true);
   const [showInRender, setShowInRender] = useState(true);
+  const [selectable, setSelectable] = useState(true);
 
   const handleEditorVisibility = (val: boolean) => {
     setShowInEditor(val);
-    editorEventBus.emit(EDITOR_EVENT.SetObjectLayers,
-      0
-      | (Number(val) << EDITOR_LAYER)
-      | (Number(showInRender) << RENDER_LAYER)
-      | (Number(val) << INTERSECTION_LAYER)
-    );
+
+    sendLayerMask(val, showInRender, selectable);
   };
 
   const handleRenderVisibility = (val: boolean) => {
     setShowInRender(val);
 
+    sendLayerMask(showInEditor, val, selectable);
+  };
+
+  const handleSelectable = (val: boolean) => {
+    setSelectable(val);
+
+    sendLayerMask(showInEditor, showInRender, val);
+  };
+
+  const sendLayerMask = (editor: boolean, render: boolean, select: boolean) => {
     editorEventBus.emit(EDITOR_EVENT.SetObjectLayers,
       0
-      | (Number(showInEditor) << EDITOR_LAYER)
-      | (Number(val) << RENDER_LAYER)
-      | (Number(showInEditor) << INTERSECTION_LAYER)
+      | (Number(editor) << EDITOR_LAYER)
+      | (Number(render) << RENDER_LAYER)
+      | (Number(select) << INTERSECTION_LAYER)
     );
   };
 
@@ -35,8 +42,10 @@ export function LayersMenu() {
     const handleRefreshObjectLayers = (layerMask: number) => {
       const showEditorMask = layerMask & (1 << EDITOR_LAYER);
       const showRenderMask = layerMask & (1 << RENDER_LAYER);
+      const shouldSelect = layerMask & (1 << INTERSECTION_LAYER);
       setShowInEditor(Boolean(showEditorMask));
       setShowInRender(Boolean(showRenderMask));
+      setSelectable(Boolean(shouldSelect));
     };
 
     editorEventBus.on(EDITOR_EVENT.RefreshObjectLayers, handleRefreshObjectLayers);
@@ -53,7 +62,7 @@ export function LayersMenu() {
       <div className="w-[calc(100%-10px)] h-[calc(100%-10px)]">
         <div className=" select-none p-2 flex justify-between" >
           <span className="w-full font-bold">
-            VISIBILITY
+            LAYERS
           </span>
         </div>
 
@@ -82,6 +91,20 @@ export function LayersMenu() {
           </TooltipTrigger>
           <TooltipContent className="w-fit" side="left">
             <p>Show object in render view.</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Separator orientation="horizontal" />
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center justify-center gap-3 w-full m-2">
+              <label htmlFor="Selectable" className="w-1/2 font-bold select-none">Selectable</label>
+              <Checkbox id="Selectable" checked={selectable} onCheckedChange={(val: boolean) => { handleSelectable(val); }} />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent className="w-fit" side="left">
+            <p>Allow object to be selectable in editor view.</p>
           </TooltipContent>
         </Tooltip>
 

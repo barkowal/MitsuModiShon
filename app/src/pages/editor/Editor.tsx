@@ -44,6 +44,7 @@ function Editor() {
 
     objectModeHandler.initEventHandlers();
     uiController.setRendererInfo(renderer.info.memory); // Only for testing if objects are disposed correctly
+    uiController.refreshPanel();
 
     const handleAddMesh = (meshType: MeshType) => {
       const mesh = GetMesh(meshType);

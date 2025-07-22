@@ -14,6 +14,7 @@ import { ChangeMeshesMaterialCommand } from "../commands/ChangeMeshesMaterialCom
 import { ModellingObjectLoader } from "./objects/Custom/ModellingObjectLoader";
 import { AddMeshCommand } from "../commands/AddMeshCommand";
 import { DownloadJSON } from "@/lib/DownloadJSON";
+import { INTERSECTION_LAYER } from "./Global";
 
 export class ObjectModeHandler {
   eventHandlers: Array<EventHandlerType>;
@@ -266,21 +267,29 @@ export class ObjectModeHandler {
     const handle = (layerMask: number) => {
       const selectedObjects = this.selectionController.getSelectedObjects();
 
-      if (isArrayOfMeshes(selectedObjects)) {
-        selectedObjects.forEach(
-          (obj) => {
-            obj.layers.mask = layerMask;
+      selectedObjects.forEach(
+        (obj) => {
+          if (obj.userData.changeableLayers === false) return;
 
-            if (obj.children.length === 0) return;
+          obj.layers.mask = layerMask;
 
-            obj.traverse((child) => {
-              child.layers.mask = layerMask;
-            });
+          if (obj.children.length === 0) return;
 
-          }
-        );
-        this.selectionController.clearAllSelections();
-      }
+          // Change only visibility of children
+          obj.traverse((child) => {
+
+            if (child.userData.changeableLayers === false) return;
+            const isSelectEnabled = child.layers.isEnabled(INTERSECTION_LAYER);
+
+            child.layers.mask = layerMask;
+
+            if (isSelectEnabled) child.layers.enable(INTERSECTION_LAYER);
+            else child.layers.disable(INTERSECTION_LAYER);
+          });
+
+        }
+      );
+      this.selectionController.clearAllSelections();
     };
 
     editorEventBus.on(EDITOR_EVENT.SetObjectLayers, handle);

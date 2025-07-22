@@ -1,3 +1,4 @@
+import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { ROOT_ID } from "../utils/Global";
 import type { Command } from "./CommandInterface";
 import { Scene, Object3D, Vector3, Quaternion } from "three/webgpu";
@@ -56,9 +57,15 @@ export class AttachObjectCommand implements Command {
     setObjects(parentID: number, childID: number) {
         this.parent = parentID === ROOT_ID ? this.scene : this.scene.getObjectById(parentID);
         this.child = this.scene.getObjectById(childID);
-        if (this.child) {
-            this.oldParent = this.child.parent;
+        if (!this.child) return;
+
+        if (this.child.userData.attachable === false) {
+            this.child = undefined;
+            editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "You cannot attach this object to another");
+            return;
         }
+
+        this.oldParent = this.child.parent;
     }
 
     childContainsParent(parentID: number, child: Object3D): boolean {
