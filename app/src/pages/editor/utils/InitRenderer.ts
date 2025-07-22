@@ -6,7 +6,7 @@ import { OrbitControls, TransformControls, type TransformControlsMode } from "th
 import { SelectionController } from "@/pages/editor/utils/SelectionController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import { compareVec3, convertEulerToVec3Degrees, convertTVector3ToVec3 } from "./utils";
-import { EDITOR_MODE, type Vec3 } from "./Types";
+import { EDITOR_MODE, ORBITCONTROLS_MODE, type Vec3 } from "./Types";
 import { BACKGROUND_LAYER, DEFAULT_SCENE_COLOR, EDITOR_LAYER, INTERSECTION_LAYER, RENDER_LAYER } from "./Global";
 import { AddListener, RemoveAllListeners, RemoveListener } from "./AddListener";
 import { ViewHelper } from "./objects/ViewHelper";
@@ -56,20 +56,28 @@ const InitRenderer = () => {
 
         const handleEditorModeChange = (mode: string) => {
             if (mode === EDITOR_MODE.PaintMode) {
-                orbitControls.mouseButtons.LEFT = null;
-                orbitControls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+                resetOrbitControls(orbitControls, ORBITCONTROLS_MODE.SELECTION);
                 const obj = selectionController.getCurrentSelection();
                 if (obj) {
                     orbitControls.target.copy(obj.position);
                 }
             } else {
-                orbitControls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
-                orbitControls.mouseButtons.RIGHT = THREE.MOUSE.PAN;
+                resetOrbitControls(orbitControls, ORBITCONTROLS_MODE.DEFAULT);
             }
         };
 
         const handleRenderingSwitch = (isRendering: boolean) => {
             isRenderingView = isRendering;
+            selectionController.clearAllSelections();
+            if (isRendering) {
+                control.enabled = false;
+                selectionController.disable();
+                resetOrbitControls(orbitControls, ORBITCONTROLS_MODE.DISABLED);
+            } else {
+                control.enabled = true;
+                selectionController.enable();
+                resetOrbitControls(orbitControls, ORBITCONTROLS_MODE.DEFAULT);
+            }
         };
 
         selectionController.onSelect((obj: THREE.Object3D) => {
@@ -392,6 +400,30 @@ function handlePicking(canvas: HTMLElement, scene: THREE.Scene, camera: THREE.Ca
     AddListener(canvas, "mouseout", clearMouse);
     AddListener(canvas, "mouseleave", clearMouse);
 
+}
+
+function resetOrbitControls(orbitControls: OrbitControls, mode: number) {
+
+    switch (mode) {
+        case ORBITCONTROLS_MODE.DEFAULT: {
+            orbitControls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
+            orbitControls.mouseButtons.MIDDLE = THREE.MOUSE.DOLLY;
+            orbitControls.mouseButtons.RIGHT = THREE.MOUSE.PAN;
+            break;
+        }
+        case ORBITCONTROLS_MODE.DISABLED: {
+            orbitControls.mouseButtons.LEFT = null;
+            orbitControls.mouseButtons.MIDDLE = null;
+            orbitControls.mouseButtons.RIGHT = null;
+            break;
+        }
+        case ORBITCONTROLS_MODE.SELECTION: {
+            orbitControls.mouseButtons.LEFT = null;
+            orbitControls.mouseButtons.MIDDLE = THREE.MOUSE.DOLLY;
+            orbitControls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+            break;
+        }
+    };
 }
 
 function createOutlinePass(scene: THREE.Scene, camera: THREE.Camera, selectionController: SelectionController) {

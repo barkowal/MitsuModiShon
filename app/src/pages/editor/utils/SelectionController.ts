@@ -10,6 +10,7 @@ export class SelectionController {
     private onClearListeners: Array<CallableFunction>;
     private currentSelection: THREE.Object3D | null;
     private selectedObjects: Array<THREE.Object3D>;
+    private enabled: boolean;
 
     private modellingObject: ModellingMesh | null;
     private editIntersections: Array<THREE.Intersection>;
@@ -26,6 +27,8 @@ export class SelectionController {
         this.onPaintListeners = [];
         this.onSelectListeners = [];
         this.onClearListeners = [];
+
+        this.enabled = true;
 
         this.editIntersections = [];
         this.modellingObject = null;
@@ -44,6 +47,10 @@ export class SelectionController {
     }
 
     select(normalizedPosition: THREE.Vector2, scene: THREE.Scene, camera: THREE.Camera, multiSelect: boolean = false) {
+
+        if (!this.enabled) {
+            return;
+        }
 
         this.raycaster.setFromCamera(normalizedPosition, camera);
         this.raycaster.layers.set(INTERSECTION_LAYER);
@@ -135,6 +142,8 @@ export class SelectionController {
     }
 
     changeSelection(scene: THREE.Scene, id: number) {
+        if (!this.enabled) return;
+
         if (this.editorMode !== EDITOR_MODE.ObjectMode) {
             return;
         }
@@ -180,6 +189,14 @@ export class SelectionController {
         this.onClearListeners = [];
         this.onEditListeners = [];
         this.onPaintListeners = [];
+    }
+
+    disable() {
+        this.enabled = false;
+    }
+
+    enable() {
+        this.enabled = true;
     }
 
     checkIfSelectionExists(scene: THREE.Scene) {

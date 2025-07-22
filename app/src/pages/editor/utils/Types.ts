@@ -40,6 +40,12 @@ export const EDITOR_MODE = {
     PaintMode: "Paint Mode",
 } as const;
 
+export const ORBITCONTROLS_MODE = {
+    DEFAULT: 0,
+    DISABLED: 1,
+    SELECTION: 2,
+} as const;
+
 export const EDITING_MODE = {
     Faces: 0,
     Edges: 1,
