@@ -12,6 +12,7 @@ import { AddListener, RemoveAllListeners, RemoveListener } from "./AddListener";
 import { ViewHelper } from "./objects/ViewHelper";
 import ModellingMesh from "./objects/ModellingMesh";
 import { GetCurrentEditorMode } from "../ui/EditorModeMenu/ChangeModeDropdown";
+import { DownloadImage } from "@/lib/DownloadImage";
 
 const InitRenderer = () => {
     const canvasRef = useRef<HTMLDivElement | null>(null);
@@ -80,6 +81,12 @@ const InitRenderer = () => {
             }
         };
 
+        const handleRenderImage = () => {
+            renderer.render(scene, secondCamera);
+            const imgData = renderer.domElement.toDataURL("image/png");
+            DownloadImage(imgData);
+        };
+
         selectionController.onSelect((obj: THREE.Object3D) => {
             if (!obj.layers.isEnabled(INTERSECTION_LAYER)) return;
             if (!obj.layers.isEnabled(EDITOR_LAYER)) return;
@@ -125,6 +132,8 @@ const InitRenderer = () => {
         let startTime = 0;
         let renderTime = 0;
 
+        renderer.clearAsync();
+
         const renderScene = () => {
             renderRequested = false;
             startTime = performance.now();
@@ -132,15 +141,19 @@ const InitRenderer = () => {
 
                 if (isRenderingView) {
 
-                    renderer.renderAsync(scene, secondCamera);
+                    renderer.clear();
+                    renderer.render(scene, secondCamera);
 
                 } else {
 
-                    renderer.clearAsync();
+                    // renderer.clearAsync();
+                    renderer.clear();
+                    // renderer.renderAsync(scene, camera);
 
                     viewhelper.render(renderer);
 
-                    postProcessing.renderAsync();
+                    // postProcessing.renderAsync();
+                    postProcessing.render();
 
                 }
             }
@@ -151,6 +164,7 @@ const InitRenderer = () => {
         // Rendering on demand instead of animation loop
         let renderRequested = false;
         const requestRenderIfNotRequested = () => {
+            if (!renderer.hasInitialized()) return;
             if (!renderRequested) {
                 renderRequested = true;
                 requestAnimationFrame(renderScene);
@@ -171,6 +185,8 @@ const InitRenderer = () => {
         editorEventBus.on(EDITOR_EVENT.SetControlMode, handleControlMode);
         editorEventBus.on(EDITOR_EVENT.ChangeEditorMode, handleEditorModeChange);
         editorEventBus.on(EDITOR_EVENT.SwitchRendering, handleRenderingSwitch);
+        editorEventBus.on(EDITOR_EVENT.RenderImage, handleRenderImage);
+
 
         return () => {
             viewhelper.dispose();
@@ -181,6 +197,7 @@ const InitRenderer = () => {
             editorEventBus.off(EDITOR_EVENT.SetControlMode, handleControlMode);
             editorEventBus.off(EDITOR_EVENT.ChangeEditorMode, handleEditorModeChange);
             editorEventBus.off(EDITOR_EVENT.SwitchRendering, handleRenderingSwitch);
+            editorEventBus.off(EDITOR_EVENT.RenderImage, handleRenderImage);
             renderer.dispose();
 
         };

@@ -223,6 +223,12 @@ export const EDITOR_EVENT = {
   UploadObject: "UploadObject",
 
   /**
+   * Signal for rendering and downloading image from canvas
+   * @returns {void}
+   */
+  RenderImage: "RenderImage",
+
+  /**
    * Signal for user pressing the 1 on keyboard.
    * It should change editing mode while in edit mode.
    * @returns {number} nb - the number key that user pressed
