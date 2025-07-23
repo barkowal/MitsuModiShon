@@ -4,7 +4,6 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import EditorTopBar from "./ui/EditorTopBar";
 import { AddMeshCommand } from "./commands/AddMeshCommand";
 import { CommandHistory } from "@/lib/CommandHistory";
-import { GetMesh, type MeshType } from "./utils/GetMesh";
 import InitRenderer from "./utils/InitRenderer";
 import { UiController } from "./utils/UiController";
 import { EDITOR_EVENT, editorEventBus } from "./utils/EditorEvents";
@@ -23,6 +22,7 @@ import { ModellingHelper } from "./utils/ModellingHelper";
 import WarningLogPanel from "./ui/WarningLogPanel";
 import { PaintModeHandler } from "./utils/PaintModeHandler";
 import { PaintingHelper } from "./utils/PaintingHelper";
+import { CreateMesh } from "./utils/CreateMesh";
 
 
 function Editor() {
@@ -46,8 +46,8 @@ function Editor() {
     uiController.setRendererInfo(renderer.info.memory); // Only for testing if objects are disposed correctly
     uiController.refreshPanel();
 
-    const handleAddMesh = (meshType: MeshType) => {
-      const mesh = GetMesh(meshType);
+    const handleAddMesh = (meshData: Array<number>) => {
+      const mesh = CreateMesh(meshData);
       commandHistory.addCommand(new AddMeshCommand(scene, mesh));
       uiController.refreshTree();
     };

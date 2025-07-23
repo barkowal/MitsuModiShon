@@ -3,7 +3,7 @@ import type { MaterialItem, TreeItem, Vec3 } from "@/pages/editor/utils/Types";
 export const EDITOR_EVENT = {
   /**
    * Signal for adding a mesh to the scene.
-   * @returns {string} meshType - The type of the mesh to add
+   * @returns {Array<number>} meshData- Mesh type with parameters to add to the scene
    */
   AddMesh: "AddMesh",
 

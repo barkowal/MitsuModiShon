@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { Redo, Undo } from "lucide-react";
-import AddMeshDropdown from "./AddMeshDropdown";
 import RemoveMeshButton from "./RemoveMeshButton";
 import ChangeModeDropdown from "./EditorModeMenu/ChangeModeDropdown";
 import { SaveLoadDropdown } from "./SaveLoadDropdown";
 import { RenderingButton } from "./RenderingButton";
+import { AddObjectDialog } from "./AddObjectMenu/AddObjectDialog";
 
 function EditorTopBar() {
 
@@ -19,7 +19,7 @@ function EditorTopBar() {
         <Button className="[&_svg]:size-6" onClick={() => { editorEventBus.emit(EDITOR_EVENT.REDO); }}>
           <Redo className="size-1" />
         </Button>
-        <AddMeshDropdown />
+        <AddObjectDialog />
         <RemoveMeshButton />
         <ChangeModeDropdown />
         <RenderingButton />
