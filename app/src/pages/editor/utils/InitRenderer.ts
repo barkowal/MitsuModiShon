@@ -230,10 +230,12 @@ function addSecondCamera(scene: THREE.Scene) {
     cameraHelper.userData.attachable = false;
     cameraHelper.name = "Visualizer";
     cameraHelper.matrix = new THREE.Matrix4();
+    cameraHelper.layers.disable(EDITOR_LAYER);
 
     const cameraBox = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({ color: 0x44aa44, wireframe: true }));
     scene.add(cameraBox);
     cameraBox.layers.enable(INTERSECTION_LAYER);
+    cameraBox.layers.disable(EDITOR_LAYER);
     cameraBox.name = "Camera";
     cameraBox.scale.setScalar(0.4);
     cameraBox.userData.removable = false;

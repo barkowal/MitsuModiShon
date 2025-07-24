@@ -409,7 +409,7 @@ export default class ModellingMesh extends THREE.Mesh {
         break;
 
       // Unique key for the same positions
-      const key = vertex.x * 100 + vertex.y * 10 + vertex.z;
+      const key = Number(vertex.x.toFixed(4)) * 100 + Number(vertex.y.toFixed(4)) * 10 + Number(vertex.z.toFixed(4));
 
       let group: Array<number> = map.get(key);
       if (group) {

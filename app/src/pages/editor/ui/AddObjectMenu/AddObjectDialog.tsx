@@ -28,8 +28,14 @@ const AvailableObjects = [
     maxValues: [20, 64, 100, 100],
     defaultValues: [1, 16, 0, 100],
   },
+  {
+    name: "ModellingCylinder",
+    params: ["Top Radius", "Bottom Radius", "Height", "Radial Segments", "Height Segments", "ThetaStart", "ThetaLength"],
+    minValues: [1, 1, 1, 3, 1, 0, 0],
+    maxValues: [20, 20, 20, 64, 10, 100, 100],
+    defaultValues: [1, 1, 1, 16, 1, 0, 100],
+  },
 ];
-
 
 export function AddObjectDialog() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
