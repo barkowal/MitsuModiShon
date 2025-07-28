@@ -54,13 +54,13 @@ export function PositionInput() {
         className="w-full p-2 flex justify-between gap-2 font-bold select-none ">
         <p>Position</p>
         <div onBlur={() => { sendPosition(); }} className="flex gap-1 w-fit">
-          <DraggableInput labelText="X:" minValue={-1000} maxValue={1000} value={posX} onValueChange={setPosX}
+          <DraggableInput labelText="X:" minValue={-1000} maxValue={1000} value={posX} step={0.01} onValueChange={setPosX}
             inputWidth={8} className="h-fit rounded-none p-0.5 m-0" />
 
-          <DraggableInput labelText="Y:" minValue={-1000} maxValue={1000} value={posY} onValueChange={setPosY}
+          <DraggableInput labelText="Y:" minValue={-1000} maxValue={1000} value={posY} step={0.01} onValueChange={setPosY}
             inputWidth={8} className="h-fit rounded-none p-0.5 m-0" />
 
-          <DraggableInput labelText="Z:" minValue={-1000} maxValue={1000} value={posZ} onValueChange={setPosZ}
+          <DraggableInput labelText="Z:" minValue={-1000} maxValue={1000} value={posZ} step={0.01} onValueChange={setPosZ}
             inputWidth={8} className="h-fit rounded-none p-0.5 m-0" />
         </div >
       </div >

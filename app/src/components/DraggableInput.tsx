@@ -11,9 +11,10 @@ type Props = {
   onValueChange?: CallableFunction
   className?: string
   decimalPoints?: number
+  step?: number
 };
 
-export default function DraggableInput({ labelText = "label", value = 0, onValueChange, inputWidth, minValue = 0, maxValue = 100, className = "", decimalPoints = 3 }: Props) {
+export default function DraggableInput({ labelText = "label", value = 0, onValueChange, inputWidth, minValue = 0, maxValue = 100, className = "", decimalPoints = 3, step = 1 }: Props) {
   const [inputNb, setInputNb] = useState(value.toString());
   const [isSelected, setIsSelected] = useState(false);
 
@@ -24,7 +25,7 @@ export default function DraggableInput({ labelText = "label", value = 0, onValue
     if (onValueChange) {
       onValueChange(newValue);
     }
-  }, []);
+  }, [minValue, maxValue, onValueChange]);
 
   function isValidNumber(str: string) {
     const regex = /^-?\d+(\.\d+)?$/;
@@ -49,12 +50,12 @@ export default function DraggableInput({ labelText = "label", value = 0, onValue
       return;
     }
     changeValue(Number(val));
-  }
+  };
 
   return (
     <div className="flex items-center ">
       <DraggableLabel value={value} setValue={(val: number) => { changeValue(val); }}
-        decimalPoints={decimalPoints - 1} labelText={labelText} />
+        step={step} labelText={labelText} />
       <Input
         type="text"
         value={isSelected ? inputNb : value.toFixed(decimalPoints)}

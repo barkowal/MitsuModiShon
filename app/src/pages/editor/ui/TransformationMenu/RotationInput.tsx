@@ -55,15 +55,15 @@ export function RotationInput() {
         <div className="flex gap-1 w-fit"
           onBlur={() => { sendRotation(); }}>
           <DraggableInput labelText="X:" minValue={-1000} maxValue={1000} decimalPoints={2}
-            value={rotationX} onValueChange={setRotationX}
+            value={rotationX} onValueChange={setRotationX} step={0.1}
             inputWidth={8} className="h-fit rounded-none p-0.5 m-0" />
 
           <DraggableInput labelText="Y:" minValue={-1000} maxValue={1000} decimalPoints={2}
-            value={rotationY} onValueChange={setRotationY}
+            value={rotationY} onValueChange={setRotationY} step={0.1}
             inputWidth={8} className="h-fit rounded-none p-0.5 m-0" />
 
           <DraggableInput labelText="Z:" minValue={-1000} maxValue={1000} decimalPoints={2}
-            value={rotationZ} onValueChange={setRotationZ}
+            value={rotationZ} onValueChange={setRotationZ} step={0.1}
             inputWidth={8} className="h-fit rounded-none p-0.5 m-0" />
         </div >
       </div >

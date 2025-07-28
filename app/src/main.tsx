@@ -1,9 +1,10 @@
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import './index.css'
-import App from './App.tsx'
+import "./index.css"
+import App from "./App.tsx"
 import HomePage from "./pages/HomePage.tsx";
 import Editor from "./pages/editor/Editor.tsx";
+import AnimationEditor from "./pages/editor/AnimationEditor.tsx";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,11 @@ const router = createBrowserRouter([
       {
         path: "/Editor",
         element: <Editor />
+      },
+
+      {
+        path: "/Animation",
+        element: <AnimationEditor />
       },
 
 

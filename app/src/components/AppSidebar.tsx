@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Box, Home } from "lucide-react";
+import { Box, Clapperboard, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Separator } from "./ui/separator";
 
@@ -24,6 +24,11 @@ const items = [
     title: "EDITOR",
     url: "/Editor",
     icon: Box,
+  },
+  {
+    title: "ANIMATION",
+    url: "/Animation",
+    icon: Clapperboard,
   },
 ];
 

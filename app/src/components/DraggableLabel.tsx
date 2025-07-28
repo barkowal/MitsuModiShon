@@ -4,10 +4,10 @@ type Props = {
   value: number;
   setValue: CallableFunction;
   labelText?: string;
-  decimalPoints?: number
+  step?: number;
 }
 
-function DraggableLabel({ value, setValue, labelText = "label", decimalPoints = 2 }: Props) {
+function DraggableLabel({ value, setValue, labelText = "label", step = 1 }: Props) {
   const [snapshot, setSnapshot] = useState(value);
   const [startVal, setStartVal] = useState(0);
 
@@ -22,7 +22,7 @@ function DraggableLabel({ value, setValue, labelText = "label", decimalPoints = 
   useEffect(() => {
     const onChange = (event: MouseEvent) => {
       if (startVal) {
-        setValue(snapshot + ((event.clientX - startVal) / 10 ** decimalPoints));
+        setValue(snapshot + ((event.clientX - startVal) * step));
       }
     };
 
@@ -36,7 +36,7 @@ function DraggableLabel({ value, setValue, labelText = "label", decimalPoints = 
       document.removeEventListener("mousemove", onChange);
       document.removeEventListener("mouseup", onStop);
     };
-  }, [startVal, setValue, snapshot]);
+  }, [startVal, setValue, snapshot, step]);
 
   return (
     <span

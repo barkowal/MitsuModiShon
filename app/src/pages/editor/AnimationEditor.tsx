@@ -1,51 +1,85 @@
 import { useEffect, type KeyboardEvent } from "react";
 import EditorPanel from "./ui/EditorPanel";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-import EditorTopBar from "./ui/EditorTopBar";
 import { AddMeshCommand } from "./commands/AddMeshCommand";
 import { CommandHistory } from "@/lib/CommandHistory";
 import { UiController } from "./utils/UiController";
 import { EDITOR_EVENT, editorEventBus } from "./utils/EditorEvents";
-import { EDITOR_MODE } from "./utils/Types";
 import * as THREE from "three/webgpu";
 import { HandleKeyboardPress } from "./utils/KeyboardShortcuts";
 import { AttachObjectCommand } from "./commands/AttachObjectCommand";
 import { EditorUtils } from "./utils/EditorUtils";
 import { AddObjectsCommand } from "./commands/AddObjectsCommand";
-import RenderInfoPanel from "./ui/RenderInfoPanel";
 import ToolbarPanel from "./ui/ToolbarPanel";
-import { EditModeHandler } from "./utils/EditModeHandler";
 import { ObjectModeHandler } from "./utils/ObjectModeHandler";
-import ModellingMesh from "./utils/objects/ModellingMesh";
 import { ModellingHelper } from "./utils/ModellingHelper";
 import WarningLogPanel from "./ui/WarningLogPanel";
-import { PaintModeHandler } from "./utils/PaintModeHandler";
 import { PaintingHelper } from "./utils/PaintingHelper";
 import { CreateMesh } from "./utils/CreateMesh";
+import AnimationTopBar from "./ui/AnimationTopBar";
+import { PlaybackPanel } from "./ui/Playback/PlaybackPanel";
+import { EDITOR_LAYER, INTERSECTION_LAYER, RENDER_LAYER } from "./utils/Global";
+import { AnimationLoop } from "./utils/AnimationLoop";
+import { AnimationObject } from "./utils/objects/AnimationObject";
+import { AnimationModeHandler } from "./utils/AnimationModeHandler";
 import { InitRenderer } from "./utils/InitRenderer";
 
 
-function Editor() {
+function AnimationEditor() {
   const { canvasRef, rendererController, selectionController } = InitRenderer();
 
   useEffect(() => {
     const scene = rendererController.getScene();
+
     const commandHistory = new CommandHistory();
     const editorUtils = new EditorUtils(scene);
     const uiController = new UiController(scene);
     const modellingHelper = new ModellingHelper();
     const paintingHelper = new PaintingHelper();
 
+    const loop = new AnimationLoop(rendererController);
+
     const objectModeHandler = new ObjectModeHandler(commandHistory, uiController, selectionController, scene);
-    const editModeHandler = new EditModeHandler(commandHistory, uiController, modellingHelper, scene);
-    const paintModeHandler = new PaintModeHandler(commandHistory, uiController, paintingHelper, scene);
+    const animationModeHandler = new AnimationModeHandler(commandHistory, loop, uiController);
 
     selectionController.onEditSelect((intersections: Array<THREE.Intersection>) => { modellingHelper.handleIntersectionChange(intersections); });
     selectionController.onPaintSelect((intersection: THREE.Intersection) => { paintingHelper.handleIntersectionChange(intersection); });
 
     objectModeHandler.initEventHandlers();
+    animationModeHandler.initEventHandlers();
     uiController.setRendererInfo(rendererController.getRenderInfo()); // Only for testing if objects are disposed correctly
     uiController.refreshPanel();
+
+
+    // Static object TEST
+
+    const positionKF = new THREE.VectorKeyframeTrack(
+      ".position",
+      [0, 1, 2, 3, 4],
+      [
+        0, 0, 0,
+        1, 1, 0,
+        2, 2, 0,
+        3, 3, 0,
+        4, 4, 0]
+    );
+
+    const boxbox = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({ color: 0x77ffaa }));
+    boxbox.layers.enable(EDITOR_LAYER);
+    boxbox.layers.enable(RENDER_LAYER);
+    boxbox.layers.enable(INTERSECTION_LAYER);
+    scene.add(boxbox);
+
+    const animationBoxBox = new AnimationObject(boxbox);
+    const clip = new THREE.AnimationClip("move", 4, [positionKF]);
+    animationBoxBox.addClip(clip);
+    animationBoxBox.startPlaying();
+    loop.updatables.push(animationBoxBox);
+
+    // Static object TEST
+
+
+
 
     const handleAddMesh = (meshData: Array<number>) => {
       const mesh = CreateMesh(meshData);
@@ -85,42 +119,6 @@ function Editor() {
       scene.background = background;
     };
 
-    const handleChangeEditorMode = (mode: string) => {
-      if (mode === EDITOR_MODE.ObjectMode) {
-        editModeHandler.disposeEventHandlers();
-        paintModeHandler.disposeEventHandlers();
-        objectModeHandler.initEventHandlers();
-        modellingHelper.clearObject();
-        paintingHelper.clearObject();
-        selectionController.setEditorMode(EDITOR_MODE.ObjectMode);
-      }
-      if (mode === EDITOR_MODE.EditMode) {
-        objectModeHandler.disposeEventHandlers();
-        paintModeHandler.disposeEventHandlers();
-        editModeHandler.initEventHandlers();
-        const selection = selectionController.getCurrentSelection();
-        if (selection instanceof ModellingMesh) {
-          modellingHelper.setCurrentObjectToEditMode(selection);
-        } else {
-          editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Please select a modelling object in object mode before editing.");
-
-        }
-        selectionController.setEditorMode(EDITOR_MODE.EditMode);
-      }
-      if (mode === EDITOR_MODE.PaintMode) {
-        objectModeHandler.disposeEventHandlers();
-        editModeHandler.disposeEventHandlers();
-        paintModeHandler.initEventHandlers();
-        const selection = selectionController.getCurrentSelection();
-        if (selection instanceof ModellingMesh) {
-          paintingHelper.setCurrentObjectToPaintMode(selection);
-        } else {
-          editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Please select a modelling object in object mode before painting.");
-        }
-        selectionController.setEditorMode(EDITOR_MODE.PaintMode);
-      }
-    };
-
     const handleCopy = () => {
       const selections = selectionController.getSelectedObjects();
       editorUtils.setCopiedObjects(selections);
@@ -151,7 +149,7 @@ function Editor() {
     editorEventBus.on(EDITOR_EVENT.ClearSelections, handleClearSelections);
     editorEventBus.on(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
     editorEventBus.on(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
-    editorEventBus.on(EDITOR_EVENT.ChangeEditorMode, handleChangeEditorMode);
+
     editorEventBus.on(EDITOR_EVENT.COPY, handleCopy);
     editorEventBus.on(EDITOR_EVENT.PASTE, handlePaste);
     editorEventBus.on(EDITOR_EVENT.UNDO, handleUndo);
@@ -165,17 +163,16 @@ function Editor() {
       editorEventBus.off(EDITOR_EVENT.ClearSelections, handleClearSelections);
       editorEventBus.off(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
       editorEventBus.off(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
-      editorEventBus.off(EDITOR_EVENT.ChangeEditorMode, handleChangeEditorMode);
+
       editorEventBus.off(EDITOR_EVENT.COPY, handleCopy);
       editorEventBus.off(EDITOR_EVENT.PASTE, handlePaste);
       editorEventBus.off(EDITOR_EVENT.UNDO, handleUndo);
       editorEventBus.off(EDITOR_EVENT.REDO, handleRedo);
 
-      editModeHandler.disposeEventHandlers();
-      paintModeHandler.disposeEventHandlers();
       objectModeHandler.disposeEventHandlers();
+      animationModeHandler.disposeEventHandlers();
     };
-  }, [rendererController, selectionController,]);
+  }, [rendererController, selectionController]);
 
   return (
     <>
@@ -186,13 +183,13 @@ function Editor() {
             <div tabIndex={1} onKeyDown={(event: KeyboardEvent) => { HandleKeyboardPress(event); }}
               className="flex-col inline-flex w-full h-full bg-background">
               <div className="flex-auto bg-card border border-b-card-foreground">
-                <EditorTopBar />
+                <AnimationTopBar />
               </div>
               <div ref={canvasRef} className="flex-auto" >
               </div>
               <ToolbarPanel />
-              <RenderInfoPanel />
               <WarningLogPanel />
+              <PlaybackPanel />
             </div>
           </ResizablePanel>
           <ResizableHandle />
@@ -205,4 +202,4 @@ function Editor() {
   );
 }
 
-export default Editor;
+export default AnimationEditor;

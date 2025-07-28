@@ -229,6 +229,63 @@ export const EDITOR_EVENT = {
   RenderImage: "RenderImage",
 
   /**
+   * ***********ANIMATION EVENTS********
+   * */
+
+  /**
+   * Signal for playing the animation
+   * @returns {number} keyframe - keyframe that animation should start from
+   */
+  PlayAnimation: "PlayAnimation",
+
+  /**
+   * Signal for stopping the animation
+   * @returns {void}
+   */
+  StopAnimation: "StopAnimation",
+
+  /**
+   * Signal for setting the specific keyframe in the animation mixer
+   * @returns {number} keyframe 
+   */
+  SetKeyframe: "SetKeyframe",
+
+  /**
+   * Signal for changing keyframes in the ui
+   * @returns {number} delta - seconds passed since last render
+   */
+  RefreshAnimationPanel: "RefreshAnimationPanel",
+
+  /**
+   * Signal for setting the duration of the animation loop
+   * @returns {number} duration - keyframe duration
+   */
+  SetKeyframeDuration: "SetKeyframeDuration",
+
+  /**
+   * Signal for setting the number of frames per second
+   * @returns {number} fps 
+   */
+  SetAnimationFps: "SetAnimationFps",
+
+  /**
+   * Signal for turning on/off lopping in the animation loop
+   * @returns {boolean} isLooping - true for looping, false for single repetition
+   */
+  SetAnimationLooping: "SetAnimationLooping",
+
+  /**
+   * Signal for stopping the playback in the ui
+   * @returns {void}
+   */
+  StopPlayback: "StopPlayback",
+
+
+  /**
+   * ***********ANIMATION EVENTS********
+   * */
+
+  /**
    * Signal for user pressing the 1 on keyboard.
    * It should change editing mode while in edit mode.
    * @returns {number} nb - the number key that user pressed

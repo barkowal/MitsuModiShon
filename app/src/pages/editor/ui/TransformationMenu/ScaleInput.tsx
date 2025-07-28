@@ -55,15 +55,15 @@ export function ScaleInput() {
         <div className="flex gap-1 w-fit"
           onBlur={() => { sendScale(); }}>
           <DraggableInput labelText="X:" minValue={-1000} maxValue={1000}
-            value={scaleX} onValueChange={setScaleX}
+            value={scaleX} onValueChange={setScaleX} step={0.01}
             inputWidth={8} className="h-fit rounded-none p-0.5 m-0" />
 
           <DraggableInput labelText="Y:" minValue={-1000} maxValue={1000}
-            value={scaleY} onValueChange={setScaleY}
+            value={scaleY} onValueChange={setScaleY} step={0.01}
             inputWidth={8} className="h-fit rounded-none p-0.5 m-0" />
 
           <DraggableInput labelText="Z:" minValue={-1000} maxValue={1000}
-            value={scaleZ} onValueChange={setScaleZ}
+            value={scaleZ} onValueChange={setScaleZ} step={0.01}
             inputWidth={8} className="h-fit rounded-none p-0.5 m-0" />
         </div >
       </div >

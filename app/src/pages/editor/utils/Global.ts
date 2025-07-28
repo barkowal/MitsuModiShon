@@ -6,3 +6,6 @@ export const DEFAULT_SCENE_COLOR = "#050505";
 export const ROOT_ID = -1000;
 export const DEFAULT_LINE_WIDTH = 10;
 export const DEFAULT_LINE_OFFSET = 0.05;
+export const DEFAULT_KEYFRAME_DURATION = 250;
+export const DEFAULT_FPS = 24;
+export const DEFAULT_LOOP_SETTING = true;
