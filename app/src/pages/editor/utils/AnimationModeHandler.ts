@@ -3,18 +3,28 @@ import type { EventHandlerType } from "./Types";
 import type { UiController } from "./UiController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import type { AnimationLoop } from "./AnimationLoop";
+import { SelectionController } from "./SelectionController";
+import type { AnimationObject } from "./objects/AnimationObject";
+import type { Object3D } from "three";
 
 export class AnimationModeHandler {
-  eventHandlers: Array<EventHandlerType>;
-  commandHistory: CommandHistory;
-  animationLoop: AnimationLoop;
-  uiController: UiController;
+  private eventHandlers: Array<EventHandlerType>;
+  private commandHistory: CommandHistory;
+  private animationLoop: AnimationLoop;
+  private uiController: UiController;
+  private selectionController: SelectionController;
+  private currentAnimationObject: AnimationObject | null;
 
-  constructor(commandHistory: CommandHistory, animationLoop: AnimationLoop, uiController: UiController) {
+
+  constructor(commandHistory: CommandHistory, animationLoop: AnimationLoop, uiController: UiController, selectionController: SelectionController) {
     this.eventHandlers = [];
     this.commandHistory = commandHistory;
     this.animationLoop = animationLoop;
     this.uiController = uiController;
+    this.selectionController = selectionController;
+
+    this.currentAnimationObject = null;
+
   }
 
 
@@ -27,6 +37,8 @@ export class AnimationModeHandler {
     this.handleSetKeyframeDuration();
     this.handleSetFps();
     this.handleSetLooping();
+
+    this.handleSelectionChange();
 
 
   }
@@ -95,6 +107,16 @@ export class AnimationModeHandler {
     };
     editorEventBus.on(EDITOR_EVENT.SetAnimationLooping, handle);
     this.eventHandlers.push({ event: EDITOR_EVENT.SetAnimationLooping, callback: handle });
+  }
+
+  // TODO create and clear listeners on selectioncontroller
+  private handleSelectionChange() {
+
+    this.selectionController.onSelect((obj: Object3D) => {
+      this.currentAnimationObject = this.animationLoop.findAnimationObjectByID(obj.id);
+      this.uiController.refreshAnimationPanel(this.currentAnimationObject);
+    });
+
   }
 
 }

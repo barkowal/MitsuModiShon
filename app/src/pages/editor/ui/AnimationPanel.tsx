@@ -5,8 +5,9 @@ import { ObjectNameMenu } from "./ObjectNameMenu";
 import { Separator } from "@/components/ui/separator";
 import { MaterialView } from "./MaterialMenu/MaterialView";
 import { LayersMenu } from "./LayersMenu";
+import { AnimationView } from "./ObjectAnimationMenu/AnimationView";
 
-function EditorPanel() {
+function AnimationPanel() {
 
   return (
     <>
@@ -18,10 +19,11 @@ function EditorPanel() {
         <Separator orientation="horizontal" />
         <MaterialView />
         <LayersMenu />
+        <AnimationView />
       </div>
     </>
   );
 
 }
 
-export default EditorPanel;
+export default AnimationPanel;

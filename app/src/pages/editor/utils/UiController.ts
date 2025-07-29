@@ -2,6 +2,7 @@ import * as THREE from "three/webgpu";
 import { BACKGROUND_LAYER, INTERSECTION_LAYER, ROOT_ID } from "./Global";
 import type { MaterialItem, RendererMemoryInfo, TreeItem } from "./Types";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
+import type { AnimationObject } from "./objects/AnimationObject";
 
 export class UiController {
     private scene: THREE.Scene;
@@ -150,6 +151,17 @@ export class UiController {
             return;
         };
         editorEventBus.emit(EDITOR_EVENT.RefreshObjectLayers, obj.layers.mask);
+    }
+
+    refreshAnimationPanel(obj: AnimationObject | null) {
+
+        if (obj === null) {
+            editorEventBus.emit(EDITOR_EVENT.RefreshAnimationView, 1);
+            return;
+        }
+
+        editorEventBus.emit(EDITOR_EVENT.RefreshAnimationView, 0);
+
     }
 
 

@@ -24,6 +24,7 @@ export class AnimationObject {
 
   addClip(clip: THREE.AnimationClip) {
     const action = this.mixer.clipAction(clip);
+    action.setLoop(THREE.LoopOnce, 0);
     this.actions.push(action);
   }
 
@@ -42,6 +43,10 @@ export class AnimationObject {
       action.play();
     });
 
+  }
+
+  getRootObjectID() {
+    return this.rootObject.id;
   }
 
 }

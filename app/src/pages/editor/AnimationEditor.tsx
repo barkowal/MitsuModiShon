@@ -1,5 +1,4 @@
 import { useEffect, type KeyboardEvent } from "react";
-import EditorPanel from "./ui/EditorPanel";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { AddMeshCommand } from "./commands/AddMeshCommand";
 import { CommandHistory } from "@/lib/CommandHistory";
@@ -12,9 +11,7 @@ import { EditorUtils } from "./utils/EditorUtils";
 import { AddObjectsCommand } from "./commands/AddObjectsCommand";
 import ToolbarPanel from "./ui/ToolbarPanel";
 import { ObjectModeHandler } from "./utils/ObjectModeHandler";
-import { ModellingHelper } from "./utils/ModellingHelper";
 import WarningLogPanel from "./ui/WarningLogPanel";
-import { PaintingHelper } from "./utils/PaintingHelper";
 import { CreateMesh } from "./utils/CreateMesh";
 import AnimationTopBar from "./ui/AnimationTopBar";
 import { PlaybackPanel } from "./ui/Playback/PlaybackPanel";
@@ -23,6 +20,7 @@ import { AnimationLoop } from "./utils/AnimationLoop";
 import { AnimationObject } from "./utils/objects/AnimationObject";
 import { AnimationModeHandler } from "./utils/AnimationModeHandler";
 import { InitRenderer } from "./utils/InitRenderer";
+import AnimationPanel from "./ui/AnimationPanel";
 
 
 function AnimationEditor() {
@@ -34,16 +32,10 @@ function AnimationEditor() {
     const commandHistory = new CommandHistory();
     const editorUtils = new EditorUtils(scene);
     const uiController = new UiController(scene);
-    const modellingHelper = new ModellingHelper();
-    const paintingHelper = new PaintingHelper();
-
     const loop = new AnimationLoop(rendererController);
 
     const objectModeHandler = new ObjectModeHandler(commandHistory, uiController, selectionController, scene);
-    const animationModeHandler = new AnimationModeHandler(commandHistory, loop, uiController);
-
-    selectionController.onEditSelect((intersections: Array<THREE.Intersection>) => { modellingHelper.handleIntersectionChange(intersections); });
-    selectionController.onPaintSelect((intersection: THREE.Intersection) => { paintingHelper.handleIntersectionChange(intersection); });
+    const animationModeHandler = new AnimationModeHandler(commandHistory, loop, uiController, selectionController);
 
     objectModeHandler.initEventHandlers();
     animationModeHandler.initEventHandlers();
@@ -74,7 +66,7 @@ function AnimationEditor() {
     const clip = new THREE.AnimationClip("move", 4, [positionKF]);
     animationBoxBox.addClip(clip);
     animationBoxBox.startPlaying();
-    loop.updatables.push(animationBoxBox);
+    loop.addAnimationObject(animationBoxBox);
 
     // Static object TEST
 
@@ -194,7 +186,7 @@ function AnimationEditor() {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel maxSize={38} minSize={26} className="bg-card border border-l-card-foreground">
-            <EditorPanel />
+            <AnimationPanel />
           </ResizablePanel>
         </ResizablePanelGroup>
       </div >

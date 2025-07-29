@@ -280,6 +280,12 @@ export const EDITOR_EVENT = {
    */
   StopPlayback: "StopPlayback",
 
+  /**
+   * Signal for showing new selection data in the animation view
+   * @returns {number} animationInfo
+   */
+  RefreshAnimationView: "RefreshAnimationView",
+
 
   /**
    * ***********ANIMATION EVENTS********

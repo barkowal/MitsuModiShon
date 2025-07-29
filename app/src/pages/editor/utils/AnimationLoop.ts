@@ -12,14 +12,14 @@ export class AnimationLoop {
   private keyframe;
   private rendererController: RendererController;
   private timeID: NodeJS.Timeout | null;
-  updatables: Array<AnimationObject>;
+  private animationObjects: Array<AnimationObject>;
 
   constructor(rendererController: RendererController) {
     this.clock = new Clock();
     this.fps = DEFAULT_FPS;
     this.duration = DEFAULT_KEYFRAME_DURATION;
     this.loop = DEFAULT_LOOP_SETTING;
-    this.updatables = [];
+    this.animationObjects = [];
     this.keyframe = 0;
     this.rendererController = rendererController;
     this.timeID = null;
@@ -52,7 +52,7 @@ export class AnimationLoop {
 
     editorEventBus.emit(EDITOR_EVENT.RefreshAnimationPanel, Math.floor(this.keyframe));
 
-    for (const object of this.updatables) {
+    for (const object of this.animationObjects) {
       object.step(delta);
     }
 
@@ -75,7 +75,7 @@ export class AnimationLoop {
 
   setKeyframe(keyframe: number) {
 
-    for (const object of this.updatables) {
+    for (const object of this.animationObjects) {
       object.setTime(this.keyframeToTime(keyframe));
     }
 
@@ -94,6 +94,17 @@ export class AnimationLoop {
   setLoop(loop: boolean) {
     this.loop = loop;
   }
+
+  addAnimationObject(obj: AnimationObject) {
+    this.animationObjects.push(obj);
+  }
+
+  findAnimationObjectByID(id: number): AnimationObject | null {
+    const obj = this.animationObjects.find((obj) => { return obj.getRootObjectID() === id; });
+    if (obj) return obj;
+    return null;
+  }
+
 
   private timeToKeyframes(seconds: number) {
     return (seconds * this.fps);
