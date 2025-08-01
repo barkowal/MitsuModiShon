@@ -91,6 +91,18 @@ export class AnimationLoop {
     this.fps = fps;
   }
 
+  getFps() {
+    return this.fps;
+  }
+
+  getCurrentKeyframe() {
+    return this.keyframe;
+  }
+
+  getCurrentAnimationTime() {
+    return this.keyframeToTime(this.keyframe);
+  }
+
   setLoop(loop: boolean) {
     this.loop = loop;
   }

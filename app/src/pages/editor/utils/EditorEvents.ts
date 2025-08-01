@@ -1,4 +1,4 @@
-import type { MaterialItem, TreeItem, Vec3 } from "@/pages/editor/utils/Types";
+import type { AnimationObjectData, MaterialItem, TreeItem, Vec3 } from "@/pages/editor/utils/Types";
 
 export const EDITOR_EVENT = {
   /**
@@ -282,9 +282,33 @@ export const EDITOR_EVENT = {
 
   /**
    * Signal for showing new selection data in the animation view
-   * @returns {number} animationInfo
+   * @returns {AnimationObjectData} animationData
    */
   RefreshAnimationView: "RefreshAnimationView",
+
+  /**
+   * Signal for adding a new keyframe to the selected object
+   * @returns {Array<SetKeyframeArrayData>} keyframeData - 0 - property, 1-keyframe 
+   */
+  AddAnimationKeyframe: "AddAnimationKeyframe",
+
+  /**
+   * Signal for removing a keyframe from the selected object
+   * @returns {Array<SetKeyframeArrayData>} keyframeData - 0 - property, 1- index of the keyframe
+   */
+  RemoveAnimationKeyframe: "RemoveAnimationKeyframe",
+
+  /**
+   * Signal for enabling/disabling animation of selected animation object
+   * @returns {boolean} isEnabled - if true the object should animate
+   */
+  SetAnimationObjectPlaying: "SetAnimationObjectPlaying",
+
+  /**
+   * Signal for enabling/disabling looping of selected animation object
+   * @returns {boolean} isLooping - if true the object's animation should loop
+   */
+  SetAnimationObjectLooping: "SetAnimationObjectLooping",
 
 
   /**
@@ -333,6 +357,7 @@ type eventData =
   | boolean
   | Vec3
   | MaterialItem
+  | AnimationObjectData
   | Array<number>
   | Array<Vec3>
   | Array<TreeItem>;

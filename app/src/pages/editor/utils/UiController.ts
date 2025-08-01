@@ -156,11 +156,12 @@ export class UiController {
     refreshAnimationPanel(obj: AnimationObject | null) {
 
         if (obj === null) {
-            editorEventBus.emit(EDITOR_EVENT.RefreshAnimationView, 1);
+            editorEventBus.emit(EDITOR_EVENT.RefreshAnimationView, 0);
             return;
         }
 
-        editorEventBus.emit(EDITOR_EVENT.RefreshAnimationView, 0);
+        const data = obj.getAnimationData();
+        editorEventBus.emit(EDITOR_EVENT.RefreshAnimationView, data);
 
     }
 

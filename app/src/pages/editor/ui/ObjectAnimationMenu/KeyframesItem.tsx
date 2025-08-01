@@ -5,12 +5,11 @@ import { Separator } from "@/components/ui/separator";
 import { Trash2 } from "lucide-react";
 
 type Props = {
-  start: number,
-  end: number,
+  keyframe: number,
   onDelete: CallableFunction,
 };
 
-export function KeyframesItem({ start, end, onDelete }: Props) {
+export function KeyframesItem({ keyframe, onDelete }: Props) {
 
   return (<>
     <Collapsible>
@@ -19,7 +18,7 @@ export function KeyframesItem({ start, end, onDelete }: Props) {
       <div className=" w-[calc(100%)] p-1 flex justify-evenly items-center hover:bg-card/20 ">
 
         <CollapsibleTrigger className="w-full h-8 cursor-pointer ">
-          <p>Keyframe {start} - {end}</p>
+          <p>Keyframe {keyframe}</p>
         </CollapsibleTrigger>
 
         <Button className="bg-destructive h-8" onClick={() => { onDelete(); }}>

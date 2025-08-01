@@ -22,7 +22,6 @@ import { AnimationModeHandler } from "./utils/AnimationModeHandler";
 import { InitRenderer } from "./utils/InitRenderer";
 import AnimationPanel from "./ui/AnimationPanel";
 
-
 function AnimationEditor() {
   const { canvasRef, rendererController, selectionController } = InitRenderer();
 
@@ -45,33 +44,16 @@ function AnimationEditor() {
 
     // Static object TEST
 
-    const positionKF = new THREE.VectorKeyframeTrack(
-      ".position",
-      [0, 1, 2, 3, 4],
-      [
-        0, 0, 0,
-        1, 1, 0,
-        2, 2, 0,
-        3, 3, 0,
-        4, 4, 0]
-    );
-
     const boxbox = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({ color: 0x77ffaa }));
     boxbox.layers.enable(EDITOR_LAYER);
     boxbox.layers.enable(RENDER_LAYER);
     boxbox.layers.enable(INTERSECTION_LAYER);
     scene.add(boxbox);
 
-    const animationBoxBox = new AnimationObject(boxbox);
-    const clip = new THREE.AnimationClip("move", 4, [positionKF]);
-    animationBoxBox.addClip(clip);
-    animationBoxBox.startPlaying();
+    const animationBoxBox = new AnimationObject(boxbox, loop.getFps());
     loop.addAnimationObject(animationBoxBox);
 
     // Static object TEST
-
-
-
 
     const handleAddMesh = (meshData: Array<number>) => {
       const mesh = CreateMesh(meshData);

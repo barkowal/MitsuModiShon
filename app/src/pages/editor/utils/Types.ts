@@ -1,3 +1,4 @@
+import type { Quaternion, Vector3 } from "three/webgpu";
 import type { EditorEvent } from "./EditorEvents";
 
 export type TreeItem = {
@@ -96,3 +97,31 @@ export const MATERIAL_TYPES = {
     Toon: "MeshToonMaterial",
     Drawing: "MeshBasicNodeMaterial",
 } as const;
+
+export const ANIMATION_PROPERTY = {
+    Position: 0,
+    Scale: 1,
+    Rotation: 2,
+} as const;
+
+export const INTERPOLATION = {
+    0: "Linear",
+} as const;
+
+export type KeyframeSequence = {
+    keyframes: Array<number>,
+    values: Array<Vector3 | Quaternion>,
+    interpolations: Array<number>,
+}
+
+export type AnimationObjectData = {
+    enabled: boolean,
+    loop: boolean,
+    animationKeyframes: Array<KeyframeSequence>,
+}
+
+export const SetKeyframeArrayData = {
+    Property: 0,
+    Data: 1,
+};
+
