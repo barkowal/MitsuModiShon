@@ -22,6 +22,10 @@ export function AnimationView() {
     editorEventBus.emit(EDITOR_EVENT.SetAnimationObjectLooping, loop);
   };
 
+  const makeAnimationObject = () => {
+    editorEventBus.emit(EDITOR_EVENT.MakeAnimationObject);
+  };
+
   useEffect(() => {
 
     const handleRefresh = (data: AnimationObjectData | number) => {
@@ -79,7 +83,16 @@ export function AnimationView() {
 
             </div>
             :
-            <Button>Animate</Button>
+            <div>
+              <div className=" select-none p-2 flex justify-between" >
+                <span className="w-full font-bold">
+                  ANIMATION
+                </span>
+              </div>
+              <span className="w-full flex justify-center">
+                <Button className="w-1/2 m-2" onClick={() => { makeAnimationObject(); }}>Animate</Button>
+              </span>
+            </div>
 
         }
       </div >

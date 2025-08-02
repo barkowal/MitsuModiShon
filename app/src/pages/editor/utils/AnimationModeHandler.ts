@@ -4,7 +4,7 @@ import type { UiController } from "./UiController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import type { AnimationLoop } from "./AnimationLoop";
 import { SelectionController } from "./SelectionController";
-import type { AnimationObject } from "./objects/AnimationObject";
+import { AnimationObject } from "./objects/AnimationObject";
 import type { Object3D, Quaternion, Vector3 } from "three/webgpu";
 
 export class AnimationModeHandler {
@@ -41,6 +41,8 @@ export class AnimationModeHandler {
     this.handleRemovingKeyframe();
     this.handleAnimationPlaying();
     this.handleAnimationLooping();
+
+    this.handleMakeAnimationObject();
 
     this.handleSelectionChange();
   }
@@ -184,6 +186,27 @@ export class AnimationModeHandler {
 
     editorEventBus.on(EDITOR_EVENT.SetAnimationObjectLooping, handle);
     this.eventHandlers.push({ event: EDITOR_EVENT.SetAnimationObjectLooping, callback: handle });
+  }
+
+  private handleMakeAnimationObject() {
+
+    const handle = () => {
+
+      if (this.currentAnimationObject !== null) return;
+
+      const selection = this.selectionController.getCurrentSelection();
+      if (selection === null) return;
+
+      const animationObj = new AnimationObject(selection, this.animationLoop.getFps());
+      this.animationLoop.addAnimationObject(animationObj);
+      this.currentAnimationObject = animationObj;
+
+      this.uiController.refreshAnimationPanel(animationObj);
+
+    };
+
+    editorEventBus.on(EDITOR_EVENT.MakeAnimationObject, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.MakeAnimationObject, callback: handle });
   }
 
   private getAnimationObjectsProperty(property: number) {

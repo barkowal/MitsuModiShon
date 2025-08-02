@@ -139,6 +139,14 @@ export class AnimationObject {
     this.updateAnimation(property);
   }
 
+  dispose() {
+    this.actions.forEach((action) => {
+      if (action !== null)
+        this.mixer.uncacheAction(action.getClip());
+      action = null;
+    });
+  }
+
   private updateAnimation(property: number) {
     const animationKeyframes = this.animationSequences[property].keyframes;
     const animationValues = this.animationSequences[property].values;

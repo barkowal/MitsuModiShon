@@ -232,6 +232,13 @@ export const EDITOR_EVENT = {
    * ***********ANIMATION EVENTS********
    * */
 
+
+  /**
+   * Signal for making a new animation object from selection
+   * @returns {void} 
+   */
+  MakeAnimationObject: "MakeAnimationObject",
+
   /**
    * Signal for playing the animation
    * @returns {number} keyframe - keyframe that animation should start from

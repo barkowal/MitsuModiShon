@@ -15,9 +15,7 @@ import WarningLogPanel from "./ui/WarningLogPanel";
 import { CreateMesh } from "./utils/CreateMesh";
 import AnimationTopBar from "./ui/AnimationTopBar";
 import { PlaybackPanel } from "./ui/Playback/PlaybackPanel";
-import { EDITOR_LAYER, INTERSECTION_LAYER, RENDER_LAYER } from "./utils/Global";
 import { AnimationLoop } from "./utils/AnimationLoop";
-import { AnimationObject } from "./utils/objects/AnimationObject";
 import { AnimationModeHandler } from "./utils/AnimationModeHandler";
 import { InitRenderer } from "./utils/InitRenderer";
 import AnimationPanel from "./ui/AnimationPanel";
@@ -40,20 +38,6 @@ function AnimationEditor() {
     animationModeHandler.initEventHandlers();
     uiController.setRendererInfo(rendererController.getRenderInfo()); // Only for testing if objects are disposed correctly
     uiController.refreshPanel();
-
-
-    // Static object TEST
-
-    const boxbox = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({ color: 0x77ffaa }));
-    boxbox.layers.enable(EDITOR_LAYER);
-    boxbox.layers.enable(RENDER_LAYER);
-    boxbox.layers.enable(INTERSECTION_LAYER);
-    scene.add(boxbox);
-
-    const animationBoxBox = new AnimationObject(boxbox, loop.getFps());
-    loop.addAnimationObject(animationBoxBox);
-
-    // Static object TEST
 
     const handleAddMesh = (meshData: Array<number>) => {
       const mesh = CreateMesh(meshData);
@@ -145,6 +129,7 @@ function AnimationEditor() {
 
       objectModeHandler.disposeEventHandlers();
       animationModeHandler.disposeEventHandlers();
+      loop.dispose();
     };
   }, [rendererController, selectionController]);
 

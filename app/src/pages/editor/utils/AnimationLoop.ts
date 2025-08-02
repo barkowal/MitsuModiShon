@@ -117,6 +117,14 @@ export class AnimationLoop {
     return null;
   }
 
+  // TODO check if correct
+  dispose() {
+    this.stop();
+    this.animationObjects.forEach((obj) => {
+      obj.dispose();
+    });
+    this.animationObjects = [];
+  }
 
   private timeToKeyframes(seconds: number) {
     return (seconds * this.fps);

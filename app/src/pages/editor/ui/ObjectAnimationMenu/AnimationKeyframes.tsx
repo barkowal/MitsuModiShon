@@ -16,27 +16,10 @@ type Props = {
   sequenceData: Array<KeyframeSequence> | null
 }
 
-function getSharedKeyframes(data: Array<KeyframeSequence> | null): Array<number> {
-  if (data === null) return [];
-
-  const set1 = new Set(data[ANIMATION_PROPERTY.Position].keyframes);
-  const set2 = new Set(data[ANIMATION_PROPERTY.Scale].keyframes);
-  const set3 = new Set(data[ANIMATION_PROPERTY.Rotation].keyframes);
-
-  const sharedKeyframes = [...set1].filter(num => set2.has(num) && set3.has(num));
-
-  return sharedKeyframes;
-}
-
 export function AnimationKeyframes({ sequenceData }: Props) {
   const currentKeyframe = useRef(0);
   const [selectedProperty, setSelectedProperty] = useState("All");
-  const [animationKeyframes, setAnimationKeyframes] = useState<Array<frame>>([
-    { property: "All", keyframes: getSharedKeyframes(sequenceData) },
-    { property: "Position", keyframes: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Position].keyframes },
-    { property: "Scale", keyframes: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Scale].keyframes },
-    { property: "Rotation", keyframes: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Rotation].keyframes },
-  ]);
+  const [animationKeyframes, setAnimationKeyframes] = useState<Array<frame>>(getDataFromSequence(sequenceData));
   const animationProperties = new Map([
     ["Position", ANIMATION_PROPERTY.Position],
     ["Scale", ANIMATION_PROPERTY.Scale],
@@ -107,6 +90,8 @@ export function AnimationKeyframes({ sequenceData }: Props) {
 
   useEffect(() => {
 
+    setAnimationKeyframes(getDataFromSequence(sequenceData));
+
     const handleRefreshKeyframe = (keyframe: number) => {
       currentKeyframe.current = keyframe;
     };
@@ -119,7 +104,7 @@ export function AnimationKeyframes({ sequenceData }: Props) {
       editorEventBus.off(EDITOR_EVENT.SetKeyframe, handleRefreshKeyframe);
     });
 
-  }, []);
+  }, [sequenceData]);
 
   return (
     <div>
@@ -164,3 +149,25 @@ export function AnimationKeyframes({ sequenceData }: Props) {
     </div>
   );
 }
+
+function getSharedKeyframes(data: Array<KeyframeSequence> | null): Array<number> {
+  if (data === null) return [];
+
+  const set1 = new Set(data[ANIMATION_PROPERTY.Position].keyframes);
+  const set2 = new Set(data[ANIMATION_PROPERTY.Scale].keyframes);
+  const set3 = new Set(data[ANIMATION_PROPERTY.Rotation].keyframes);
+
+  const sharedKeyframes = [...set1].filter(num => set2.has(num) && set3.has(num));
+
+  return sharedKeyframes;
+}
+
+function getDataFromSequence(sequenceData: Array<KeyframeSequence> | null): Array<frame> {
+  return [
+    { property: "All", keyframes: getSharedKeyframes(sequenceData) },
+    { property: "Position", keyframes: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Position].keyframes },
+    { property: "Scale", keyframes: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Scale].keyframes },
+    { property: "Rotation", keyframes: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Rotation].keyframes },
+  ];
+}
+

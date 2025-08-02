@@ -1,5 +1,5 @@
 import * as THREE from "three/webgpu";
-import { BACKGROUND_LAYER, DEFAULT_SCENE_COLOR, EDITOR_LAYER, INTERSECTION_LAYER, RENDER_LAYER } from "./Global";
+import { BACKGROUND_LAYER, DEFAULT_SCENE_COLOR, EDITOR_LAYER, RENDER_LAYER } from "./Global";
 import { ViewHelper } from "./objects/ViewHelper";
 import { mix, pass, step, uniform } from "three/tsl";
 import OutlineNode, { outline } from "three/examples/jsm/tsl/display/OutlineNode.js";
@@ -202,7 +202,6 @@ export class RendererController {
     cameraHelper.layers.disable(EDITOR_LAYER);
 
     const cameraBox = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({ color: 0x44aa44, wireframe: true }));
-    cameraBox.layers.enable(INTERSECTION_LAYER);
     cameraBox.layers.disable(EDITOR_LAYER);
     cameraBox.name = "Camera";
     cameraBox.scale.setScalar(0.4);
