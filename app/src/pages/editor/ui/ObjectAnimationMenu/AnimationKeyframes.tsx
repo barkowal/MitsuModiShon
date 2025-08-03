@@ -10,6 +10,7 @@ import { ANIMATION_PROPERTY, type KeyframeSequence } from "../../utils/Types";
 type frame = {
   property: string,
   keyframes: Array<number>,
+  interpolations: Array<number>,
 }
 
 type Props = {
@@ -64,6 +65,32 @@ export function AnimationKeyframes({ sequenceData }: Props) {
       addKeyframe(selectedProperty, propertyValue);
     }
 
+  };
+
+  const handleInterpolationChange = (interpolation: number, keyframeIndex: number) => {
+    const property = animationProperties.get(selectedProperty);
+
+    if (property === undefined) return;
+    editorEventBus.emit(EDITOR_EVENT.ChangeKeyframeInterpolation, [keyframeIndex, property, interpolation]);
+
+    const arr = animationKeyframes.findIndex((val) => val.property === selectedProperty);
+    animationKeyframes[arr].interpolations[keyframeIndex] = interpolation;
+
+    setAnimationKeyframes([...animationKeyframes]);
+  };
+
+  const getItemProperty = (): number => {
+    const property = animationProperties.get(selectedProperty);
+    if (property === undefined) return 0;
+    return property + 1; // including "All"
+  };
+
+  // TODO make interpolation for other properties
+  const isInterpolationPossible = (): boolean => {
+    if (selectedProperty === "Position") return true;
+    if (selectedProperty === "Scale") return true;
+
+    return false;
   };
 
   // This is ugly
@@ -140,7 +167,11 @@ export function AnimationKeyframes({ sequenceData }: Props) {
           .map((item) => (
 
             item.keyframes.map((data, index) => (
-              <KeyframesItem key={index} keyframe={data} onDelete={() => { handleRemovingKeyframe(index); }} />
+              <KeyframesItem key={index} keyframe={data}
+                selectedInterpolation={animationKeyframes[getItemProperty()].interpolations[index]}
+                allowChangingInterpolation={isInterpolationPossible()}
+                onInterpolationChange={(val: number) => { handleInterpolationChange(val, index); }}
+                onDelete={() => { handleRemovingKeyframe(index); }} />
             ))
 
           ))}
@@ -162,12 +193,37 @@ function getSharedKeyframes(data: Array<KeyframeSequence> | null): Array<number>
   return sharedKeyframes;
 }
 
+function getSharedInterpolations(data: Array<KeyframeSequence> | null): Array<number> {
+  if (data === null) return [];
+
+  const set1 = new Set(data[ANIMATION_PROPERTY.Position].interpolations);
+  const set2 = new Set(data[ANIMATION_PROPERTY.Scale].interpolations);
+  const set3 = new Set(data[ANIMATION_PROPERTY.Rotation].interpolations);
+
+  const sharedKeyframes = [...set1].filter(num => set2.has(num) && set3.has(num));
+
+  return sharedKeyframes;
+}
+
 function getDataFromSequence(sequenceData: Array<KeyframeSequence> | null): Array<frame> {
+
   return [
-    { property: "All", keyframes: getSharedKeyframes(sequenceData) },
-    { property: "Position", keyframes: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Position].keyframes },
-    { property: "Scale", keyframes: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Scale].keyframes },
-    { property: "Rotation", keyframes: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Rotation].keyframes },
+    { property: "All", keyframes: getSharedKeyframes(sequenceData), interpolations: getSharedInterpolations(sequenceData) },
+    {
+      property: "Position",
+      keyframes: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Position].keyframes,
+      interpolations: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Position].interpolations,
+    },
+    {
+      property: "Scale",
+      keyframes: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Scale].keyframes,
+      interpolations: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Scale].interpolations,
+    },
+    {
+      property: "Rotation",
+      keyframes: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Rotation].keyframes,
+      interpolations: sequenceData === null ? [] : sequenceData[ANIMATION_PROPERTY.Rotation].interpolations,
+    },
   ];
 }
 

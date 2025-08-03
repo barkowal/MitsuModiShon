@@ -1,5 +1,5 @@
 import type { CommandHistory } from "@/lib/CommandHistory";
-import { ANIMATION_PROPERTY, SetKeyframeArrayData, type EventHandlerType } from "./Types";
+import { ANIMATION_PROPERTY, InterpolationArrayData, SetKeyframeArrayData, type EventHandlerType } from "./Types";
 import type { UiController } from "./UiController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import type { AnimationLoop } from "./AnimationLoop";
@@ -41,6 +41,7 @@ export class AnimationModeHandler {
     this.handleRemovingKeyframe();
     this.handleAnimationPlaying();
     this.handleAnimationLooping();
+    this.handleChangingFrameInterpolation();
 
     this.handleMakeAnimationObject();
 
@@ -111,6 +112,22 @@ export class AnimationModeHandler {
     };
     editorEventBus.on(EDITOR_EVENT.SetAnimationLooping, handle);
     this.eventHandlers.push({ event: EDITOR_EVENT.SetAnimationLooping, callback: handle });
+  }
+
+  private handleChangingFrameInterpolation() {
+    const handle = (interpolationData: Array<number>) => {
+
+      if (this.currentAnimationObject === null) return;
+
+      this.currentAnimationObject.changeKeyframeInterpolation(
+        interpolationData[InterpolationArrayData.Keyframe],
+        interpolationData[InterpolationArrayData.Property],
+        interpolationData[InterpolationArrayData.Method]);
+
+
+    };
+    editorEventBus.on(EDITOR_EVENT.ChangeKeyframeInterpolation, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.ChangeKeyframeInterpolation, callback: handle });
   }
 
   // TODO create and clear listeners on selectioncontroller

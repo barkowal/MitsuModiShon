@@ -1,6 +1,7 @@
 import * as THREE from "three/webgpu";
 import { ANIMATION_PROPERTY, type AnimationObjectData, type KeyframeSequence } from "../Types";
 import { insertSort } from "@/lib/utils";
+import { GetEasing } from "../GetEasing";
 
 export class AnimationObject {
   private rootObject: THREE.Object3D;
@@ -139,6 +140,14 @@ export class AnimationObject {
     this.updateAnimation(property);
   }
 
+  changeKeyframeInterpolation(keyframeIndex: number, property: number, interpolation: number) {
+    const animationInterpolations = this.animationSequences[property].interpolations;
+    if (keyframeIndex > animationInterpolations.length - 1) return;
+
+    animationInterpolations[keyframeIndex] = interpolation;
+    this.updateAnimation(property);
+  }
+
   dispose() {
     this.actions.forEach((action) => {
       if (action !== null)
@@ -147,24 +156,84 @@ export class AnimationObject {
     });
   }
 
+  // TODO instead of making new arrays all the time,
+  // implement changing only the updated values
   private updateAnimation(property: number) {
     const animationKeyframes = this.animationSequences[property].keyframes;
     const animationValues = this.animationSequences[property].values;
-    // const animationInterpolations = this.animationSequences[property].interpolations; TODO
+    const animationInterpolations = this.animationSequences[property].interpolations;
 
     const times = animationKeyframes.map((val) => this.keyframeToTime(val));
     const values: Array<number> = [];
 
     if (property === ANIMATION_PROPERTY.Rotation) {
+
       animationValues.forEach((val) => {
         if (val instanceof THREE.Quaternion)
           values.push(val.x, val.y, val.z, val.w);
       });
-    } else {
-      animationValues.forEach((val) => values.push(val.x, val.y, val.z));
+
+      this.createClip(times, values, property);
+      return;
     }
 
-    this.createClip(times, values, property);
+    animationValues.forEach((val) => values.push(val.x, val.y, val.z));
+
+    const containsNonLinearInterpolation = animationInterpolations.some(num => num !== 0);
+
+    if (containsNonLinearInterpolation) {
+      this.applyInterpolation(times, values, property);
+      return;
+    } else {
+      this.createClip(times, values, property);
+    }
+  }
+
+  private applyInterpolation(times: Array<number>, values: Array<number>, property: number) {
+    const animationInterpolations = this.animationSequences[property].interpolations;
+    const animationKeyframes = this.animationSequences[property].keyframes;
+
+    const interpolatedTime: Array<number> = [];
+    const interpolatedValues: Array<number> = [];
+
+    animationInterpolations.forEach((method, i) => {
+      if (i === 0) {
+        interpolatedTime.push(times[i]);
+        interpolatedValues.push(values[i], values[i + 1], values[i + 2]);
+        return;
+      }
+      if (method === 0) {
+        interpolatedTime.push(times[i]);
+        interpolatedValues.push(values[i * 3], values[i * 3 + 1], values[i * 3 + 2]);
+        return;
+      }
+      const count = this.populateInterpolatedTime(animationKeyframes[i - 1], animationKeyframes[i], interpolatedTime);
+      this.populateInterpolatedValues(interpolatedValues, method, [values[i * 3 - 3], values[i * 3 - 2], values[i * 3 - 1]],
+        [values[i * 3], values[i * 3 + 1], values[i * 3 + 2]], count);
+
+    });
+
+    this.createClip(interpolatedTime, interpolatedValues, property);
+  }
+
+  private populateInterpolatedTime(start: number, end: number, arr: Array<number>) {
+    let count = 0;
+    const step = this.getIterationStep(end - start);
+    for (let i = start; i < end; i += step) {
+      arr.push(this.keyframeToTime(i));
+      count++;
+    }
+    return count;
+  }
+
+  private populateInterpolatedValues(values: Array<number>, method: number, start: Array<number>, end: Array<number>, count: number) {
+    const x = GetEasing(method, start[0], end[0], count);
+    const y = GetEasing(method, start[1], end[1], count);
+    const z = GetEasing(method, start[2], end[2], count);
+
+    for (let i = 0; i < count; i++) {
+      values.push(x[i], y[i], z[i]);
+    }
   }
 
   private addClip(clip: THREE.AnimationClip, property: number) {
@@ -224,6 +293,20 @@ export class AnimationObject {
 
   private keyframeToTime(keyframe: number) {
     return keyframe / this.fps;
+  }
+
+  private getIterationStep(number: number): number {
+    if (number < 100) {
+      return 2;
+    } else if (number < 200) {
+      return 4;
+    } else if (number < 400) {
+      return 6;
+    } else if (number < 800) {
+      return 8;
+    } else {
+      return 10;
+    }
   }
 
 }

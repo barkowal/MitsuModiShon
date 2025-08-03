@@ -306,6 +306,12 @@ export const EDITOR_EVENT = {
   RemoveAnimationKeyframe: "RemoveAnimationKeyframe",
 
   /**
+   * Signal for changing interpolation method on selected keyframe
+   * @returns {Array<InterpolationArrayData >} interpolationData - 0-keyframe, 1-property, 2-interpolation
+   */
+  ChangeKeyframeInterpolation: "ChangeKeyframeInterpolation",
+
+  /**
    * Signal for enabling/disabling animation of selected animation object
    * @returns {boolean} isEnabled - if true the object should animate
    */

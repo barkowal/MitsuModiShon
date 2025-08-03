@@ -105,7 +105,11 @@ export const ANIMATION_PROPERTY = {
 } as const;
 
 export const INTERPOLATION = {
-    0: "Linear",
+    Linear: 0,
+    EaseInCirc: 1,
+    EaseOutCirc: 2,
+    EaseInBack: 3,
+    EaseOutElastic: 4,
 } as const;
 
 export type KeyframeSequence = {
@@ -123,5 +127,11 @@ export type AnimationObjectData = {
 export const SetKeyframeArrayData = {
     Property: 0,
     Data: 1,
-};
+} as const;
+
+export const InterpolationArrayData = {
+    Keyframe: 0,
+    Property: 1,
+    Method: 2,
+} as const;
 
