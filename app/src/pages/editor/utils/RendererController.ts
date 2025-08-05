@@ -91,6 +91,16 @@ export class RendererController {
     return imgData;
   }
 
+  setRendererSize(width: number, height: number) {
+    this.renderer.setSize(width, height);
+  }
+
+  getRendererSize() {
+    const size = new THREE.Vector2();
+    this.renderer.getSize(size);
+    return { width: size.width, height: size.height };
+  }
+
   recalculatePostProcessing() {
     const gizmoNode = this.viewHelper.getTexture();
     this.postProcessing.outputNode = mix(this.outlineColor, gizmoNode, step(0.000001, gizmoNode));

@@ -135,3 +135,8 @@ export const InterpolationArrayData = {
     Method: 2,
 } as const;
 
+export const RenderSettings = {
+    RenderWidth: 0,
+    RenderHeight: 1,
+} as const;
+

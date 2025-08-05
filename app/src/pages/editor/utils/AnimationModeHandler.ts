@@ -6,6 +6,7 @@ import type { AnimationLoop } from "./AnimationLoop";
 import { SelectionController } from "./SelectionController";
 import { AnimationObject } from "./objects/AnimationObject";
 import type { Object3D, Quaternion, Vector3 } from "three/webgpu";
+import { DownloadVideo } from "@/lib/DownloadVideo";
 
 export class AnimationModeHandler {
   private eventHandlers: Array<EventHandlerType>;
@@ -36,6 +37,8 @@ export class AnimationModeHandler {
     this.handleSetKeyframeDuration();
     this.handleSetFps();
     this.handleSetLooping();
+    this.handleAnimationRender();
+    this.handleCancelRenderingAnimation();
 
     this.handleAnimateKeyframe();
     this.handleRemovingKeyframe();
@@ -224,6 +227,64 @@ export class AnimationModeHandler {
 
     editorEventBus.on(EDITOR_EVENT.MakeAnimationObject, handle);
     this.eventHandlers.push({ event: EDITOR_EVENT.MakeAnimationObject, callback: handle });
+  }
+
+  private handleAnimationRender() {
+
+    const handle = (renderSettings: Array<number>) => {
+      editorEventBus.emit(EDITOR_EVENT.IsRenderingSignal, true);
+      this.animationLoop.stop();
+
+      this.getRenderedFrames(renderSettings).then((frames: Array<string>) => {
+        DownloadVideo(frames)
+          .then(() => {
+            editorEventBus.emit(EDITOR_EVENT.IsRenderingSignal, false);
+          })
+          .catch((error) => {
+            editorEventBus.emit(EDITOR_EVENT.IsRenderingSignal, false);
+            console.warn(error);
+          });
+      }).catch((error) => {
+        editorEventBus.emit(EDITOR_EVENT.IsRenderingSignal, false);
+        console.warn(error);
+      });
+    };
+
+    editorEventBus.on(EDITOR_EVENT.RenderAnimation, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.RenderAnimation, callback: handle });
+
+  }
+
+  private getRenderedFrames(renderSettings: Array<number>): Promise<Array<string>> {
+    return new Promise((resolve, reject) => {
+      const attempt = (n: number) => {
+        this.animationLoop.renderAnimationFrames(renderSettings, n).then(resolve)
+          .catch((error) => {
+            if (n === 3) {
+              reject(error);
+            } else if (error !== "Long Render") {
+              reject(error);
+            } else {
+              setTimeout(() => attempt(n + 1));
+            }
+          });
+      };
+      attempt(1);
+    });
+  }
+
+
+  private handleCancelRenderingAnimation() {
+
+    const handle = () => {
+
+      this.animationLoop.endRenderingAnimationFrames();
+      editorEventBus.emit(EDITOR_EVENT.IsRenderingSignal, false);
+
+    };
+
+    editorEventBus.on(EDITOR_EVENT.CancelRenderingAnimation, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.CancelRenderingAnimation, callback: handle });
   }
 
   private getAnimationObjectsProperty(property: number) {

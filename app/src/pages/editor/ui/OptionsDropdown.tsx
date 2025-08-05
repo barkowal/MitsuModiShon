@@ -5,7 +5,7 @@ import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { Input } from "@/components/ui/input";
 import type { ChangeEvent } from "react";
 
-export function SaveLoadDropdown() {
+export function OptionsDropdown() {
 
   const signalDownload = () => {
     editorEventBus.emit(EDITOR_EVENT.SaveObject);
@@ -60,7 +60,7 @@ export function SaveLoadDropdown() {
 
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel> Save/Load Object </DropdownMenuLabel>
+        <DropdownMenuLabel> Options </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
         <DropdownMenuItem onClick={signalDownload}>

@@ -40,6 +40,66 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-warning-log: var(--warning-log);
+  --color-loading-box: var(--loading-box);
+
+  --animate-box-up: box-up 2.4s cubic-bezier(0, 0, 0.24, 1.21) infinite;
+  --animate-box-down: box-down 2.4s cubic-bezier(0, 0, 0.24, 1.21) infinite;
+
+  @keyframes box-down {
+
+    0%,
+    100% {
+      transform: none;
+    }
+
+    25% {
+      transform: translateX(100%);
+    }
+
+    50% {
+      transform: translateX(100%) translateY(100%);
+    }
+
+    75% {
+      transform: translateY(100%);
+    }
+  }
+
+  @keyframes box-up {
+
+    0%,
+    100% {
+      transform: none;
+    }
+
+    25% {
+      transform: translateX(-100%);
+    }
+
+    50% {
+      transform: translateX(-100%) translateY(-100%);
+    }
+
+    75% {
+      transform: translateY(-100%);
+    }
+
+  }
+
+  --animate-fade-fully: fade-fully 2s infinite;
+
+  @keyframes fade-fully {
+
+    0%,
+    100% {
+      opacity: 0;
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
+
 }
 
 :root {
@@ -76,6 +136,7 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --warning-log: oklch(89.31% 0.154 93.53);
+  --loading-box: oklch(1 0 135);
 }
 
 .dark {
@@ -111,6 +172,7 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   --warning-log: oklch(89.31% 0.154 93.53);
+  --loading-box: oklch(1 0 135);
 }
 
 @layer base {

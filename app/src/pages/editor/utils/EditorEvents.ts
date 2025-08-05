@@ -323,6 +323,23 @@ export const EDITOR_EVENT = {
    */
   SetAnimationObjectLooping: "SetAnimationObjectLooping",
 
+  /**
+   * Signal for rendering and downloading animation video from canvas
+   * @returns {Array<number>} renderSettings - settings like width and height
+   */
+  RenderAnimation: "RenderAnimation",
+
+  /**
+   * Signal for canceling/stopping the rendering
+   * @returns {void}
+   */
+  CancelRenderingAnimation: "CancelRenderingAnimation",
+
+  /**
+   * Signal for currently rendering animation. If is rendering animation playback should be stopped
+   * @returns {boolean} isRendering - if true, animation is being rendered 
+   */
+  IsRenderingSignal: "IsRenderingSignal",
 
   /**
    * ***********ANIMATION EVENTS********

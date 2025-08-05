@@ -56,12 +56,20 @@ export class AnimationObject {
 
   }
 
-  getRootObject() {
+  getRootObject(): THREE.Object3D {
     return this.rootObject;
   }
 
-  getRootObjectID() {
+  getRootObjectID(): number {
     return this.rootObject.id;
+  }
+
+  getIsPlaying(): boolean {
+    return this.isPlaying;
+  }
+
+  getIsLooping(): boolean {
+    return this.isLooping;
   }
 
   setLooping(enableLooping: boolean) {

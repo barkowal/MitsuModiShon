@@ -3,16 +3,16 @@ import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { Redo, Undo } from "lucide-react";
 import RemoveMeshButton from "./RemoveMeshButton";
 import ChangeModeDropdown from "./EditorModeMenu/ChangeModeDropdown";
-import { SaveLoadDropdown } from "./SaveLoadDropdown";
 import { RenderingButton } from "./RenderingButton";
 import { AddObjectDialog } from "./AddObjectMenu/AddObjectDialog";
+import { OptionsDropdown } from "./OptionsDropdown";
 
 function EditorTopBar() {
 
   return (
     <>
       <div className="flex w-full h-full gap-4 p-2 mx-10 justify-center">
-        <SaveLoadDropdown />
+        <OptionsDropdown />
         <Button className="[&_svg]:size-6" onClick={() => { editorEventBus.emit(EDITOR_EVENT.UNDO); }}>
           <Undo className="size-1" />
         </Button>
