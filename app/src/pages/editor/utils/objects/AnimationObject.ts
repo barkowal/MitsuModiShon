@@ -2,9 +2,11 @@ import * as THREE from "three/webgpu";
 import { ANIMATION_PROPERTY, type AnimationObjectData, type KeyframeSequence } from "../Types";
 import { insertSort } from "@/lib/utils";
 import { GetEasing } from "../GetEasing";
+import { generateUUID } from "three/src/math/MathUtils.js";
 
 export class AnimationObject {
   private rootObject: THREE.Object3D;
+  private uuid: string;
   private mixer: THREE.AnimationMixer;
   private actions: Array<THREE.AnimationAction | null>;
   private animationSequences: Array<KeyframeSequence>;
@@ -30,6 +32,9 @@ export class AnimationObject {
     this.fps = fps;
     this.isPlaying = false;
     this.isLooping = true;
+
+    this.uuid = generateUUID();
+    object.userData.animationObject = this.uuid;
 
   }
 
@@ -62,6 +67,14 @@ export class AnimationObject {
 
   getRootObjectID(): number {
     return this.rootObject.id;
+  }
+
+  getName(): string {
+    return this.rootObject.name;
+  }
+
+  getUUID(): string {
+    return this.uuid;
   }
 
   getIsPlaying(): boolean {
@@ -162,6 +175,17 @@ export class AnimationObject {
         this.mixer.uncacheAction(action.getClip());
       action = null;
     });
+  }
+
+  getJSON() {
+    const data = {
+      uuid: this.uuid,
+      loop: this.isLooping,
+      positionAnimation: this.animationSequences[ANIMATION_PROPERTY.Position],
+      scaleAnimation: this.animationSequences[ANIMATION_PROPERTY.Scale],
+      rotationAnimation: this.animationSequences[ANIMATION_PROPERTY.Rotation],
+    };
+    return data;
   }
 
   // TODO instead of making new arrays all the time,

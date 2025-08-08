@@ -7,6 +7,7 @@ import { SelectionController } from "./SelectionController";
 import { AnimationObject } from "./objects/AnimationObject";
 import type { Object3D, Quaternion, Vector3 } from "three/webgpu";
 import { DownloadVideo } from "@/lib/DownloadVideo";
+import { DownloadJSON } from "@/lib/DownloadJSON";
 
 export class AnimationModeHandler {
   private eventHandlers: Array<EventHandlerType>;
@@ -47,6 +48,8 @@ export class AnimationModeHandler {
     this.handleChangingFrameInterpolation();
 
     this.handleMakeAnimationObject();
+
+    this.handleSaveAnimationObject();
 
     this.handleSelectionChange();
   }
@@ -137,12 +140,13 @@ export class AnimationModeHandler {
   private handleSelectionChange() {
 
     this.selectionController.onSelect((obj: Object3D) => {
-      this.currentAnimationObject = this.animationLoop.findAnimationObjectByID(obj.id);
+      this.currentAnimationObject = this.animationLoop.findAnimationObjectByID(obj.userData.animationObject);
       this.uiController.refreshAnimationPanel(this.currentAnimationObject);
     });
 
   }
 
+  // TODO should this be a command?
   private handleAnimateKeyframe() {
 
     const handle = (animateData: Array<number>) => {
@@ -287,6 +291,28 @@ export class AnimationModeHandler {
     this.eventHandlers.push({ event: EDITOR_EVENT.CancelRenderingAnimation, callback: handle });
   }
 
+  private handleSaveAnimationObject() {
+
+    const handle = () => {
+
+      const obj = this.selectionController.getCurrentSelection();
+
+      if (obj === null) {
+        editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Please select an object.");
+        return;
+      }
+
+      const json = this.getObjectsJSON(obj);
+
+      DownloadJSON(json, obj.name);
+
+    };
+
+    editorEventBus.on(EDITOR_EVENT.SaveAnimationObject, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.SaveAnimationObject, callback: handle });
+  }
+
+
   private getAnimationObjectsProperty(property: number) {
     if (this.currentAnimationObject === null) return null;
 
@@ -311,5 +337,23 @@ export class AnimationModeHandler {
     }
 
     return value;
+  }
+
+  // TODO this should be a type
+  private getObjectsJSON(rootObj: Object3D) {
+    const data = rootObj.toJSON();
+    const animationJSON = [];
+    const animationData: Array<string> = [];
+    rootObj.traverse((obj) => {
+      if (obj.userData.animationObject !== undefined) animationData.push(obj.userData.animationObject);
+    });
+
+    animationData.forEach((uuid) => {
+      const obj = this.animationLoop.findAnimationObjectByID(uuid);
+      if (obj !== null) animationJSON.push(obj.getJSON());
+    });
+
+    data.animation = animationJSON;
+    return data;
   }
 }

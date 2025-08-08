@@ -147,7 +147,7 @@ function AnimationEditor() {
               <div ref={canvasRef} className="flex-auto" >
               </div>
               <ToolbarPanel />
-              <WarningLogPanel />
+              <WarningLogPanel bottomMargin={100} />
               <PlaybackPanel />
             </div>
           </ResizablePanel>

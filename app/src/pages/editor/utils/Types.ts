@@ -124,6 +124,14 @@ export type AnimationObjectData = {
     animationKeyframes: Array<KeyframeSequence>,
 }
 
+export type AnimationObjectJSON = {
+    uuid: string,
+    loop: boolean,
+    positionAnimation: KeyframeSequence,
+    scaleAnimation: KeyframeSequence,
+    rotationAnimation: KeyframeSequence,
+}
+
 export const SetKeyframeArrayData = {
     Property: 0,
     Data: 1,

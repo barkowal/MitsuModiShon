@@ -11,10 +11,10 @@ import { RotateObjectsCommand } from "../commands/RotateObjectsCommand";
 import { RemoveObjectsCommand } from "../commands/RemoveObjectsCommand";
 import { SetMeshesColorCommand } from "../commands/SetMeshesColorCommand";
 import { ChangeMeshesMaterialCommand } from "../commands/ChangeMeshesMaterialCommand";
-import { ModellingObjectLoader } from "./objects/Custom/ModellingObjectLoader";
 import { AddMeshCommand } from "../commands/AddMeshCommand";
 import { DownloadJSON } from "@/lib/DownloadJSON";
 import { INTERSECTION_LAYER } from "./Global";
+import { LoadObject } from "./LoadObject";
 
 export class ObjectModeHandler {
   eventHandlers: Array<EventHandlerType>;
@@ -316,21 +316,8 @@ export class ObjectModeHandler {
   private handleUploadObject() {
 
     const handle = (file: string) => {
-      const loader = new THREE.ObjectLoader();
-      const jsonData = JSON.parse(file);
-      let object;
 
-      if (!("object" in jsonData)) {
-        editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Error uploading a file. Please upload json of type Object3d.");
-        return;
-      }
-
-      if (jsonData.object.type === "ModellingMesh") {
-        const modellingLoader = new ModellingObjectLoader(loader);
-        object = modellingLoader.parse(jsonData);
-      } else {
-        object = loader.parse(jsonData);
-      }
+      const object = LoadObject(file);
 
       if (object) {
 

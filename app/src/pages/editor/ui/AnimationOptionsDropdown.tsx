@@ -9,7 +9,7 @@ import { RenderAnimationDialog } from "./RenderAnimationDialog";
 export function AnimationOptionsDropdown() {
 
     const signalDownload = () => {
-        editorEventBus.emit(EDITOR_EVENT.SaveObject);
+        editorEventBus.emit(EDITOR_EVENT.SaveAnimationObject);
     };
 
     const signalRenderImage = () => {
@@ -63,12 +63,12 @@ export function AnimationOptionsDropdown() {
                 < DropdownMenuSeparator />
 
                 <DropdownMenuItem onClick={signalDownload}>
-                    <Download /><p>Download</p >
+                    <Download /><p>Export Object</p >
                 </DropdownMenuItem>
 
                 < DropdownMenuItem className="p-0" >
                     <label htmlFor="fileUpload" className="[&_svg]:size-6 p-2 w-full flex gap-2" >
-                        <Upload /><p>Upload</p >
+                        <Upload /><p>Upload Animation</p >
                     </label>
                 </DropdownMenuItem>
 

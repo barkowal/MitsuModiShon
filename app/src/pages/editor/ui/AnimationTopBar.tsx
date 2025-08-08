@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
-import { Download, Redo, Undo } from "lucide-react";
+import { Redo, Undo } from "lucide-react";
 import RemoveMeshButton from "./RemoveMeshButton";
 import { RenderingButton } from "./RenderingButton";
 import { AddObjectDialog } from "./AddObjectMenu/AddObjectDialog";

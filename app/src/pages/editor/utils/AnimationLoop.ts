@@ -113,8 +113,8 @@ export class AnimationLoop {
     this.animationObjects.push(obj);
   }
 
-  findAnimationObjectByID(id: number): AnimationObject | null {
-    const obj = this.animationObjects.find((obj) => { return obj.getRootObjectID() === id; });
+  findAnimationObjectByID(uuid: string): AnimationObject | null {
+    const obj = this.animationObjects.find((obj) => { return obj.getUUID() === uuid; });
     if (obj) return obj;
     return null;
   }

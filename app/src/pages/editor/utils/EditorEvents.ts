@@ -342,6 +342,12 @@ export const EDITOR_EVENT = {
   IsRenderingSignal: "IsRenderingSignal",
 
   /**
+   * Signal for saving the animation object as a json file
+   * @returns {void}
+   */
+  SaveAnimationObject: "SaveAnimationObject",
+
+  /**
    * ***********ANIMATION EVENTS********
    * */
 
