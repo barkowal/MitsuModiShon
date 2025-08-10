@@ -1,4 +1,4 @@
-import type { Quaternion, Vector3 } from "three/webgpu";
+import type { AnimationClipJSON, BufferGeometryJSON, MaterialJSON, Object3DJSON, Object3DJSONObject, Quaternion, ShapeJSON, SkeletonJSON, SourceJSON, TextureJSON, Vector3 } from "three/webgpu";
 import type { EditorEvent } from "./EditorEvents";
 
 export type TreeItem = {
@@ -118,6 +118,12 @@ export type KeyframeSequence = {
     interpolations: Array<number>,
 }
 
+export type KeyframeSequenceJSON = {
+    keyframes: Array<number>,
+    values: Array<Array<number>>,
+    interpolations: Array<number>,
+}
+
 export type AnimationObjectData = {
     enabled: boolean,
     loop: boolean,
@@ -127,9 +133,9 @@ export type AnimationObjectData = {
 export type AnimationObjectJSON = {
     uuid: string,
     loop: boolean,
-    positionAnimation: KeyframeSequence,
-    scaleAnimation: KeyframeSequence,
-    rotationAnimation: KeyframeSequence,
+    positionAnimation: KeyframeSequence | KeyframeSequenceJSON,
+    scaleAnimation: KeyframeSequence | KeyframeSequenceJSON,
+    rotationAnimation: KeyframeSequence | KeyframeSequenceJSON,
 }
 
 export const SetKeyframeArrayData = {

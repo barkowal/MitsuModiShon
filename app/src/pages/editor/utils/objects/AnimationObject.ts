@@ -1,8 +1,9 @@
 import * as THREE from "three/webgpu";
-import { ANIMATION_PROPERTY, type AnimationObjectData, type KeyframeSequence } from "../Types";
+import { ANIMATION_PROPERTY, type AnimationObjectData, type AnimationObjectJSON, type KeyframeSequence } from "../Types";
 import { insertSort } from "@/lib/utils";
 import { GetEasing } from "../GetEasing";
 import { generateUUID } from "three/src/math/MathUtils.js";
+import { KeyframeSequenctToJSON } from "../utils";
 
 export class AnimationObject {
   private rootObject: THREE.Object3D;
@@ -10,7 +11,7 @@ export class AnimationObject {
   private mixer: THREE.AnimationMixer;
   private actions: Array<THREE.AnimationAction | null>;
   private animationSequences: Array<KeyframeSequence>;
-  private fps: number;
+  private fps: number;  // TODO this shouldn't be here
   private isPlaying: boolean;
   private isLooping: boolean;
 
@@ -83,6 +84,10 @@ export class AnimationObject {
 
   getIsLooping(): boolean {
     return this.isLooping;
+  }
+
+  setFps(fps: number) {
+    this.fps = fps;
   }
 
   setLooping(enableLooping: boolean) {
@@ -181,11 +186,27 @@ export class AnimationObject {
     const data = {
       uuid: this.uuid,
       loop: this.isLooping,
-      positionAnimation: this.animationSequences[ANIMATION_PROPERTY.Position],
-      scaleAnimation: this.animationSequences[ANIMATION_PROPERTY.Scale],
-      rotationAnimation: this.animationSequences[ANIMATION_PROPERTY.Rotation],
+      positionAnimation: KeyframeSequenctToJSON(this.animationSequences[ANIMATION_PROPERTY.Position]),
+      scaleAnimation: KeyframeSequenctToJSON(this.animationSequences[ANIMATION_PROPERTY.Scale]),
+      rotationAnimation: KeyframeSequenctToJSON(this.animationSequences[ANIMATION_PROPERTY.Rotation]),
     };
     return data;
+  }
+
+  setFromJSON(json: AnimationObjectJSON) {
+    this.setLooping(json.loop);
+    if (json.positionAnimation.keyframes.length !== 0) {
+      this.animationSequences[ANIMATION_PROPERTY.Position] = json.positionAnimation as KeyframeSequence;
+      this.updateAnimation(ANIMATION_PROPERTY.Position);
+    }
+    if (json.scaleAnimation.keyframes.length !== 0) {
+      this.animationSequences[ANIMATION_PROPERTY.Scale] = json.scaleAnimation as KeyframeSequence;
+      this.updateAnimation(ANIMATION_PROPERTY.Scale);
+    }
+    if (json.rotationAnimation.keyframes.length !== 0) {
+      this.animationSequences[ANIMATION_PROPERTY.Rotation] = json.rotationAnimation as KeyframeSequence;
+      this.updateAnimation(ANIMATION_PROPERTY.Rotation);
+    }
   }
 
   // TODO instead of making new arrays all the time,

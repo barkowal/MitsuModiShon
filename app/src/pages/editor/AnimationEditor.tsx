@@ -32,7 +32,7 @@ function AnimationEditor() {
     const loop = new AnimationLoop(rendererController);
 
     const objectModeHandler = new ObjectModeHandler(commandHistory, uiController, selectionController, scene);
-    const animationModeHandler = new AnimationModeHandler(commandHistory, loop, uiController, selectionController);
+    const animationModeHandler = new AnimationModeHandler(commandHistory, loop, uiController, selectionController, scene);
 
     objectModeHandler.initEventHandlers();
     animationModeHandler.initEventHandlers();

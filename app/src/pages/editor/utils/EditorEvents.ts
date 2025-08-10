@@ -348,6 +348,12 @@ export const EDITOR_EVENT = {
   SaveAnimationObject: "SaveAnimationObject",
 
   /**
+   * Signal for Uploading animation object to the scene
+   * @returns {string} fileData - contents of the file
+   */
+  UploadAnimationObject: "UploadAnimationObject",
+
+  /**
    * ***********ANIMATION EVENTS********
    * */
 

@@ -1,5 +1,5 @@
 import * as THREE from "three/webgpu";
-import type { Point2d, Vec3 } from "./Types";
+import type { KeyframeSequence, KeyframeSequenceJSON, Point2d, Vec3 } from "./Types";
 
 export function convertTVector3ToVec3(vec: THREE.Vector3): Vec3 {
   return {
@@ -75,4 +75,41 @@ export function distanceFromLine(pointA: Point2d, pointB: Point2d, pointC: Point
 
 export function distanceBetweenPoints(pointA: Point2d, pointB: Point2d): number {
   return Math.sqrt(Math.pow(pointA.y - pointB.y, 2) + Math.pow(pointA.x - pointB.x, 2));
+}
+
+export function KeyframeSequenctToJSON(sequence: KeyframeSequence): KeyframeSequenceJSON {
+  const values: Array<Array<number>> = [];
+
+  sequence.values.forEach((valueArray) => {
+    const arr = valueArray.toArray();
+    values.push(arr);
+  });
+
+  return {
+    keyframes: sequence.keyframes,
+    values: values,
+    interpolations: sequence.interpolations,
+  };
+}
+
+export function Vector3ArrayFromNumberArray(data: Array<Array<number>>): Array<THREE.Vector3> {
+  const vec3Arr: Array<THREE.Vector3> = [];
+
+  data.forEach((arr) => {
+    if (arr.length < 2) return;
+    vec3Arr.push(new THREE.Vector3(arr[0], arr[1], arr[2]));
+  });
+
+  return vec3Arr;
+}
+
+export function QuaternionArrayFromNumberArray(data: Array<Array<number>>): Array<THREE.Quaternion> {
+  const quatArr: Array<THREE.Quaternion> = [];
+
+  data.forEach((arr) => {
+    if (arr.length < 3) return;
+    quatArr.push(new THREE.Quaternion(arr[0], arr[1], arr[2], arr[3]));
+  });
+
+  return quatArr;
 }

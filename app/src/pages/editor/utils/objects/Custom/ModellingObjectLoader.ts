@@ -21,6 +21,8 @@ type ModellingObjectJSON = {
   material?: string,
   name?: string,
   layers?: number,
+  userData?: Record<string, unknown>,
+  matrix?: Array<number>,
   objectsGeometry?: string,
   lineWidth?: number,
   lineColor?: number,
@@ -65,6 +67,7 @@ export class ModellingObjectLoader {
     else {
       object = this.objectLoader.parseObject(jsonData.object, geometries, materials, animations);
     }
+
 
     return object;
   }
@@ -119,6 +122,15 @@ export class ModellingObjectLoader {
         object = new ModellingMesh(geometry, material as THREE.Material);
 
         object.name = jsonData.name ? jsonData.name : "ModellingMesh";
+
+        if (jsonData.userData !== undefined) object.userData = jsonData.userData;
+        if (jsonData.matrix !== undefined) {
+          const matri = new THREE.Matrix4().fromArray(jsonData.matrix);
+          object.position.setFromMatrixPosition(matri);
+          object.rotation.setFromRotationMatrix(matri);
+          object.scale.setFromMatrixScale(matri);
+        };
+
         break;
       }
       case "ModellingOutline": {

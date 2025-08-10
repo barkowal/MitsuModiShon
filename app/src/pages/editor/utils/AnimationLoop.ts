@@ -91,6 +91,9 @@ export class AnimationLoop {
 
   setFps(fps: number) {
     this.fps = fps;
+    this.animationObjects.forEach((obj) => {
+      obj.setFps(fps);
+    });
   }
 
   getFps() {

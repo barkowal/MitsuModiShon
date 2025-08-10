@@ -1,13 +1,16 @@
 import type { CommandHistory } from "@/lib/CommandHistory";
-import { ANIMATION_PROPERTY, InterpolationArrayData, SetKeyframeArrayData, type EventHandlerType } from "./Types";
+import { ANIMATION_PROPERTY, InterpolationArrayData, SetKeyframeArrayData, type AnimationObjectJSON, type EventHandlerType } from "./Types";
 import type { UiController } from "./UiController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import type { AnimationLoop } from "./AnimationLoop";
 import { SelectionController } from "./SelectionController";
 import { AnimationObject } from "./objects/AnimationObject";
-import type { Object3D, Quaternion, Vector3 } from "three/webgpu";
+import { Mesh, Scene, type Object3D, type Quaternion, type Vector3 } from "three/webgpu";
 import { DownloadVideo } from "@/lib/DownloadVideo";
 import { DownloadJSON } from "@/lib/DownloadJSON";
+import { LoadAnimationObject } from "./LoadObject";
+import { AddMeshCommand } from "../commands/AddMeshCommand";
+import type ModellingMesh from "./objects/ModellingMesh";
 
 export class AnimationModeHandler {
   private eventHandlers: Array<EventHandlerType>;
@@ -16,14 +19,16 @@ export class AnimationModeHandler {
   private uiController: UiController;
   private selectionController: SelectionController;
   private currentAnimationObject: AnimationObject | null;
+  private scene: Scene;
 
 
-  constructor(commandHistory: CommandHistory, animationLoop: AnimationLoop, uiController: UiController, selectionController: SelectionController) {
+  constructor(commandHistory: CommandHistory, animationLoop: AnimationLoop, uiController: UiController, selectionController: SelectionController, scene: Scene) {
     this.eventHandlers = [];
     this.commandHistory = commandHistory;
     this.animationLoop = animationLoop;
     this.uiController = uiController;
     this.selectionController = selectionController;
+    this.scene = scene;
 
     this.currentAnimationObject = null;
 
@@ -50,6 +55,7 @@ export class AnimationModeHandler {
     this.handleMakeAnimationObject();
 
     this.handleSaveAnimationObject();
+    this.handleUploadAnimationObject();
 
     this.handleSelectionChange();
   }
@@ -312,6 +318,32 @@ export class AnimationModeHandler {
     this.eventHandlers.push({ event: EDITOR_EVENT.SaveAnimationObject, callback: handle });
   }
 
+  private handleUploadAnimationObject() {
+
+    const handle = (file: string) => {
+
+      const object = LoadAnimationObject(file, this.animationLoop);
+
+      if (object) {
+
+        let rootObject = object;
+
+        if (object instanceof AnimationObject) {
+          rootObject = object.getRootObject();
+        }
+
+        if (rootObject instanceof Mesh) {
+          this.commandHistory.addCommand(new AddMeshCommand(this.scene, rootObject));
+          this.uiController.refreshTree();
+        }
+
+      }
+    };
+
+    editorEventBus.on(EDITOR_EVENT.UploadAnimationObject, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.UploadAnimationObject, callback: handle });
+  }
+
 
   private getAnimationObjectsProperty(property: number) {
     if (this.currentAnimationObject === null) return null;
@@ -339,10 +371,11 @@ export class AnimationModeHandler {
     return value;
   }
 
-  // TODO this should be a type
-  private getObjectsJSON(rootObj: Object3D) {
+  private getObjectsJSON(rootObj: Object3D | ModellingMesh) {
+
     const data = rootObj.toJSON();
-    const animationJSON = [];
+
+    const animationJSON: Array<AnimationObjectJSON> = [];
     const animationData: Array<string> = [];
     rootObj.traverse((obj) => {
       if (obj.userData.animationObject !== undefined) animationData.push(obj.userData.animationObject);
@@ -353,7 +386,11 @@ export class AnimationModeHandler {
       if (obj !== null) animationJSON.push(obj.getJSON());
     });
 
-    data.animation = animationJSON;
+    if (animationJSON.length !== 0)
+      //@ts-expect-error dynamic property
+      data.animation = animationJSON;
+
+
     return data;
   }
 }

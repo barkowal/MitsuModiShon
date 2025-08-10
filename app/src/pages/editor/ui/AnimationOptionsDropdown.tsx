@@ -44,7 +44,7 @@ export function AnimationOptionsDropdown() {
             const fileData = e.target.result;
 
             if (typeof fileData === "string")
-                editorEventBus.emit(EDITOR_EVENT.UploadObject, fileData);
+                editorEventBus.emit(EDITOR_EVENT.UploadAnimationObject, fileData);
 
         };
 
