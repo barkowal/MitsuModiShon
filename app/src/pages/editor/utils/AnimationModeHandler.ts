@@ -1,5 +1,5 @@
 import type { CommandHistory } from "@/lib/CommandHistory";
-import { ANIMATION_PROPERTY, InterpolationArrayData, SetKeyframeArrayData, type AnimationObjectJSON, type EventHandlerType } from "./Types";
+import { ANIMATION_PROPERTY, InterpolationArrayData, SetKeyframeArrayData, type EventHandlerType } from "./Types";
 import type { UiController } from "./UiController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import type { AnimationLoop } from "./AnimationLoop";
@@ -8,9 +8,11 @@ import { AnimationObject } from "./objects/AnimationObject";
 import { Mesh, Scene, type Object3D, type Quaternion, type Vector3 } from "three/webgpu";
 import { DownloadVideo } from "@/lib/DownloadVideo";
 import { DownloadJSON } from "@/lib/DownloadJSON";
-import { LoadAnimationObject } from "./LoadObject";
+import { LoadAnimationObject, LoadAnimationScene } from "./LoadObject";
 import { AddMeshCommand } from "../commands/AddMeshCommand";
-import type ModellingMesh from "./objects/ModellingMesh";
+import { GetAnimationSceneJSON, getObjectsJSON } from "./GetJSON";
+import { BACKGROUND_LAYER } from "./Global";
+import { disposeMesh } from "./utils";
 
 export class AnimationModeHandler {
   private eventHandlers: Array<EventHandlerType>;
@@ -56,6 +58,9 @@ export class AnimationModeHandler {
 
     this.handleSaveAnimationObject();
     this.handleUploadAnimationObject();
+
+    this.handleSaveAnimationScene();
+    this.handleLoadAnimationScene();
 
     this.handleSelectionChange();
   }
@@ -308,7 +313,7 @@ export class AnimationModeHandler {
         return;
       }
 
-      const json = this.getObjectsJSON(obj);
+      const json = getObjectsJSON(obj, this.animationLoop);
 
       DownloadJSON(json, obj.name);
 
@@ -322,14 +327,14 @@ export class AnimationModeHandler {
 
     const handle = (file: string) => {
 
-      const object = LoadAnimationObject(file, this.animationLoop);
+      const loadedObject = LoadAnimationObject(file, this.animationLoop);
 
-      if (object) {
+      if (loadedObject) {
 
-        let rootObject = object;
+        let rootObject = loadedObject;
 
-        if (object instanceof AnimationObject) {
-          rootObject = object.getRootObject();
+        if (loadedObject instanceof AnimationObject) {
+          rootObject = loadedObject.getRootObject();
         }
 
         if (rootObject instanceof Mesh) {
@@ -342,6 +347,41 @@ export class AnimationModeHandler {
 
     editorEventBus.on(EDITOR_EVENT.UploadAnimationObject, handle);
     this.eventHandlers.push({ event: EDITOR_EVENT.UploadAnimationObject, callback: handle });
+  }
+
+  private handleSaveAnimationScene() {
+
+    const handle = () => {
+
+      const json = GetAnimationSceneJSON(this.scene, this.animationLoop);
+      DownloadJSON(json, "scene");
+
+    };
+
+    editorEventBus.on(EDITOR_EVENT.SaveAnimationScene, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.SaveAnimationScene, callback: handle });
+  }
+
+  private handleLoadAnimationScene() {
+
+    const handle = (file: string) => {
+
+      this.resetScene();
+      const [settings, sceneObjects] = LoadAnimationScene(file, this.scene, this.animationLoop);
+
+      sceneObjects.forEach((obj) => {
+        if (obj instanceof Mesh) {
+          this.scene.add(obj);
+        }
+      });
+
+      this.uiController.refreshTree();
+      this.uiController.refreshAnimationPlayback(settings);
+
+    };
+
+    editorEventBus.on(EDITOR_EVENT.LoadAnimationScene, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.LoadAnimationScene, callback: handle });
   }
 
 
@@ -371,26 +411,21 @@ export class AnimationModeHandler {
     return value;
   }
 
-  private getObjectsJSON(rootObj: Object3D | ModellingMesh) {
+  private resetScene() {
+    this.commandHistory.clearHistory();
+    this.selectionController.clearAllSelections();
 
-    const data = rootObj.toJSON();
+    const cameraBox = this.animationLoop.getCameraBox();
+    const sceneObjects = this.scene.children.filter((obj) => !obj.layers.isEnabled(BACKGROUND_LAYER) && obj.id !== cameraBox.id);
 
-    const animationJSON: Array<AnimationObjectJSON> = [];
-    const animationData: Array<string> = [];
-    rootObj.traverse((obj) => {
-      if (obj.userData.animationObject !== undefined) animationData.push(obj.userData.animationObject);
+    sceneObjects.forEach((obj) => {
+      this.scene.remove(obj);
+      disposeMesh(this.scene, obj);
     });
 
-    animationData.forEach((uuid) => {
-      const obj = this.animationLoop.findAnimationObjectByID(uuid);
-      if (obj !== null) animationJSON.push(obj.getJSON());
-    });
-
-    if (animationJSON.length !== 0)
-      //@ts-expect-error dynamic property
-      data.animation = animationJSON;
-
-
-    return data;
+    cameraBox.position.set(0, 0, 0);
+    cameraBox.scale.set(1, 1, 1);
+    cameraBox.rotation.set(0, 0, 0, "XYZ");
   }
+
 }

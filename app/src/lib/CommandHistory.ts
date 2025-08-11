@@ -40,11 +40,23 @@ export class CommandHistory {
       const command = this.redoStack.pop();
 
       if (command) {
-        command?.execute();
+        command.execute();
         this.commandStack.push(command);
       }
 
     }
+  }
+
+  clearHistory() {
+    for (const command of this.commandStack) {
+      command.destroy();
+    }
+    this.commandStack = [];
+
+    for (const command of this.redoStack) {
+      command.destroy();
+    }
+    this.redoStack = [];
   }
 
   private removeFirstIfFull() {

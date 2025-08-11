@@ -1,4 +1,4 @@
-import type { AnimationObjectData, MaterialItem, TreeItem, Vec3 } from "@/pages/editor/utils/Types";
+import type { AnimationLoopSettings, AnimationObjectData, MaterialItem, TreeItem, Vec3 } from "@/pages/editor/utils/Types";
 
 export const EDITOR_EVENT = {
   /**
@@ -264,6 +264,12 @@ export const EDITOR_EVENT = {
   RefreshAnimationPanel: "RefreshAnimationPanel",
 
   /**
+   * Signal for changing the playback settings
+   * @returns {AnimationLoopSettings} settings - playback settings
+   */
+  RefreshAnimationPlayback: "RefreshAnimationPlayback",
+
+  /**
    * Signal for setting the duration of the animation loop
    * @returns {number} duration - keyframe duration
    */
@@ -354,6 +360,18 @@ export const EDITOR_EVENT = {
   UploadAnimationObject: "UploadAnimationObject",
 
   /**
+   * Signal for saving the animation scene as a json file
+   * @returns {void}
+   */
+  SaveAnimationScene: "SaveAnimationScene",
+
+  /**
+   * Signal for loading the animation scene from a json file
+   * @returns {string} fileData - scene data 
+   */
+  LoadAnimationScene: "LoadAnimationScene",
+
+  /**
    * ***********ANIMATION EVENTS********
    * */
 
@@ -400,6 +418,7 @@ type eventData =
   | Vec3
   | MaterialItem
   | AnimationObjectData
+  | AnimationLoopSettings
   | Array<number>
   | Array<Vec3>
   | Array<TreeItem>;

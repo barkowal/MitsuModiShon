@@ -13,6 +13,7 @@ export class RendererController {
   private renderer: THREE.WebGPURenderer;
   private editorCamera: THREE.PerspectiveCamera;
   private renderCamera: THREE.Camera;
+  private cameraBox: THREE.Object3D;
   private scene: THREE.Scene;
   private renderRequested: boolean;
   private isRenderingView: boolean;
@@ -34,6 +35,7 @@ export class RendererController {
     this.scene = this.initScene();
     this.editorCamera = this.createEditorCamera();
     this.renderCamera = this.createRenderCamera();
+    this.cameraBox = this.createCameraBox();
 
     this.viewHelper = new ViewHelper(this.editorCamera, this.renderer.domElement);
     AddListener(window, "click", (event: Event) => {
@@ -62,6 +64,10 @@ export class RendererController {
 
   getEditorCamera() {
     return this.editorCamera;
+  }
+
+  getCameraBox() {
+    return this.cameraBox;
   }
 
   getControl() {
@@ -203,8 +209,11 @@ export class RendererController {
     camera.userData.removable = false;
     camera.userData.attachable = false;
     camera.userData.changeableLayers = false;
+    return camera;
+  }
 
-    const cameraHelper = new THREE.CameraHelper(camera);
+  private createCameraBox(): THREE.Object3D {
+    const cameraHelper = new THREE.CameraHelper(this.renderCamera);
     cameraHelper.userData.removable = false;
     cameraHelper.userData.attachable = false;
     cameraHelper.name = "Visualizer";
@@ -218,12 +227,12 @@ export class RendererController {
     cameraBox.userData.removable = false;
     cameraBox.userData.attachable = false;
 
-    cameraBox.add(camera);
+    cameraBox.add(this.renderCamera);
     cameraBox.add(cameraHelper);
 
     this.scene.add(cameraBox);
 
-    return camera;
+    return cameraBox;
   }
 
   private initControls() {

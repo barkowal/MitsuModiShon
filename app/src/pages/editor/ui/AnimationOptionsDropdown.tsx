@@ -1,19 +1,31 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Download, ImageDown, Menu, Upload, Camera } from "lucide-react";
+import { Download, ImageDown, Menu, Upload, Camera, Save } from "lucide-react";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { Input } from "@/components/ui/input";
-import type { ChangeEvent } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { RenderAnimationDialog } from "./RenderAnimationDialog";
+import { SceneLoadDialog } from "./SceneLoadDialog";
 
 export function AnimationOptionsDropdown() {
+    const [sendObject, setSendObject] = useState(true);
+    const inputRef = useRef<null | HTMLInputElement>(null);
 
     const signalDownload = () => {
         editorEventBus.emit(EDITOR_EVENT.SaveAnimationObject);
     };
 
+    const signalSaveScene = () => {
+        editorEventBus.emit(EDITOR_EVENT.SaveAnimationScene);
+    };
+
     const signalRenderImage = () => {
         editorEventBus.emit(EDITOR_EVENT.RenderImage);
+    };
+
+    const triggerInputClick = () => {
+        if (inputRef.current !== null)
+            inputRef.current.click();
     };
 
     const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +56,10 @@ export function AnimationOptionsDropdown() {
             const fileData = e.target.result;
 
             if (typeof fileData === "string")
-                editorEventBus.emit(EDITOR_EVENT.UploadAnimationObject, fileData);
+                if (sendObject)
+                    editorEventBus.emit(EDITOR_EVENT.UploadAnimationObject, fileData);
+                else
+                    editorEventBus.emit(EDITOR_EVENT.LoadAnimationScene, fileData);
 
         };
 
@@ -66,9 +81,20 @@ export function AnimationOptionsDropdown() {
                     <Download /><p>Export Object</p >
                 </DropdownMenuItem>
 
-                < DropdownMenuItem className="p-0" >
+                <DropdownMenuItem onClick={signalSaveScene}>
+                    <Save /><p>Save Scene</p >
+                </DropdownMenuItem>
+
+                < DropdownMenuItem className="p-0" onClick={() => { setSendObject(true); }} >
                     <label htmlFor="fileUpload" className="[&_svg]:size-6 p-2 w-full flex gap-2" >
                         <Upload /><p>Upload Animation</p >
+                    </label>
+                </DropdownMenuItem>
+
+
+                < DropdownMenuItem className="p-0"  >
+                    <label htmlFor="sceneLoadDialog" className="[&_svg]:size-6 p-2 w-full flex gap-2" >
+                        <Upload /><p>Load Scene</p >
                     </label>
                 </DropdownMenuItem>
 
@@ -84,9 +110,10 @@ export function AnimationOptionsDropdown() {
 
             </DropdownMenuContent>
 
-            < Input id="fileUpload" type="file" accept=".json" onChange={handleFileUpload} onClick={(e) => (e.currentTarget.value = "")
+            < Input ref={inputRef} id="fileUpload" type="file" accept=".json" onChange={handleFileUpload} onClick={(e) => (e.currentTarget.value = "")
             } className="hidden" />
             <RenderAnimationDialog />
+            <SceneLoadDialog onConfirm={() => { setSendObject(false); triggerInputClick(); }} />
 
         </DropdownMenu>);
 

@@ -1,6 +1,6 @@
 import * as THREE from "three/webgpu";
 import { BACKGROUND_LAYER, INTERSECTION_LAYER, ROOT_ID } from "./Global";
-import type { MaterialItem, RendererMemoryInfo, TreeItem } from "./Types";
+import type { AnimationLoopSettings, MaterialItem, RendererMemoryInfo, TreeItem } from "./Types";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import type { AnimationObject } from "./objects/AnimationObject";
 
@@ -163,6 +163,10 @@ export class UiController {
         const data = obj.getAnimationData();
         editorEventBus.emit(EDITOR_EVENT.RefreshAnimationView, data);
 
+    }
+
+    refreshAnimationPlayback(settings: AnimationLoopSettings) {
+        editorEventBus.emit(EDITOR_EVENT.RefreshAnimationPlayback, settings);
     }
 
 

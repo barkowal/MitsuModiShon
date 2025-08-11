@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Film } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import DraggableInput from "@/components/DraggableInput";
+import type { AnimationLoopSettings } from "../../utils/Types";
 
 
 export function PlaybackPanel() {
@@ -63,12 +64,20 @@ export function PlaybackPanel() {
 
       };
 
+      const handleRefreshPlayback = (settings: AnimationLoopSettings) => {
+        setDuration(settings.duration);
+        setIsLooping(settings.loop);
+        setFps(settings.fps);
+      };
+
       editorEventBus.on(EDITOR_EVENT.RefreshAnimationPanel, handleRefreshAnimationPanel);
       editorEventBus.on(EDITOR_EVENT.StopPlayback, handleStopPlayback);
+      editorEventBus.on(EDITOR_EVENT.RefreshAnimationPlayback, handleRefreshPlayback);
 
       return (() => {
         editorEventBus.off(EDITOR_EVENT.RefreshAnimationPanel, handleRefreshAnimationPanel);
         editorEventBus.off(EDITOR_EVENT.StopPlayback, handleStopPlayback);
+        editorEventBus.off(EDITOR_EVENT.RefreshAnimationPlayback, handleRefreshPlayback);
       });
 
     }, [currentKeyframe, duration]);

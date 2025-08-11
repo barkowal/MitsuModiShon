@@ -1,8 +1,8 @@
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import { AnimationObject } from "./objects/AnimationObject";
 import { ModellingObjectLoader } from "./objects/Custom/ModellingObjectLoader";
-import { Object3D, ObjectLoader } from "three/webgpu";
-import type { AnimationObjectJSON } from "./Types";
+import { Color, Matrix4, Object3D, ObjectLoader, Scene, type Object3DJSON } from "three/webgpu";
+import type { AnimationObjectJSON, AnimationSceneJSON, CameraSettings } from "./Types";
 import { QuaternionArrayFromNumberArray, Vector3ArrayFromNumberArray } from "./utils";
 import type { AnimationLoop } from "./AnimationLoop";
 
@@ -57,7 +57,22 @@ export function LoadAnimationObject(file: string, loop: AnimationLoop): Animatio
 
   });
 
-  return animationObjects[0];
+  return object;
+}
+
+export function LoadAnimationScene(file: string, scene: Scene, loop: AnimationLoop) {
+  const jsonData: AnimationSceneJSON = JSON.parse(file);
+
+  scene.background = new Color(jsonData.sceneColor);
+  loop.setSettings(jsonData.animationLoopSettings);
+
+  const cameraBox = loop.getCameraBox();
+  loadCameraBox(cameraBox, loop, jsonData.cameraObject);
+
+  const objects = jsonData.sceneObjects;
+  const sceneObjects = loadSceneObjects(objects, loop);
+
+  return [jsonData.animationLoopSettings, sceneObjects] as const;
 }
 
 // TODO ugly types
@@ -92,5 +107,47 @@ function parseAnimationData(json: AnimationObjectJSON): AnimationObjectJSON {
   }
 
   return data;
+}
+
+function loadCameraBox(cameraBox: Object3D, loop: AnimationLoop, cameraData: CameraSettings) {
+  const cameraMatrix = new Matrix4().fromArray(cameraData.matrix.elements);
+  cameraBox.position.setFromMatrixPosition(cameraMatrix);
+  cameraBox.scale.setFromMatrixScale(cameraMatrix);
+  cameraBox.rotation.setFromRotationMatrix(cameraMatrix);
+
+  if (cameraData.animation !== undefined) {
+    let cameraAnimation = loop.getAnimationObjects().find(obj => (obj.getRootObjectID() === cameraBox.id));
+    if (!cameraAnimation) {
+      cameraAnimation = new AnimationObject(cameraBox, loop.getFps());
+      loop.addAnimationObject(cameraAnimation);
+    }
+    cameraAnimation.setFromJSON(parseAnimationData(cameraData.animation));
+  }
+}
+
+function loadSceneObjects(objects: Array<Object3DJSON>, loop: AnimationLoop) {
+  const sceneObjects: Array<Object3D> = [];
+
+  objects.forEach((obj) => {
+
+    const data = JSON.stringify(obj);
+    const loadedObject = LoadAnimationObject(data, loop);
+
+    if (loadedObject) {
+      const transformMatrix = new Matrix4().fromArray(obj.object.matrix);
+      let rootObj;
+
+      if (loadedObject instanceof AnimationObject) {
+        rootObj = loadedObject.getRootObject();
+      } else {
+        rootObj = loadedObject;
+      }
+      rootObj.position.setFromMatrixPosition(transformMatrix);
+
+      sceneObjects.push(rootObj);
+    }
+  });
+
+  return sceneObjects;
 }
 

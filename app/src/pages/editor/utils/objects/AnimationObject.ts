@@ -90,6 +90,26 @@ export class AnimationObject {
     this.fps = fps;
   }
 
+  resetAnimation() {
+    this.animationSequences.forEach((sequence) => {
+      sequence.keyframes = [];
+      sequence.values = [];
+      sequence.interpolations = [];
+    });
+
+    for (let i = 0; i < this.actions.length; i++) {
+      const action = this.actions[i];
+
+      if (action !== null) {
+        action.stop();
+        this.mixer.uncacheAction(action.getClip());
+      }
+
+      this.actions[i] = null;
+    }
+
+  }
+
   setLooping(enableLooping: boolean) {
 
     this.isLooping = enableLooping;
@@ -175,11 +195,20 @@ export class AnimationObject {
   }
 
   dispose() {
-    this.actions.forEach((action) => {
-      if (action !== null)
+    for (let i = 0; i < this.actions.length; i++) {
+      const action = this.actions[i];
+
+      if (action !== null) {
+        action.stop();
         this.mixer.uncacheAction(action.getClip());
-      action = null;
-    });
+      }
+
+      this.actions[i] = null;
+    }
+  }
+
+  isAnimationObject() {
+    return true;
   }
 
   getJSON() {
@@ -195,6 +224,7 @@ export class AnimationObject {
 
   setFromJSON(json: AnimationObjectJSON) {
     this.setLooping(json.loop);
+    this.resetAnimation();
     if (json.positionAnimation.keyframes.length !== 0) {
       this.animationSequences[ANIMATION_PROPERTY.Position] = json.positionAnimation as KeyframeSequence;
       this.updateAnimation(ANIMATION_PROPERTY.Position);

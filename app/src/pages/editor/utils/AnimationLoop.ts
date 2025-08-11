@@ -3,7 +3,7 @@ import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import type { RendererController } from "./RendererController";
 import type { AnimationObject } from "./objects/AnimationObject";
 import { DEFAULT_FPS, DEFAULT_KEYFRAME_DURATION, DEFAULT_LOOP_SETTING } from "./Global";
-import { RenderSettings } from "./Types";
+import { RenderSettings, type AnimationLoopSettings } from "./Types";
 
 export class AnimationLoop {
   private clock: Clock;
@@ -108,8 +108,30 @@ export class AnimationLoop {
     return this.keyframeToTime(this.keyframe);
   }
 
+  getAnimationObjects(): Array<AnimationObject> {
+    return this.animationObjects;
+  }
+
   setLoop(loop: boolean) {
     this.loop = loop;
+  }
+
+  getCameraBox() {
+    return this.rendererController.getCameraBox();
+  }
+
+  getSettings(): AnimationLoopSettings {
+    return {
+      fps: this.fps,
+      loop: this.loop,
+      duration: this.duration,
+    };
+  }
+
+  setSettings(settings: AnimationLoopSettings) {
+    this.setFps(settings.fps);
+    this.setLoop(settings.loop);
+    this.setDuration(settings.duration);
   }
 
   addAnimationObject(obj: AnimationObject) {

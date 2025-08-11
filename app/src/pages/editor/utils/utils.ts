@@ -54,8 +54,12 @@ export function isArrayOfMeshes(array: Array<THREE.Object3D>): boolean {
   return onlyMeshes;
 }
 
-// TODO dispose all childs
-export function disposeMesh(scene: THREE.Scene, object: THREE.Object3D) {
+// TODO check
+export function disposeMesh(scene: THREE.Scene, object3d: THREE.Object3D) {
+  object3d.traverse((obj) => disposeObject(scene, obj));
+}
+
+function disposeObject(scene: THREE.Scene, object: THREE.Object3D) {
   if (object && !scene.getObjectById(object.id)) {
     if (object instanceof THREE.Mesh) {
       if ("dispose" in object.material) {
