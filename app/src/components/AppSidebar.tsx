@@ -10,9 +10,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Box, Clapperboard, Home } from "lucide-react";
+import { Box, Clapperboard, Home, PackageSearch } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Separator } from "./ui/separator";
+import { AccountDropdown } from "@/pages/account/AccountDropdown";
 
 const items = [
   {
@@ -29,6 +30,11 @@ const items = [
     title: "ANIMATION",
     url: "/Animation",
     icon: Clapperboard,
+  },
+  {
+    title: "Mitsu Objects",
+    url: "/MitsuObjectsListing",
+    icon: PackageSearch,
   },
 ];
 
@@ -72,7 +78,9 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <p className="w-full text-center font-bold ">ACCOUNT</p>
+
+            <AccountDropdown />
+
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
