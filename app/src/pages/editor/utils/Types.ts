@@ -73,6 +73,12 @@ export type ListenerHandler = {
     capture: boolean
 }
 
+export type UploadableObjectData = {
+    imgData: string,
+    objectData: string,
+    objectName: string,
+}
+
 export type EventHandlerType = {
     event: EditorEvent,
     callback: CallableFunction

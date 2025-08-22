@@ -1,4 +1,4 @@
-import type { AnimationLoopSettings, AnimationObjectData, MaterialItem, TreeItem, Vec3 } from "@/pages/editor/utils/Types";
+import type { AnimationLoopSettings, AnimationObjectData, MaterialItem, TreeItem, UploadableObjectData, Vec3 } from "@/pages/editor/utils/Types";
 
 export const EDITOR_EVENT = {
   /**
@@ -223,6 +223,18 @@ export const EDITOR_EVENT = {
   UploadObject: "UploadObject",
 
   /**
+   * Signal for sending the prepared data for upload
+   * @returns {UploadableObjectData} objectData - data that will be uploaded to the server 
+   */
+  UploadObjectToServer: "UploadObjectToServer",
+
+  /**
+   * Signal for preparing the data to be uploaded to the server
+   * @returns {void} 
+   */
+  PrepareObjectDataForUpload: "PrepareObjectDataForUpload",
+
+  /**
    * Signal for rendering and downloading image from canvas
    * @returns {void}
    */
@@ -419,6 +431,7 @@ type eventData =
   | MaterialItem
   | AnimationObjectData
   | AnimationLoopSettings
+  | UploadableObjectData
   | Array<number>
   | Array<Vec3>
   | Array<TreeItem>;

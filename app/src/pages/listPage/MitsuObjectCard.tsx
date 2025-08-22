@@ -31,7 +31,7 @@ export function MitsuObjectCard({ mitsuObjectData }: Props) {
         <Separator orientation="horizontal" />
       </CardHeader>
       <CardContent className="w-100% p-0 m-0">
-        <img src={imgUrl} width={256} height={256} className="rounded-b-2xl" />
+        <img src={imgUrl} width={256} height={256} className="rounded-b-2xl aspect-square" />
       </CardContent>
     </Card>
     {/* <EyeShapeDialog eyeShape={eyeShape} showDialog={showDialog} setShowDialog={setShowDialog} /> */}

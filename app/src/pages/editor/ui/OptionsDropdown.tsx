@@ -4,8 +4,11 @@ import { Download, ImageDown, Menu, Upload } from "lucide-react";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { Input } from "@/components/ui/input";
 import type { ChangeEvent } from "react";
+import { useAuth } from "@/hooks/auth/useAuth";
+import UploadObjectDialog from "./Upload/UploadObjectDialog";
 
 export function OptionsDropdown() {
+  const auth = useAuth();
 
   const signalDownload = () => {
     editorEventBus.emit(EDITOR_EVENT.SaveObject);
@@ -77,9 +80,21 @@ export function OptionsDropdown() {
           <ImageDown /><p>Render Image</p>
         </DropdownMenuItem>
 
+        {
+          auth?.userName ?
+            <DropdownMenuItem>
+              <label htmlFor="uploadObjectDialog" className="[&_svg]:size-6 w-full flex gap-2">
+                <Upload /><p>Upload to server</p>
+              </label>
+            </DropdownMenuItem>
+            : null
+        }
+
       </DropdownMenuContent>
 
       <Input id="fileUpload" type="file" accept=".json" onChange={handleFileUpload} onClick={(e) => (e.currentTarget.value = "")} className="hidden" />
+
+      <UploadObjectDialog />
 
     </DropdownMenu>
   );

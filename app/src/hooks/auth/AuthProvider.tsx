@@ -76,13 +76,12 @@ const AuthProvider = ({ children }: React.PropsWithChildren) => {
         const response = await fetch(resource, config);
         if (!response.ok && response.status === 401 && userName !== "") {
 
-            const response = await fetch(`/api/v1/auth/refresh`, {
+            const refreshResponse = await fetch(`/api/v1/auth/refresh`, {
                 method: "GET",
                 credentials: "include",
             });
-            const res = await response.json();
 
-            if (!res.ok) {
+            if (!refreshResponse.ok) {
                 setUserName("");
                 localStorage.removeItem("username");
                 return Promise.reject(response);

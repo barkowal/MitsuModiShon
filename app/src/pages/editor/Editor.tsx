@@ -183,12 +183,16 @@ function Editor() {
       <div className="w-full h-full flex justify-center overflow-auto">
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel>
-            <div tabIndex={1} onKeyDown={(event: KeyboardEvent) => { HandleKeyboardPress(event); }}
-              className="flex-col inline-flex w-full h-full bg-background">
+            <div className="flex-col inline-flex w-full h-full bg-background" >
               <div className="flex-auto bg-card border border-b-card-foreground">
                 <EditorTopBar />
               </div>
-              <div ref={canvasRef} className="flex-auto" >
+              <div
+                ref={canvasRef}
+                tabIndex={1}
+                onKeyDown={(event: KeyboardEvent) => { HandleKeyboardPress(event); }}
+                onMouseOver={(e) => { e.currentTarget.focus(); }}
+                className="flex-auto" >
               </div>
               <ToolbarPanel />
               <RenderInfoPanel />
