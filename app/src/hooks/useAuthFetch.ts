@@ -10,7 +10,7 @@ export function useAuthFetch<FetchType>(url: string) {
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const makeRequest = useCallback(async (params: string = "", method: string, body?: FormData) => {
+  const makeRequest = useCallback(async (params: string = "", method: string, body?: FormData | string, headers?: Record<string, string>) => {
 
     if (auth === null) {
       console.warn("Error at react hook. Auth is not provided.");
@@ -35,6 +35,7 @@ export function useAuthFetch<FetchType>(url: string) {
           signal: abortControllerRef.current?.signal,
           method: method,
           body: body,
+          headers: headers,
           credentials: "include",
         });
       }

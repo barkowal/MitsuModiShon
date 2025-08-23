@@ -2,12 +2,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import type { MitsuShortObjectData } from "@/lib/types/ServerResponseTypes";
 import { useState } from "react";
+import { MitsuObjectDialog } from "./MitsuObjectDialog";
+import { MitsuUserObjectDialog } from "./MitsuUserObjectsDialog";
 
 type Props = {
   mitsuObjectData: MitsuShortObjectData;
+  isUsers?: boolean;
 }
 
-export function MitsuObjectCard({ mitsuObjectData }: Props) {
+export function MitsuObjectCard({ mitsuObjectData, isUsers }: Props) {
   const [showDialog, setShowDialog] = useState(false);
   const imgUrl = "/api/v1/image" + mitsuObjectData.imgPath;
 
@@ -22,10 +25,10 @@ export function MitsuObjectCard({ mitsuObjectData }: Props) {
         <CardTitle>{mitsuObjectData.name}</CardTitle>
         <CardDescription>
           <p>
-            Username: {mitsuObjectData.username}
+            MitusModiShon Object
           </p>
           <p>
-            MitusModiShon Object
+            Published By: {mitsuObjectData.username}
           </p>
         </CardDescription>
         <Separator orientation="horizontal" />
@@ -34,7 +37,12 @@ export function MitsuObjectCard({ mitsuObjectData }: Props) {
         <img src={imgUrl} width={256} height={256} className="rounded-b-2xl aspect-square" />
       </CardContent>
     </Card>
-    {/* <EyeShapeDialog eyeShape={eyeShape} showDialog={showDialog} setShowDialog={setShowDialog} /> */}
+    {
+      isUsers ?
+        <MitsuUserObjectDialog objectData={mitsuObjectData} showDialog={showDialog} setShowDialog={setShowDialog} />
+        :
+        <MitsuObjectDialog objectData={mitsuObjectData} showDialog={showDialog} setShowDialog={setShowDialog} />
+    }
 
   </>);
 

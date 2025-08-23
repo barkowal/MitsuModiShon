@@ -104,7 +104,7 @@ export function MitsuUsersObjectsListing({ url }: Props) {
               objectsData ?
                 <div className="p-2 w-[90%] m-auto flex items-start space-x-6 flex-wrap">
                   {objectsData.data.result.objects.map((objectData, i) =>
-                    <MitsuObjectCard key={i} mitsuObjectData={objectData} />
+                    <MitsuObjectCard key={i} mitsuObjectData={objectData} isUsers={true} />
                   )}
                 </div>
                 :

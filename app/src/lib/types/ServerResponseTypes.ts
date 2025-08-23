@@ -34,8 +34,10 @@ export type MitsuShortObjectResponse = {
 }
 
 export type MitsuShortObjectData = {
+  id: number,
   name: string,
   createdAt: Date,
   imgPath: string,
   username: string,
+  isPublic: boolean,
 }

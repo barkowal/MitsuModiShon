@@ -25,3 +25,15 @@ export function insertSort(arr: number[], num: number): number {
   arr.splice(left, 0, num);
   return left;
 }
+
+export function formatDateString(dateString: string) {
+  const date = new Date(dateString);
+
+  const day: string = String(date.getUTCDate()).padStart(2, "0");
+  const month: string = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const year: string = String(date.getUTCFullYear());
+
+  const formattedDate: string = `${day}.${month}.${year}`;
+
+  return formattedDate;
+}

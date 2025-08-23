@@ -51,11 +51,11 @@ export default function UploadObject3DForm({ sendData }: Props) {
             {/* <Button onClick={() => { console.log("TODO"); }} > OVERRIDE EXISTING OBJECT</Button> */}
 
             {error ?
-                <span className="text-center text-destructive">{error}</span>
+                <span className="text-center text-fail-primary">{error}</span>
                 : null
             }
             {response ?
-                <span className="text-center text-green-300">{response.message}</span>
+                <span className="text-center text-success-primary">{response.message}</span>
                 : null
             }
 

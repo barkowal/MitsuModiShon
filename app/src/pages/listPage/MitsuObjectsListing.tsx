@@ -39,7 +39,7 @@ export function MitsuObjectsListing({ url }: Props) {
 
         {
           error ?
-            <span className="text-destructive w-full p-2 space-x-2 flex text-2xl justify-center items-center">
+            <span className="text-fail-primary w-full p-2 space-x-2 flex text-2xl justify-center items-center">
               <p>Something went wrong. </p>
               <p>{objectsData?.message}</p>
             </span> :
@@ -48,7 +48,7 @@ export function MitsuObjectsListing({ url }: Props) {
 
         {
           isLoading ?
-            <span className="text-chart-1 w-full p-2 space-x-2 flex text-2xl justify-center items-center">
+            <span className="w-full p-2 space-x-2 flex text-2xl justify-center items-center">
               <LoadingText LoadingText="LOADING" />
             </span> :
             null
