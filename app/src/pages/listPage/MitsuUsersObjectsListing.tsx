@@ -5,15 +5,21 @@ import { useEffect, useState } from "react";
 import { MitsuObjectCard } from "./MitsuObjectCard";
 import { ListPaginationComponent } from "@/components/ListPaginationComponent";
 import { SearchBar } from "@/components/SearchBar";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Funnel } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   url: string,
 };
 
-export function MitsuObjectsListing({ url }: Props) {
+// TODO for now this is another component, in the future make it as one with public
+// or not if it would make things too complex
+export function MitsuUsersObjectsListing({ url }: Props) {
   const { data: objectsData, isLoading, error, getData: getObjectsData } = useAuthGetFetch<MitsuShortObjectResponse>(url);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchPublic, setSearchPublic] = useState<number>(1); // 3 - public and private, 2 - only public, 1-only private
   const pageLimit = 10;
   const lastPage = objectsData ? objectsData.data.result.pageData.lastPage : 1;
 
@@ -22,18 +28,55 @@ export function MitsuObjectsListing({ url }: Props) {
     setCurrentPage(1);
   };
 
+  const filterPublic = (val: number) => {
+    const publicValue = searchPublic + val;
+    setSearchPublic(publicValue === 0 ? 1 : publicValue);
+    setCurrentPage(1);
+  };
+
   useEffect(() => {
 
-    getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}`);
+    if (searchPublic !== 3) {
+      getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}&public=${searchPublic % 2 === 0} `);
+    } else {
+      getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}`);
+    }
 
-  }, [getObjectsData, searchKeyword, currentPage]);
+  }, [getObjectsData, searchKeyword, currentPage, searchPublic]);
 
   return (
     <>
 
-      <div className="w-11/12 my-2">
+      <div className="w-11/12 my-2 flex justify-center gap-2">
+
         <SearchBar onSearch={handleSearch} />
-      </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild >
+            <Button variant="outline">
+              <Funnel />Show
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuCheckboxItem
+              className="capitalize"
+              checked={(searchPublic & 1) === 1}
+              onCheckedChange={(value) =>
+                filterPublic(value ? 1 : -1)
+              }>
+              Private
+            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              className="capitalize"
+              checked={(searchPublic & 2) > 0}
+              onCheckedChange={(value) =>
+                filterPublic(value ? 2 : -2)
+              }>
+              Public
+            </DropdownMenuCheckboxItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div >
 
       <div className="w-11/12">
 

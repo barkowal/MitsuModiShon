@@ -32,8 +32,8 @@ const items = [
     icon: Clapperboard,
   },
   {
-    title: "Mitsu Objects",
-    url: "/MitsuObjectsListing",
+    title: "OBJECTS3D",
+    url: "/MitsuListingPage",
     icon: PackageSearch,
   },
 ];
