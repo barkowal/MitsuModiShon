@@ -26,7 +26,7 @@ export default function UploadObject3DForm({ sendData }: Props) {
 
         formData.append("image", DataURLToBlob(sendData.imgData));
         formData.append("object3D", objectBlob);
-        formData.append("objectData", JSON.stringify({ name: name, is_public: isPublic }));
+        formData.append("objectData", JSON.stringify({ name: name, is_public: isPublic, is_animated: sendData.animationObject }));
 
         makeRequest("", "POST", formData);
     };

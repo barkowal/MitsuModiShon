@@ -17,7 +17,8 @@ export function MitsuUsersObjectsListing({ url }: Props) {
   const { data: objectsData, isLoading, error, getData: getObjectsData } = useAuthGetFetch<MitsuShortObjectResponse>(url);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [searchPublic, setSearchPublic] = useState<number>(1); // 3 - public and private, 2 - only public, 1-only private
+  const [searchPublic, setSearchPublic] = useState<number>(3); // 3 - public and private, 2 - only public, 1-only private
+  const [searchAnimated, setSearchAnimated] = useState<number>(1); // 3 - animated and non-animated, 2 - only animated, 1-only non animated 
   const pageLimit = 10;
   const lastPage = objectsData ? objectsData.data.result.pageData.lastPage : 1;
 
@@ -31,24 +32,34 @@ export function MitsuUsersObjectsListing({ url }: Props) {
     setCurrentPage(1);
   };
 
+  const handleAnimatedFilter = (val: number) => {
+    setSearchAnimated(val);
+    setCurrentPage(1);
+  };
+
   useEffect(() => {
 
+    let url = `?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}`;
+
     if (searchPublic !== 3) {
-      getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}&public=${searchPublic % 2 === 0} `);
-    } else {
-      getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}`);
+      url += `&public=${searchPublic % 2 === 0}`;
+    }
+    if (searchAnimated !== 3) {
+      url += `&animated=${searchAnimated % 2 === 0}`;
     }
 
-  }, [getObjectsData, searchKeyword, currentPage, searchPublic]);
+    getObjectsData(url);
+
+  }, [getObjectsData, searchKeyword, currentPage, searchPublic, searchAnimated]);
 
   return (
     <>
 
-      <div className="w-11/12 my-2 flex justify-center gap-2">
+      <div className="w-full my-2 flex justify-center gap-2">
 
         <SearchBar onSearch={handleSearch} minSearchWidth="40ch" />
 
-        <UserListFilter onPublicFilterChange={handlePublicFilter} />
+        <UserListFilter onPublicFilterChange={handlePublicFilter} onAnimatedFilterChange={handleAnimatedFilter} />
 
       </div >
 
@@ -65,7 +76,7 @@ export function MitsuUsersObjectsListing({ url }: Props) {
 
         {
           isLoading ?
-            <span className="text-chart-1 w-full p-2 space-x-2 flex text-2xl justify-center items-center">
+            <span className=" w-full p-2 space-x-2 flex text-2xl justify-center items-center">
               <LoadingText LoadingText="LOADING" />
             </span> :
             null
@@ -90,7 +101,7 @@ export function MitsuUsersObjectsListing({ url }: Props) {
 
       </div>
 
-      <div className="w-11/12 my-2">
+      <div className="w-full my-2">
         <ListPaginationComponent currentPage={currentPage} lastPage={lastPage} onPageChange={(page: number) => { setCurrentPage(page); }} />
       </div>
 

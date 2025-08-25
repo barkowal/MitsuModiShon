@@ -1,13 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Download, ImageDown, Menu, Upload, Camera, Save } from "lucide-react";
+import { Download, ImageDown, Menu, Upload, Camera, Save, CloudDownload } from "lucide-react";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { Input } from "@/components/ui/input";
 import { useRef, useState, type ChangeEvent } from "react";
 import { RenderAnimationDialog } from "./RenderAnimationDialog";
 import { SceneLoadDialog } from "./SceneLoadDialog";
+import { ServerDownloadDialog } from "./ServerDownload/ServerDownloadDialog";
+import { useAuth } from "@/hooks/auth/useAuth";
+import UploadObjectDialog from "./Upload/UploadObjectDialog";
 
 export function AnimationOptionsDropdown() {
+    const auth = useAuth();
     const [sendObject, setSendObject] = useState(true);
     const inputRef = useRef<null | HTMLInputElement>(null);
 
@@ -108,12 +112,37 @@ export function AnimationOptionsDropdown() {
                     </label>
                 </DropdownMenuItem>
 
+                {
+                    auth?.userName ?
+                        <DropdownMenuItem>
+                            <label htmlFor="uploadObjectDialog" className="[&_svg]:size-6 w-full flex gap-2">
+                                <Upload /><p>Upload to server</p>
+                            </label>
+                        </DropdownMenuItem>
+                        : null
+                }
+
+                <DropdownMenuItem>
+                    <label htmlFor="ServerDownloadObjectDialog" className="[&_svg]:size-6 w-full flex gap-2">
+                        <CloudDownload /><p>Add Object From Server</p>
+                    </label>
+                </DropdownMenuItem>
+
             </DropdownMenuContent>
 
             < Input ref={inputRef} id="fileUpload" type="file" accept=".json" onChange={handleFileUpload} onClick={(e) => (e.currentTarget.value = "")
             } className="hidden" />
             <RenderAnimationDialog />
             <SceneLoadDialog onConfirm={() => { setSendObject(false); triggerInputClick(); }} />
+
+            {
+                auth?.userName ?
+                    <>
+                        <UploadObjectDialog />
+                    </> : null
+            }
+
+            <ServerDownloadDialog showPublic={auth?.userName ? true : false} addAnimation={true} />
 
         </DropdownMenu>);
 

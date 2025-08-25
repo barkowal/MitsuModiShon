@@ -121,6 +121,25 @@ function Editor() {
       }
     };
 
+
+    const handleUploadToServer = () => {
+      const imgData: string = rendererController.getRenderImageData();
+
+      const selection = selectionController.getCurrentSelection();
+      if (selection && selection instanceof THREE.Mesh) {
+
+        const data = {
+          imgData: imgData,
+          objectData: JSON.stringify(selection.toJSON()),
+          objectName: selection.name,
+        };
+
+        editorEventBus.emit(EDITOR_EVENT.UploadObjectToServer, data);
+
+      }
+
+    };
+
     const handleCopy = () => {
       const selections = selectionController.getSelectedObjects();
       editorUtils.setCopiedObjects(selections);
@@ -152,6 +171,7 @@ function Editor() {
     editorEventBus.on(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
     editorEventBus.on(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
     editorEventBus.on(EDITOR_EVENT.ChangeEditorMode, handleChangeEditorMode);
+    editorEventBus.on(EDITOR_EVENT.PrepareObjectDataForUpload, handleUploadToServer);
     editorEventBus.on(EDITOR_EVENT.COPY, handleCopy);
     editorEventBus.on(EDITOR_EVENT.PASTE, handlePaste);
     editorEventBus.on(EDITOR_EVENT.UNDO, handleUndo);
@@ -166,6 +186,7 @@ function Editor() {
       editorEventBus.off(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
       editorEventBus.off(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
       editorEventBus.off(EDITOR_EVENT.ChangeEditorMode, handleChangeEditorMode);
+      editorEventBus.off(EDITOR_EVENT.PrepareObjectDataForUpload, handleUploadToServer);
       editorEventBus.off(EDITOR_EVENT.COPY, handleCopy);
       editorEventBus.off(EDITOR_EVENT.PASTE, handlePaste);
       editorEventBus.off(EDITOR_EVENT.UNDO, handleUndo);

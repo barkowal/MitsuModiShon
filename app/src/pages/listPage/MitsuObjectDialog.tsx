@@ -41,6 +41,9 @@ export function MitsuObjectDialog({ objectData, showDialog, setShowDialog }: Pro
           </DialogDescription>
 
           <div className="my-2">
+            <DialogDescription className="w-100% p-0 m-auto font-bold ">
+              {objectData.isAnimated ? "Animation" : "Static"} Object
+            </DialogDescription >
             <DialogDescription className="w-100% p-0 m-auto ">
               Published By: {objectData.username}
             </DialogDescription>

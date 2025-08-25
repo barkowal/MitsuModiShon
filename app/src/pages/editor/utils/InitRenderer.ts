@@ -59,24 +59,6 @@ export const InitRenderer = () => {
       DownloadImage(imgData);
     };
 
-    const handleUploadToServer = () => {
-      const imgData: string = rendererController.getRenderImageData();
-
-      const selection = selectionController.getCurrentSelection();
-      if (selection && selection instanceof THREE.Mesh) {
-
-        const data = {
-          imgData: imgData,
-          objectData: JSON.stringify(selection.toJSON()),
-          objectName: selection.name,
-        };
-
-        editorEventBus.emit(EDITOR_EVENT.UploadObjectToServer, data);
-
-      }
-
-    };
-
     selectionController.onSelect((obj: THREE.Object3D) => {
       if (!obj.layers.isEnabled(INTERSECTION_LAYER)) return;
       if (!obj.layers.isEnabled(EDITOR_LAYER)) return;
@@ -115,7 +97,6 @@ export const InitRenderer = () => {
     editorEventBus.on(EDITOR_EVENT.ChangeEditorMode, handleEditorModeChange);
     editorEventBus.on(EDITOR_EVENT.SwitchRendering, handleRenderingSwitch);
     editorEventBus.on(EDITOR_EVENT.RenderImage, handleRenderImage);
-    editorEventBus.on(EDITOR_EVENT.PrepareObjectDataForUpload, handleUploadToServer);
 
 
     return () => {
@@ -126,7 +107,6 @@ export const InitRenderer = () => {
       editorEventBus.off(EDITOR_EVENT.ChangeEditorMode, handleEditorModeChange);
       editorEventBus.off(EDITOR_EVENT.SwitchRendering, handleRenderingSwitch);
       editorEventBus.off(EDITOR_EVENT.RenderImage, handleRenderImage);
-      editorEventBus.off(EDITOR_EVENT.PrepareObjectDataForUpload, handleUploadToServer);
       rendererController.dispose();
     };
   }, [rendererController, selectionController]);

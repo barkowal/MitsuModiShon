@@ -9,14 +9,20 @@ import type { MitsuShortObjectResponse } from "@/lib/types/ServerResponseTypes";
 import { formatDateString } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
+import { PublicListFilter } from "@/pages/listPage/PublicListFilter";
 
 const PUBLIC_OBJECTS3D_URL = "/api/v1/objects3D/public";
 const PUBLIC_OBJECTS3D_DOWNLOAD = "/api/v1/objects3D/download/public";
 
-export function SmallPublicMitsuListing() {
+type Props = {
+    addAnimation: boolean;
+}
+
+export function SmallPublicMitsuListing({ addAnimation }: Props) {
 
     const { data: objectsData, isLoading, error, getData: getObjectsData } = useAuthGetFetch<MitsuShortObjectResponse>(PUBLIC_OBJECTS3D_URL);
     const { response: downloadResponse, error: downloadError, makeRequest: makeDownloadRequest } = useAuthFetch(PUBLIC_OBJECTS3D_DOWNLOAD);
+    const [searchAnimated, setSearchAnimated] = useState<number>(1); // 3 - animated and non-animated, 2 - only animated, 1-only non animated 
     const [currentPage, setCurrentPage] = useState(1);
     const [searchKeyword, setSearchKeyword] = useState("");
     const pageLimit = 5;
@@ -27,27 +33,40 @@ export function SmallPublicMitsuListing() {
         setCurrentPage(1);
     };
 
+    const handleAnimatedFilter = (val: number) => {
+        setSearchAnimated(val);
+        setCurrentPage(1);
+    };
+
     const handleDownload = (objectID: number) => {
         makeDownloadRequest(`/${objectID}`, "GET");
     };
 
     useEffect(() => {
 
-        getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}`);
-
-        if (downloadResponse) {
-            editorEventBus.emit(EDITOR_EVENT.UploadObject, JSON.stringify(downloadResponse));
+        if (searchAnimated !== 3) {
+            getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}&animated=${searchAnimated % 2 === 0} `);
+        } else {
+            getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}`);
         }
 
-    }, [getObjectsData, searchKeyword, currentPage, downloadResponse]);
+        if (downloadResponse) {
+            editorEventBus.emit(addAnimation ? EDITOR_EVENT.UploadAnimationObject : EDITOR_EVENT.UploadObject, JSON.stringify(downloadResponse));
+        }
+
+    }, [getObjectsData, searchKeyword, currentPage, downloadResponse, searchAnimated, addAnimation]);
 
 
     return (
         <>
 
-            <div className="w-full my-2">
-                <SearchBar onSearch={handleSearch} />
-            </div>
+            <div className="w-full my-2 flex justify-center gap-2">
+
+                <SearchBar onSearch={handleSearch} minSearchWidth="40ch" />
+
+                <PublicListFilter onAnimatedFilterChange={handleAnimatedFilter} />
+
+            </div >
 
             {
                 error || downloadError ?

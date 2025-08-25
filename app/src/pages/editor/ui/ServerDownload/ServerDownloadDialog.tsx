@@ -6,9 +6,10 @@ import { SmallUserMitsuListing } from "./SmallUserMitsuListing";
 
 type Props = {
     showPublic: boolean;
+    addAnimation: boolean;
 }
 
-export function ServerDownloadDialog({ showPublic }: Props) {
+export function ServerDownloadDialog({ showPublic, addAnimation }: Props) {
     const [showExport, setShowExport] = useState(false);
     const [isPublicList, setIsPublicList] = useState(true);
 
@@ -51,15 +52,12 @@ export function ServerDownloadDialog({ showPublic }: Props) {
                             : null
                     }
 
-
-
                     {
                         isPublicList ?
-                            <SmallPublicMitsuListing />
+                            <SmallPublicMitsuListing addAnimation={addAnimation} />
                             :
-                            <SmallUserMitsuListing />
+                            <SmallUserMitsuListing addAnimation={addAnimation} />
                     }
-
 
                 </DialogHeader>
             </DialogContent>

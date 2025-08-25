@@ -108,7 +108,7 @@ export function OptionsDropdown() {
           </> : null
       }
 
-      <ServerDownloadDialog showPublic={auth?.userName ? true : false} />
+      <ServerDownloadDialog showPublic={auth?.userName ? true : false} addAnimation={false} />
 
     </DropdownMenu>
   );

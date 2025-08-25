@@ -14,13 +14,18 @@ import { UserListFilter } from "@/pages/listPage/UserListFilter";
 const USERS_OBJECTS3D_URL = "/api/v1/objects3D/private";
 const USERS_OBJECTS3D_DOWNLOAD = "/api/v1/objects3D/download/users";
 
-export function SmallUserMitsuListing() {
+type Props = {
+    addAnimation: boolean;
+}
+
+export function SmallUserMitsuListing({ addAnimation }: Props) {
 
     const { data: objectsData, isLoading, error, getData: getObjectsData } = useAuthGetFetch<MitsuShortObjectResponse>(USERS_OBJECTS3D_URL);
     const { response: downloadResponse, error: downloadError, makeRequest: makeDownloadRequest } = useAuthFetch(USERS_OBJECTS3D_DOWNLOAD);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchKeyword, setSearchKeyword] = useState("");
-    const [searchPublic, setSearchPublic] = useState<number>(1); // 3 - public and private, 2 - only public, 1-only private
+    const [searchPublic, setSearchPublic] = useState<number>(3); // 3 - public and private, 2 - only public, 1-only private
+    const [searchAnimated, setSearchAnimated] = useState<number>(1); // 3 - animated and non-animated, 2 - only animated, 1-only non animated 
     const pageLimit = 5;
     const lastPage = objectsData ? objectsData.data.result.pageData.lastPage : 1;
 
@@ -34,23 +39,34 @@ export function SmallUserMitsuListing() {
         setCurrentPage(1);
     };
 
+    const handleAnimatedFilter = (val: number) => {
+        setSearchAnimated(val);
+        setCurrentPage(1);
+    };
+
     const handleDownload = (objectID: number) => {
         makeDownloadRequest(`/${objectID}`, "GET");
     };
 
+
     useEffect(() => {
 
+        let url = `?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}`;
+
         if (searchPublic !== 3) {
-            getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}&public=${searchPublic % 2 === 0} `);
-        } else {
-            getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}`);
+            url += `&public=${searchPublic % 2 === 0}`;
         }
+        if (searchAnimated !== 3) {
+            url += `&animated=${searchAnimated % 2 === 0}`;
+        }
+
+        getObjectsData(url);
 
         if (downloadResponse) {
-            editorEventBus.emit(EDITOR_EVENT.UploadObject, JSON.stringify(downloadResponse));
+            editorEventBus.emit(addAnimation ? EDITOR_EVENT.UploadAnimationObject : EDITOR_EVENT.UploadObject, JSON.stringify(downloadResponse));
         }
 
-    }, [getObjectsData, searchKeyword, currentPage, downloadResponse, searchPublic]);
+    }, [getObjectsData, searchKeyword, currentPage, downloadResponse, searchPublic, searchAnimated, addAnimation]);
 
 
     return (
@@ -60,7 +76,7 @@ export function SmallUserMitsuListing() {
 
                 <SearchBar onSearch={handleSearch} minSearchWidth={"40ch"} />
 
-                <UserListFilter onPublicFilterChange={handlePublicFilter} />
+                <UserListFilter onPublicFilterChange={handlePublicFilter} onAnimatedFilterChange={handleAnimatedFilter} />
 
             </div>
 

@@ -1,24 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Funnel } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
-  onPublicFilterChange: CallableFunction,
   onAnimatedFilterChange: CallableFunction,
 }
 
-export function UserListFilter({ onPublicFilterChange, onAnimatedFilterChange }: Props) {
-  const [searchPublic, setSearchPublic] = useState<number>(3); // 3 - public and private, 2 - only public, 1-only private
+export function PublicListFilter({ onAnimatedFilterChange }: Props) {
   const [searchAnimated, setSearchAnimated] = useState<number>(1); // 3 - animated and non-animated, 2 - only animated, 1-only non animated 
-
-  const filterPublic = (val: number) => {
-    const publicValue = searchPublic + val;
-    const value = publicValue === 0 ? 1 : publicValue;
-    setSearchPublic(value);
-    onPublicFilterChange(value);
-  };
-
 
   const filterAnimated = (val: number) => {
     const animateValue = searchAnimated + val;
@@ -35,25 +25,6 @@ export function UserListFilter({ onPublicFilterChange, onAnimatedFilterChange }:
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuCheckboxItem
-          className="capitalize"
-          checked={(searchPublic & 1) === 1}
-          onCheckedChange={(value) =>
-            filterPublic(value ? 1 : -1)
-          }>
-          Private
-        </DropdownMenuCheckboxItem>
-        <DropdownMenuCheckboxItem
-          className="capitalize"
-          checked={(searchPublic & 2) > 0}
-          onCheckedChange={(value) =>
-            filterPublic(value ? 2 : -2)
-          }>
-          Public
-        </DropdownMenuCheckboxItem>
-
-        <DropdownMenuSeparator />
-
         <DropdownMenuCheckboxItem
           className="capitalize"
           checked={(searchAnimated & 1) === 1}

@@ -40,4 +40,5 @@ export type MitsuShortObjectData = {
   imgPath: string,
   username: string,
   isPublic: boolean,
+  isAnimated: boolean,
 }

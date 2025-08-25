@@ -19,6 +19,8 @@ import { AnimationLoop } from "./utils/AnimationLoop";
 import { AnimationModeHandler } from "./utils/AnimationModeHandler";
 import { InitRenderer } from "./utils/InitRenderer";
 import AnimationPanel from "./ui/AnimationPanel";
+import { getObjectsJSON } from "./utils/GetJSON";
+import type { UploadableObjectData } from "./utils/Types";
 
 function AnimationEditor() {
   const { canvasRef, rendererController, selectionController } = InitRenderer();
@@ -77,6 +79,32 @@ function AnimationEditor() {
       scene.background = background;
     };
 
+    const handleUploadToServer = () => {
+      const imgData: string = rendererController.getRenderImageData();
+
+      const selection = selectionController.getCurrentSelection();
+      if (selection && selection instanceof THREE.Mesh) {
+
+
+        if (selection === null) {
+          editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Please select an object.");
+          return;
+        }
+
+        const animationObjectJSON = getObjectsJSON(selection, loop);
+
+        const data: UploadableObjectData = {
+          imgData: imgData,
+          objectData: JSON.stringify(animationObjectJSON),
+          objectName: selection.name,
+          animationObject: true,
+        };
+
+        editorEventBus.emit(EDITOR_EVENT.UploadObjectToServer, data);
+      }
+
+    };
+
     const handleCopy = () => {
       const selections = selectionController.getSelectedObjects();
       editorUtils.setCopiedObjects(selections);
@@ -107,6 +135,7 @@ function AnimationEditor() {
     editorEventBus.on(EDITOR_EVENT.ClearSelections, handleClearSelections);
     editorEventBus.on(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
     editorEventBus.on(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
+    editorEventBus.on(EDITOR_EVENT.PrepareObjectDataForUpload, handleUploadToServer);
 
     editorEventBus.on(EDITOR_EVENT.COPY, handleCopy);
     editorEventBus.on(EDITOR_EVENT.PASTE, handlePaste);
@@ -121,6 +150,7 @@ function AnimationEditor() {
       editorEventBus.off(EDITOR_EVENT.ClearSelections, handleClearSelections);
       editorEventBus.off(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
       editorEventBus.off(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
+      editorEventBus.off(EDITOR_EVENT.PrepareObjectDataForUpload, handleUploadToServer);
 
       editorEventBus.off(EDITOR_EVENT.COPY, handleCopy);
       editorEventBus.off(EDITOR_EVENT.PASTE, handlePaste);

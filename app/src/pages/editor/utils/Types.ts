@@ -77,6 +77,7 @@ export type UploadableObjectData = {
     imgData: string,
     objectData: string,
     objectName: string,
+    animationObject?: boolean,
 }
 
 export type EventHandlerType = {
