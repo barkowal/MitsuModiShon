@@ -4,10 +4,11 @@ import { Search } from "lucide-react";
 import { useState } from "react";
 
 type Props = {
-  onSearch: CallableFunction
+  onSearch: CallableFunction,
+  minSearchWidth?: string,
 }
 
-export function SearchBar({ onSearch }: Props) {
+export function SearchBar({ onSearch, minSearchWidth = "50ch" }: Props) {
   const [search, setSearch] = useState("");
 
   const handleKey = (event: React.KeyboardEvent) => {
@@ -19,7 +20,7 @@ export function SearchBar({ onSearch }: Props) {
   return (
     <>
       <div className="flex justify-center items-center">
-        <Input type="search" className="w-[30%] min-w-[50ch] rounded-r-none" placeholder="SEARCH"
+        <Input type="search" className="w-[30%] rounded-r-none" style={{ minWidth: minSearchWidth }} placeholder="SEARCH"
           onChange={(event) => { setSearch(event ? event.target.value : ""); }}
           onKeyDown={(e: React.KeyboardEvent) => { handleKey(e); }} />
         <Button variant="outline" className="border rounded-l-none cursor-pointer"

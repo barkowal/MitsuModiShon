@@ -5,9 +5,7 @@ import { useEffect, useState } from "react";
 import { MitsuObjectCard } from "./MitsuObjectCard";
 import { ListPaginationComponent } from "@/components/ListPaginationComponent";
 import { SearchBar } from "@/components/SearchBar";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Funnel } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { UserListFilter } from "./UserListFilter";
 
 type Props = {
   url: string,
@@ -28,9 +26,8 @@ export function MitsuUsersObjectsListing({ url }: Props) {
     setCurrentPage(1);
   };
 
-  const filterPublic = (val: number) => {
-    const publicValue = searchPublic + val;
-    setSearchPublic(publicValue === 0 ? 1 : publicValue);
+  const handlePublicFilter = (val: number) => {
+    setSearchPublic(val);
     setCurrentPage(1);
   };
 
@@ -49,33 +46,10 @@ export function MitsuUsersObjectsListing({ url }: Props) {
 
       <div className="w-11/12 my-2 flex justify-center gap-2">
 
-        <SearchBar onSearch={handleSearch} />
+        <SearchBar onSearch={handleSearch} minSearchWidth="40ch" />
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild >
-            <Button variant="outline">
-              <Funnel />Show
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuCheckboxItem
-              className="capitalize"
-              checked={(searchPublic & 1) === 1}
-              onCheckedChange={(value) =>
-                filterPublic(value ? 1 : -1)
-              }>
-              Private
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              className="capitalize"
-              checked={(searchPublic & 2) > 0}
-              onCheckedChange={(value) =>
-                filterPublic(value ? 2 : -2)
-              }>
-              Public
-            </DropdownMenuCheckboxItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <UserListFilter onPublicFilterChange={handlePublicFilter} />
+
       </div >
 
       <div className="w-11/12">

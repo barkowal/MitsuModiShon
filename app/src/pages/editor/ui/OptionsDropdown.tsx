@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Download, ImageDown, Menu, Upload } from "lucide-react";
+import { CloudDownload, Download, ImageDown, Menu, Upload } from "lucide-react";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { Input } from "@/components/ui/input";
 import type { ChangeEvent } from "react";
 import { useAuth } from "@/hooks/auth/useAuth";
 import UploadObjectDialog from "./Upload/UploadObjectDialog";
+import { ServerDownloadDialog } from "./ServerDownload/ServerDownloadDialog";
 
 export function OptionsDropdown() {
   const auth = useAuth();
@@ -90,11 +91,24 @@ export function OptionsDropdown() {
             : null
         }
 
+        <DropdownMenuItem>
+          <label htmlFor="ServerDownloadObjectDialog" className="[&_svg]:size-6 w-full flex gap-2">
+            <CloudDownload /><p>Add From Server</p>
+          </label>
+        </DropdownMenuItem>
+
       </DropdownMenuContent>
 
       <Input id="fileUpload" type="file" accept=".json" onChange={handleFileUpload} onClick={(e) => (e.currentTarget.value = "")} className="hidden" />
 
-      <UploadObjectDialog />
+      {
+        auth?.userName ?
+          <>
+            <UploadObjectDialog />
+          </> : null
+      }
+
+      <ServerDownloadDialog showPublic={auth?.userName ? true : false} />
 
     </DropdownMenu>
   );
