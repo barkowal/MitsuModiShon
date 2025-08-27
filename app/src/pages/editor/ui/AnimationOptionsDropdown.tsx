@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { useRef, useState, type ChangeEvent } from "react";
 import { RenderAnimationDialog } from "./RenderAnimationDialog";
 import { SceneLoadDialog } from "./SceneLoadDialog";
-import { ServerDownloadDialog } from "./ServerDownload/ServerDownloadDialog";
+import { ServerDownloadDialog } from "./ServerObjectDownload/ServerDownloadDialog";
 import { useAuth } from "@/hooks/auth/useAuth";
 import UploadObjectDialog from "./Upload/UploadObjectDialog";
+import { SceneDownloadDialog } from "./ServerAnimationSceneOptions/SceneDownloadDialog";
+import UploadSceneDialog from "./ServerAnimationSceneOptions/UploadSceneDialog";
 
 export function AnimationOptionsDropdown() {
     const auth = useAuth();
@@ -114,17 +116,31 @@ export function AnimationOptionsDropdown() {
 
                 {
                     auth?.userName ?
-                        <DropdownMenuItem>
-                            <label htmlFor="uploadObjectDialog" className="[&_svg]:size-6 w-full flex gap-2">
-                                <Upload /><p>Upload to server</p>
-                            </label>
-                        </DropdownMenuItem>
+                        <>
+                            <DropdownMenuItem>
+                                <label htmlFor="uploadObjectDialog" className="[&_svg]:size-6 w-full flex gap-2">
+                                    <Upload /><p>Upload to server</p>
+                                </label>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem>
+                                <label htmlFor="uploadAnimationSceneDialog" className="[&_svg]:size-6 w-full flex gap-2">
+                                    <Upload /><p>Upload scene to server</p>
+                                </label>
+                            </DropdownMenuItem>
+                        </>
                         : null
                 }
 
                 <DropdownMenuItem>
                     <label htmlFor="ServerDownloadObjectDialog" className="[&_svg]:size-6 w-full flex gap-2">
                         <CloudDownload /><p>Add Object From Server</p>
+                    </label>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem>
+                    <label htmlFor="ServerDownloadSceneDialog" className="[&_svg]:size-6 w-full flex gap-2">
+                        <CloudDownload /><p>Load Scene From Server</p>
                     </label>
                 </DropdownMenuItem>
 
@@ -139,10 +155,12 @@ export function AnimationOptionsDropdown() {
                 auth?.userName ?
                     <>
                         <UploadObjectDialog />
+                        <UploadSceneDialog />
                     </> : null
             }
 
             <ServerDownloadDialog showPublic={auth?.userName ? true : false} addAnimation={true} />
+            <SceneDownloadDialog showPublic={auth?.userName ? true : false} />
 
         </DropdownMenu>);
 

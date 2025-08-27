@@ -80,6 +80,13 @@ export type UploadableObjectData = {
     animationObject?: boolean,
 }
 
+export type UploadableAnimationSceneData = {
+    imgData: string,
+    sceneData: string,
+    sceneName: string,
+    duration: number,
+}
+
 export type EventHandlerType = {
     event: EditorEvent,
     callback: CallableFunction

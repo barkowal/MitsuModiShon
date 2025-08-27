@@ -28,7 +28,7 @@ export default function AnimationSceneListingPage() {
                 className="text-center px-4 py-2 cursor-pointer hover:bg-primary/10 rounded transition duration-300"
               >
                 <p className="w-xs select-none ">
-                  My Objects
+                  My Scenes
                 </p>
               </div> : null
           }

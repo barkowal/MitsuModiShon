@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import type { ChangeEvent } from "react";
 import { useAuth } from "@/hooks/auth/useAuth";
 import UploadObjectDialog from "./Upload/UploadObjectDialog";
-import { ServerDownloadDialog } from "./ServerDownload/ServerDownloadDialog";
+import { ServerDownloadDialog } from "./ServerObjectDownload/ServerDownloadDialog";
 
 export function OptionsDropdown() {
   const auth = useAuth();

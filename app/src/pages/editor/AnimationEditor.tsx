@@ -19,8 +19,8 @@ import { AnimationLoop } from "./utils/AnimationLoop";
 import { AnimationModeHandler } from "./utils/AnimationModeHandler";
 import { InitRenderer } from "./utils/InitRenderer";
 import AnimationPanel from "./ui/AnimationPanel";
-import { getObjectsJSON } from "./utils/GetJSON";
-import type { UploadableObjectData } from "./utils/Types";
+import { GetAnimationSceneJSON, getObjectsJSON } from "./utils/GetJSON";
+import type { UploadableAnimationSceneData, UploadableObjectData } from "./utils/Types";
 
 function AnimationEditor() {
   const { canvasRef, rendererController, selectionController } = InitRenderer();
@@ -105,6 +105,21 @@ function AnimationEditor() {
 
     };
 
+    const handlePrepareAnimationScene = () => {
+      const imgData: string = rendererController.getRenderImageData();
+
+      const sceneJSON = GetAnimationSceneJSON(scene, loop);
+
+      const data: UploadableAnimationSceneData = {
+        imgData: imgData,
+        sceneData: JSON.stringify(sceneJSON),
+        sceneName: "scene",
+        duration: loop.getSettings().duration,
+      };
+
+      editorEventBus.emit(EDITOR_EVENT.UploadAnimationSceneToServer, data);
+    };
+
     const handleCopy = () => {
       const selections = selectionController.getSelectedObjects();
       editorUtils.setCopiedObjects(selections);
@@ -136,6 +151,7 @@ function AnimationEditor() {
     editorEventBus.on(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
     editorEventBus.on(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
     editorEventBus.on(EDITOR_EVENT.PrepareObjectDataForUpload, handleUploadToServer);
+    editorEventBus.on(EDITOR_EVENT.PrepareSceneDataForUpload, handlePrepareAnimationScene);
 
     editorEventBus.on(EDITOR_EVENT.COPY, handleCopy);
     editorEventBus.on(EDITOR_EVENT.PASTE, handlePaste);
@@ -151,6 +167,7 @@ function AnimationEditor() {
       editorEventBus.off(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
       editorEventBus.off(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
       editorEventBus.off(EDITOR_EVENT.PrepareObjectDataForUpload, handleUploadToServer);
+      editorEventBus.off(EDITOR_EVENT.PrepareSceneDataForUpload, handlePrepareAnimationScene);
 
       editorEventBus.off(EDITOR_EVENT.COPY, handleCopy);
       editorEventBus.off(EDITOR_EVENT.PASTE, handlePaste);
