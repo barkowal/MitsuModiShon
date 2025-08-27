@@ -1,12 +1,9 @@
-import { MitsuObjectsListing } from "./MitsuObjectsListing";
 import { useAuth } from "@/hooks/auth/useAuth";
 import { useState } from "react";
-import { MitsuUsersObjectsListing } from "./MitsuUsersObjectsListing";
+import { Object3DPublicListing } from "./Object3DPublicListing";
+import { Object3DUserListing } from "./Object3DUserListing";
 
-const PUBLIC_OBJECTS3D_URL = "/api/v1/objects3D/public";
-const USERS_OBJECTS3D_URL = "/api/v1/objects3D/private";
-
-export default function MitsuListingPage() {
+export default function Object3DListingPage() {
   const auth = useAuth();
   const [isPublicList, setIsPublicList] = useState(true);
 
@@ -41,9 +38,9 @@ export default function MitsuListingPage() {
 
       <div className="w-full h-10/12">
         {isPublicList ?
-          <MitsuObjectsListing url={PUBLIC_OBJECTS3D_URL} />
+          <Object3DPublicListing />
           :
-          <MitsuUsersObjectsListing url={USERS_OBJECTS3D_URL} />
+          <Object3DUserListing />
         }
       </div>
 

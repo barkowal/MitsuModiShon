@@ -2,29 +2,28 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
 import { DownloadJSON } from "@/lib/DownloadJSON";
-import type { MitsuShortObjectData, SuccessfullResponse } from "@/lib/types/ServerResponseTypes";
-import { formatDateString } from "@/lib/utils";
+import type { AnimationSceneData, MitsuShortObjectData, SuccessfullResponse } from "@/lib/types/ServerResponseTypes";
 import { useEffect, useState } from "react";
-import { MitsuUpdateObjectForm } from "./MitsuUpdateObjectForm";
+import { UpdateObjectForm } from "./UpdateObjectForm";
 
 type Props = {
-  objectData: MitsuShortObjectData,
+  data: MitsuShortObjectData | AnimationSceneData,
   showDialog: boolean,
   setShowDialog: CallableFunction,
+  dialogDescriptionTexts: Array<string>,
+  downloadUrl: string,
+  deleteUrl: string,
+  patchUrl: string,
 }
 
-const USERS_OBJECTS3D_DOWNLOAD = "/api/v1/objects3D/download/users";
-const USERS_OBJECTS3D_DELETE = "/api/v1/objects3D";
-
-export function MitsuUserObjectDialog({ objectData, showDialog, setShowDialog }: Props) {
-  const { response: downloadResponse, error: downloadError, makeRequest: makeDownloadRequest } = useAuthFetch(USERS_OBJECTS3D_DOWNLOAD);
-  const { response: deleteResponse, error: deleteError, makeRequest: makeDeleteRequest } = useAuthFetch<SuccessfullResponse>(USERS_OBJECTS3D_DELETE);
-  const imgUrl = "/api/v1/image" + objectData.imgPath;
-  const creationDate = formatDateString(objectData.createdAt.toString());
+export function UserListDialog({ data, showDialog, setShowDialog, dialogDescriptionTexts, downloadUrl, deleteUrl, patchUrl }: Props) {
+  const { response: downloadResponse, error: downloadError, makeRequest: makeDownloadRequest } = useAuthFetch(downloadUrl);
+  const { response: deleteResponse, error: deleteError, makeRequest: makeDeleteRequest } = useAuthFetch<SuccessfullResponse>(deleteUrl);
+  const imgUrl = "/api/v1/image" + data.imgPath;
   const [showUpdating, setShowUpdating] = useState(false);
 
   const handleDelete = () => {
-    makeDeleteRequest(`/${objectData.id}`, "DELETE");
+    makeDeleteRequest(`/${data.id}`, "DELETE");
   };
 
   const handleUpdate = () => {
@@ -32,7 +31,7 @@ export function MitsuUserObjectDialog({ objectData, showDialog, setShowDialog }:
   };
 
   const handleDownload = () => {
-    makeDownloadRequest(`/${objectData.id}`, "GET");
+    makeDownloadRequest(`/${data.id}`, "GET");
   };
 
   useEffect(() => {
@@ -47,25 +46,20 @@ export function MitsuUserObjectDialog({ objectData, showDialog, setShowDialog }:
       <DialogContent className="sm:max-w-[425px]">
 
         <DialogHeader>
-          <DialogTitle className="text-2xl">{objectData.name}</DialogTitle>
+          <DialogTitle className="text-2xl">{data.name}</DialogTitle>
 
           <DialogDescription className="w-100% p-0 m-auto ">
             <img src={imgUrl} className="rounded-2xl border-primary border" />
           </DialogDescription>
 
           <div className="my-2">
-            <DialogDescription className="w-100% p-0 m-auto font-bold ">
-              {objectData.isAnimated ? "Animation" : "Static"} Object
-            </DialogDescription >
-            <DialogDescription className="w-100% p-0 m-auto ">
-              Published By: {objectData.username}
-            </DialogDescription>
-            <DialogDescription className="w-100% p-0 m-auto ">
-              Created At: {creationDate}
-            </DialogDescription>
-            <DialogDescription className="w-100% p-0 m-auto ">
-              Visibility: {objectData.isPublic ? "Public" : "Private"}
-            </DialogDescription >
+
+            {dialogDescriptionTexts?.map((description, index) => (
+              <DialogDescription key={index} className="w-100% p-0 m-auto ">
+                {description}
+              </DialogDescription>
+            ))}
+
           </div>
 
         </DialogHeader>
@@ -86,7 +80,7 @@ export function MitsuUserObjectDialog({ objectData, showDialog, setShowDialog }:
         </DialogFooter>
 
         {showUpdating ?
-          <MitsuUpdateObjectForm objectsID={objectData.id} publicVisibility={objectData.isPublic} objectsName={objectData.name} />
+          <UpdateObjectForm objectsID={data.id} publicVisibility={data.isPublic} objectsName={data.name} patchUrl={patchUrl} />
           : null
         }
 

@@ -7,7 +7,8 @@ import Editor from "./pages/editor/Editor.tsx";
 import AnimationEditor from "./pages/editor/AnimationEditor.tsx";
 import LoginPage from "./pages/account/Login/LoginPage.tsx";
 import RegisterPage from "./pages/account/Register/RegisterPage.tsx";
-import MitsuListingPage from "./pages/listPage/MitsuListingPage.tsx";
+import AnimationSceneListingPage from "./pages/listPage/AnimationSceneListingPage.tsx";
+import Object3DListingPage from "./pages/listPage/Object3DListingPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -31,8 +32,13 @@ const router = createBrowserRouter([
       },
 
       {
-        path: "/MitsuListingPage",
-        element: <MitsuListingPage />
+        path: "/Object3DListing",
+        element: <Object3DListingPage />
+      },
+
+      {
+        path: "/AnimationSceneListingPage",
+        element: <AnimationSceneListingPage />
       },
 
       {

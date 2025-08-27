@@ -42,3 +42,29 @@ export type MitsuShortObjectData = {
   isPublic: boolean,
   isAnimated: boolean,
 }
+
+export type AnimationSceneResponse = {
+  success: boolean,
+  message: string,
+  data: {
+    result: {
+      pageData: {
+        prevPage: number,
+        nextPage: number,
+        lastPage: number,
+        limit: number,
+      },
+      scenes: Array<AnimationSceneData>,
+    }
+  }
+}
+
+export type AnimationSceneData = {
+  id: number,
+  name: string,
+  createdAt: Date,
+  imgPath: string,
+  username: string,
+  duration: number,
+  isPublic: boolean,
+}

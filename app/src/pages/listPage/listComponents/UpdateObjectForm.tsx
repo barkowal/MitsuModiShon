@@ -9,12 +9,11 @@ type Props = {
   objectsID: number,
   publicVisibility: boolean,
   objectsName: string,
+  patchUrl: string,
 }
 
-const USER_OBJECT3D_UPDATE = "/api/v1/objects3D";
-
-export function MitsuUpdateObjectForm({ objectsID, publicVisibility, objectsName }: Props) {
-  const { response, error, makeRequest } = useAuthFetch<SuccessfullResponse>(USER_OBJECT3D_UPDATE);
+export function UpdateObjectForm({ objectsID, publicVisibility, objectsName, patchUrl }: Props) {
+  const { response, error, makeRequest } = useAuthFetch<SuccessfullResponse>(patchUrl);
   const [isPublic, setIsPublic] = useState(publicVisibility);
   const [name, setName] = useState(objectsName);
 

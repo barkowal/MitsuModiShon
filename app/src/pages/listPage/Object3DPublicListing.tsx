@@ -1,21 +1,22 @@
 import { LoadingText } from "@/components/LoadingText";
 import { useAuthGetFetch } from "@/hooks/useAuthGetFetch";
-import type { MitsuShortObjectResponse } from "@/lib/types/ServerResponseTypes";
+import type { MitsuShortObjectData, MitsuShortObjectResponse } from "@/lib/types/ServerResponseTypes";
 import { useEffect, useState } from "react";
-import { MitsuObjectCard } from "./MitsuObjectCard";
 import { ListPaginationComponent } from "@/components/ListPaginationComponent";
 import { SearchBar } from "@/components/SearchBar";
-import { PublicListFilter } from "./PublicListFilter";
+import { ListCard } from "./listComponents/ListCard";
+import { formatDateString } from "@/lib/utils";
+import { ListFilter } from "./listComponents/ListFilter";
 
-type Props = {
-  url: string,
-};
+const PUBLIC_OBJECTS3D_URL = "/api/v1/objects3D/public";
+const PUBLIC_OBJECTS3D_DOWNLOAD = "/api/v1/objects3D/download/public";
 
-export function MitsuObjectsListing({ url }: Props) {
-  const { data: objectsData, isLoading, error, getData: getObjectsData } = useAuthGetFetch<MitsuShortObjectResponse>(url);
+export function Object3DPublicListing() {
+  const { data: objectsData, isLoading, error, getData: getObjectsData } = useAuthGetFetch<MitsuShortObjectResponse>(PUBLIC_OBJECTS3D_URL);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [searchAnimated, setSearchAnimated] = useState<number>(1); // 3 - animated and non-animated, 2 - only animated, 1-only non animated 
+  const [filters, setFilters] = useState([1]);
+  const filterOptions = ["Static Objects", "Animated Objects"];  // 3 - both filter options , 2 - only second , 1-only first 
   const pageLimit = 10;
   const lastPage = objectsData ? objectsData.data.result.pageData.lastPage : 1;
 
@@ -24,20 +25,30 @@ export function MitsuObjectsListing({ url }: Props) {
     setCurrentPage(1);
   };
 
-  const handleAnimatedFilter = (val: number) => {
-    setSearchAnimated(val);
-    setCurrentPage(1);
+  const getCardDescription = (data: MitsuShortObjectData) => {
+    return [
+      `MitsuModiShon Object`,
+      `Published By: ${data.username}`,
+    ];
+  };
+
+  const getDialogDescription = (data: MitsuShortObjectData) => {
+    return [
+      `${data.isAnimated ? "Animated" : "Static"} Object`,
+      `Published By: ${data.username}`,
+      `Created At: ${formatDateString(data.createdAt.toString())}`,
+    ];
   };
 
   useEffect(() => {
 
-    if (searchAnimated !== 3) {
-      getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}&animated=${searchAnimated % 2 === 0} `);
+    if (filters[0] !== 3) {
+      getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}&animated=${filters[0] % 2 === 0} `);
     } else {
       getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}`);
     }
 
-  }, [getObjectsData, searchKeyword, currentPage, searchAnimated]);
+  }, [getObjectsData, searchKeyword, currentPage, filters]);
 
   return (
     <>
@@ -46,7 +57,7 @@ export function MitsuObjectsListing({ url }: Props) {
 
         <SearchBar onSearch={handleSearch} minSearchWidth="40ch" />
 
-        <PublicListFilter onAnimatedFilterChange={handleAnimatedFilter} />
+        <ListFilter filterOptions={filterOptions} onFilterChange={(filters: Array<number>) => { setFilters(filters); }} />
 
       </div >
 
@@ -76,7 +87,14 @@ export function MitsuObjectsListing({ url }: Props) {
               objectsData ?
                 <div className="p-2 w-[90%] m-auto flex items-start space-x-6 flex-wrap">
                   {objectsData.data.result.objects.map((objectData, i) =>
-                    <MitsuObjectCard key={i} mitsuObjectData={objectData} />
+                    <ListCard
+                      key={i}
+                      data={objectData}
+                      cardDescriptionTexts={getCardDescription(objectData)}
+                      dialogDescriptionTexts={getDialogDescription(objectData)}
+                      downloadUrl={PUBLIC_OBJECTS3D_DOWNLOAD}
+                      isUsers={false}
+                    />
                   )}
                 </div>
                 :

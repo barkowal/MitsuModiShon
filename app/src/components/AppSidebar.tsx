@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Box, Clapperboard, Home, PackageSearch } from "lucide-react";
+import { Box, Clapperboard, Grid3x3, Home, PackageSearch } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Separator } from "./ui/separator";
 import { AccountDropdown } from "@/pages/account/AccountDropdown";
@@ -33,8 +33,13 @@ const items = [
   },
   {
     title: "OBJECTS3D",
-    url: "/MitsuListingPage",
+    url: "/Object3DListing",
     icon: PackageSearch,
+  },
+  {
+    title: "SCENES",
+    url: "/AnimationSceneListingPage",
+    icon: Grid3x3,
   },
 ];
 

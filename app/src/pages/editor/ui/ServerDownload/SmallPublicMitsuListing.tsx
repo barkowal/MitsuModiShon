@@ -9,7 +9,7 @@ import type { MitsuShortObjectResponse } from "@/lib/types/ServerResponseTypes";
 import { formatDateString } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
-import { PublicListFilter } from "@/pages/listPage/PublicListFilter";
+import { ListFilter } from "@/pages/listPage/listComponents/ListFilter";
 
 const PUBLIC_OBJECTS3D_URL = "/api/v1/objects3D/public";
 const PUBLIC_OBJECTS3D_DOWNLOAD = "/api/v1/objects3D/download/public";
@@ -22,19 +22,15 @@ export function SmallPublicMitsuListing({ addAnimation }: Props) {
 
     const { data: objectsData, isLoading, error, getData: getObjectsData } = useAuthGetFetch<MitsuShortObjectResponse>(PUBLIC_OBJECTS3D_URL);
     const { response: downloadResponse, error: downloadError, makeRequest: makeDownloadRequest } = useAuthFetch(PUBLIC_OBJECTS3D_DOWNLOAD);
-    const [searchAnimated, setSearchAnimated] = useState<number>(1); // 3 - animated and non-animated, 2 - only animated, 1-only non animated 
     const [currentPage, setCurrentPage] = useState(1);
     const [searchKeyword, setSearchKeyword] = useState("");
+    const [filters, setFilters] = useState([1]);
+    const filterOptions = ["Static Objects", "Animated Objects"];  // 3 - both filter options , 2 - only second , 1-only first 
     const pageLimit = 5;
     const lastPage = objectsData ? objectsData.data.result.pageData.lastPage : 1;
 
     const handleSearch = (keyword: string) => {
         setSearchKeyword(keyword);
-        setCurrentPage(1);
-    };
-
-    const handleAnimatedFilter = (val: number) => {
-        setSearchAnimated(val);
         setCurrentPage(1);
     };
 
@@ -44,8 +40,8 @@ export function SmallPublicMitsuListing({ addAnimation }: Props) {
 
     useEffect(() => {
 
-        if (searchAnimated !== 3) {
-            getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}&animated=${searchAnimated % 2 === 0} `);
+        if (filters[0] !== 3) {
+            getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}&animated=${filters[0] % 2 === 0} `);
         } else {
             getObjectsData(`?search=${searchKeyword}&page=${currentPage}&per_page=${pageLimit}`);
         }
@@ -54,7 +50,7 @@ export function SmallPublicMitsuListing({ addAnimation }: Props) {
             editorEventBus.emit(addAnimation ? EDITOR_EVENT.UploadAnimationObject : EDITOR_EVENT.UploadObject, JSON.stringify(downloadResponse));
         }
 
-    }, [getObjectsData, searchKeyword, currentPage, downloadResponse, searchAnimated, addAnimation]);
+    }, [getObjectsData, searchKeyword, currentPage, downloadResponse, addAnimation, filters]);
 
 
     return (
@@ -64,8 +60,7 @@ export function SmallPublicMitsuListing({ addAnimation }: Props) {
 
                 <SearchBar onSearch={handleSearch} minSearchWidth="40ch" />
 
-                <PublicListFilter onAnimatedFilterChange={handleAnimatedFilter} />
-
+                <ListFilter filterOptions={filterOptions} onFilterChange={(filters: Array<number>) => { setFilters(filters); }} />
             </div >
 
             {
