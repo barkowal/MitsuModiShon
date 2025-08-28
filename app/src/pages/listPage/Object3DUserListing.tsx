@@ -9,7 +9,7 @@ import { formatDateString } from "@/lib/utils";
 import { ListFilter } from "./listComponents/ListFilter";
 
 const USERS_OBJECT3D_URL = "/api/v1/objects3D/private";
-const USERS_OBJECT3D_DOWNLOAD = "/api/v1//download/users";
+const USERS_OBJECT3D_DOWNLOAD = "/api/v1/objects3D/download/users";
 const USERS_OBJECT3D_DELETE = "/api/v1/objects3D";
 const USER_OBJECT3D_PATCH = "/api/v1/objects3D";
 
