@@ -15,7 +15,7 @@ export default function AnimationSceneListingPage() {
         <div className="flex font-bold justify-center items-center h-full space-x-10">
           <div
             onClick={() => { setIsPublicList(true); }}
-            className="text-center px-4 py-2 cursor-pointer hover:bg-primary/10 rounded transition duration-300"
+            className={` ${isPublicList ? "bg-primary/15" : ""} text-center px-4 py-2 cursor-pointer hover:bg-primary/10 rounded transition duration-300`}
           >
             <p className="w-xs select-none ">
               Public
@@ -25,7 +25,7 @@ export default function AnimationSceneListingPage() {
             auth?.userName ?
               <div
                 onClick={() => { setIsPublicList(false); }}
-                className="text-center px-4 py-2 cursor-pointer hover:bg-primary/10 rounded transition duration-300"
+                className={` ${isPublicList ? "" : "bg-primary/15"} text-center px-4 py-2 cursor-pointer hover:bg-primary/10 rounded transition duration-300`}
               >
                 <p className="w-xs select-none ">
                   My Scenes
