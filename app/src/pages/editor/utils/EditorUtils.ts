@@ -14,7 +14,7 @@ export class EditorUtils {
   setCopiedObjects(objects: Array<THREE.Object3D>) {
     this.disposeCopies();
     objects.forEach((obj) => {
-      this.copiedObjects.push(obj.clone());
+      this.copiedObjects.push(obj.clone(true));
     });
   }
 

@@ -363,6 +363,24 @@ export default class ModellingMesh extends THREE.Mesh {
     this.disposeHelpers();
   }
 
+  copy(source: THREE.Object3D, recursive?: boolean): this {
+    super.copy(source, recursive);
+
+    //@ts-expect-error override
+    this.type = "ModellingMesh";
+    this.normalMaterial = this.material as THREE.Material;
+
+    this.verticesHelper = null;
+    this.transformHelper = null;
+    this.selectedVertices = [];
+    this.groupedVertices = this.groupVertices();
+
+    this.currentVerticesColors = this.initCurrentColors();
+    this.modellingOutline = null;
+
+    return this;
+  }
+
   private translateVertex(vertex: THREE.Vector3, index: number, distance: Vec3) {
     vertex.setX(vertex.x + distance.x);
     vertex.setY(vertex.y + distance.y);
@@ -407,7 +425,10 @@ export default class ModellingMesh extends THREE.Mesh {
 
   private groupVertices() {
     const positionAttribute = this.geometry.getAttribute("position");
+
     const map = new Map();
+    if (!positionAttribute) return map;
+
     const vertex = new THREE.Vector3();
 
     for (let i = 0; i < positionAttribute.array.length / 3; i++) {
