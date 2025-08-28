@@ -139,13 +139,17 @@ export class ModellingObjectLoader {
 
         const objectGeometry = getGeometry(jsonData.objectsGeometry);
         object = new ModellingOutline(objectGeometry);
-        object.createOutlineFromVerticesGroups(jsonData.currentLines);
+
+        if (jsonData.layers)
+          object.layers.mask = jsonData.layers;
 
         if (jsonData.lineWidth)
           object.setLineWidth(jsonData.lineWidth);
 
         if (jsonData.lineColor)
           object.setLineColor(jsonData.lineColor);
+
+        object.createOutlineFromVerticesGroups(jsonData.currentLines);
 
         break;
       }

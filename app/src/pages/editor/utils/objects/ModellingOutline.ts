@@ -1,6 +1,6 @@
 import { Line2, LineGeometry, LineSegments2, LineSegmentsGeometry } from "three/examples/jsm/Addons.js";
 import { type BufferGeometry, Line2NodeMaterial, Vector3, Object3D, Line3, type JSONMeta, type Object3DJSON } from "three/webgpu";
-import { DEFAULT_LINE_WIDTH } from "../Global";
+import { DEFAULT_LINE_WIDTH, EDITOR_LAYER, RENDER_LAYER } from "../Global";
 
 export class ModellingOutline extends Object3D {
   private objectsGeometry: BufferGeometry;
@@ -39,6 +39,13 @@ export class ModellingOutline extends Object3D {
     }
 
     this.outline = this.createLineSegments();
+
+    if (this.layers.isEnabled(EDITOR_LAYER))
+      this.outline.layers.enable(EDITOR_LAYER);
+
+    if (this.layers.isEnabled(RENDER_LAYER))
+      this.outline.layers.enable(RENDER_LAYER);
+
     this.clearAllHightlightedEdges();
   }
 

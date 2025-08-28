@@ -4,6 +4,7 @@ import { CreateModellingMaterial } from "./Custom/ModellingMaterial";
 import { calculateVec3Difference, convertTVector3ToVec3 } from "../utils";
 import { CreateLineSelectMaterial } from "./Custom/LineSelectMaterial";
 import { ModellingOutline } from "./ModellingOutline";
+import { EDITOR_LAYER, RENDER_LAYER } from "../Global";
 
 export default class ModellingMesh extends THREE.Mesh {
   private verticesHelper: THREE.InstancedMesh | null;
@@ -48,6 +49,13 @@ export default class ModellingMesh extends THREE.Mesh {
       this.modellingOutline?.dispose();
     }
     this.modellingOutline = modellingOutline;
+
+    if (this.layers.isEnabled(EDITOR_LAYER))
+      this.modellingOutline.layers.enable(EDITOR_LAYER);
+
+    if (this.layers.isEnabled(RENDER_LAYER))
+      this.modellingOutline.layers.enable(RENDER_LAYER);
+
     this.add(modellingOutline);
   }
 
