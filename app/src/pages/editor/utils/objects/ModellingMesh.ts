@@ -366,6 +366,11 @@ export default class ModellingMesh extends THREE.Mesh {
   copy(source: THREE.Object3D, recursive?: boolean): this {
     super.copy(source, recursive);
 
+    if (source instanceof ModellingMesh) {
+      this.geometry = source.geometry.clone();
+      this.material = (source.material as THREE.Material).clone();
+    }
+
     //@ts-expect-error override
     this.type = "ModellingMesh";
     this.normalMaterial = this.material as THREE.Material;
@@ -377,6 +382,26 @@ export default class ModellingMesh extends THREE.Mesh {
 
     this.currentVerticesColors = this.initCurrentColors();
     this.modellingOutline = null;
+
+    // Ugly, Specific code, modelling outline is created but object still needs to find reference to it
+    // and set cloned geometry so that after geometry changes it would correct itself for painting
+    if (source instanceof ModellingMesh && source.modellingOutline) {
+      const outline = this.children.find((child) => child instanceof ModellingOutline);
+
+      if (outline) {
+
+        outline.setObjectsGeometry(this.geometry);
+        this.modellingOutline = outline;
+
+        if (this.layers.isEnabled(EDITOR_LAYER))
+          this.modellingOutline.layers.enable(EDITOR_LAYER);
+
+        if (this.layers.isEnabled(RENDER_LAYER))
+          this.modellingOutline.layers.enable(RENDER_LAYER);
+
+        this.add(outline);
+      }
+    }
 
     return this;
   }

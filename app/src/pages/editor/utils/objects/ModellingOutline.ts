@@ -31,6 +31,37 @@ export class ModellingOutline extends Object3D {
     this.name = "ModellingOutline";
   }
 
+  // TODO, it should be invoked only after copying/creation
+  setObjectsGeometry(objectsGeometry: BufferGeometry) {
+    this.objectsGeometry = objectsGeometry;
+  }
+
+  copy(source: Object3D): this {
+    // It shouldn't create copies of children, instead it creates them here
+    super.copy(source, false);
+
+    if (source instanceof ModellingOutline) {
+      //@ts-expect-error override
+      this.type = "ModellingOutline";
+      this.lineWidth = source.lineWidth.valueOf();
+      this.lineColor = source.lineColor.valueOf();
+
+      this.objectsGeometry = source.objectsGeometry;
+
+      this.lineMaterial = new Line2NodeMaterial({ color: this.lineColor, linewidth: this.lineWidth, dashed: false });
+
+      this.outline = null;
+      this.lineSet = new Set();
+      this.currentLines = [];
+      this.highlightedLines = [];
+      this.name = "ModellingOutline";
+
+      this.createOutlineFromVerticesGroups(source.currentLines);
+    }
+
+    return this;
+  }
+
   createOutline() {
     if (this.highlightedLines.length === 0) return;
 

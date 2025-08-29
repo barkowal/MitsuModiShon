@@ -10,11 +10,14 @@ export class EditorUtils {
     this.copiedObjects = [];
   }
 
-  // For now it creates a clone with same material and geometry
+  // Right now custom objects like modelling mesh are different with clone. 
+  // They produce new material and geometry, but others like THREE.Mesh create clones
   setCopiedObjects(objects: Array<THREE.Object3D>) {
     this.disposeCopies();
     objects.forEach((obj) => {
+
       this.copiedObjects.push(obj.clone(true));
+
     });
   }
 
