@@ -177,6 +177,10 @@ function AnimationEditor() {
       objectModeHandler.disposeEventHandlers();
       animationModeHandler.disposeEventHandlers();
       loop.dispose();
+
+      // TODO find a better solution
+      // Reloading for flushing everything 
+      window.location.reload();
     };
   }, [rendererController, selectionController]);
 

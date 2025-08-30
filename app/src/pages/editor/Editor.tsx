@@ -195,6 +195,9 @@ function Editor() {
       editModeHandler.disposeEventHandlers();
       paintModeHandler.disposeEventHandlers();
       objectModeHandler.disposeEventHandlers();
+      // TODO find a better solution
+      // Reloading for flushing everything 
+      window.location.reload();
     };
   }, [rendererController, selectionController,]);
 

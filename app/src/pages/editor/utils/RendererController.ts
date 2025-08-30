@@ -130,12 +130,67 @@ export class RendererController {
   }
 
   dispose() {
+
+    this.disposeHierarchy(this.scene, this.disposeNode);
+
+    this.scene.remove();
     this.viewHelper.dispose();
+    this.postProcessing.dispose();
+    this.renderer._textures?.dispose();
+    this.renderer._renderLists?.dispose();
     this.renderer.dispose();
+
   }
 
   getRenderInfo() {
     return this.renderer.info.memory;
+  }
+
+  private disposeNode(parentObject: THREE.Object3D) {
+
+    parentObject.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        if (child.geometry) {
+          child.geometry.dispose();
+        }
+
+        if (child.material) {
+
+          if ("materials" in child.material) {
+
+            //@ts-expect-error different material types
+            child.material.materials.forEach((mtrl) => {
+              if (mtrl.map) mtrl.map.dispose();
+              if (mtrl.lightMap) mtrl.lightMap.dispose();
+              if (mtrl.bumpMap) mtrl.bumpMap.dispose();
+              if (mtrl.normalMap) mtrl.normalMap.dispose();
+              if (mtrl.specularMap) mtrl.specularMap.dispose();
+              if (mtrl.envMap) mtrl.envMap.dispose();
+
+              mtrl.dispose();
+            });
+          }
+          else {
+            if (child.material.map) child.material.map.dispose();
+            if (child.material.lightMap) child.material.lightMap.dispose();
+            if (child.material.bumpMap) child.material.bumpMap.dispose();
+            if (child.material.normalMap) child.material.normalMap.dispose();
+            if (child.material.specularMap) child.material.specularMap.dispose();
+            if (child.material.envMap) child.material.envMap.dispose();
+
+            child.material.dispose();
+          }
+        }
+      }
+    });
+  }
+
+  private disposeHierarchy(node: THREE.Object3D, callback: CallableFunction) {
+    for (let i = node.children.length - 1; i >= 0; i--) {
+      const child = node.children[i];
+      this.disposeHierarchy(child, callback);
+      callback(child);
+    }
   }
 
 
