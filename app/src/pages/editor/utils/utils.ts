@@ -44,6 +44,10 @@ export function convertHexColorToVec3(hexColor: number): Vec3 {
   return { x: r, y: g, z: b };
 }
 
+export function convertHexColorStringToNumber(hexString: string): number {
+  return Number("0x" + hexString.slice(1));
+}
+
 export function isArrayOfMeshes(array: Array<THREE.Object3D>): boolean {
   let onlyMeshes = true;
   array.forEach((obj) => {

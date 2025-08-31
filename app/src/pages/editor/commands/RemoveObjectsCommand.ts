@@ -1,6 +1,6 @@
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import type { Command } from "./CommandInterface";
-import { Scene, Object3D, Mesh } from "three/webgpu";
+import { Scene, Object3D, Mesh, Light } from "three/webgpu";
 
 export class RemoveObjectsCommand implements Command {
     private scene: Scene;
@@ -56,6 +56,13 @@ export class RemoveObjectsCommand implements Command {
             this.disposeObject(child);
         });
         this.disposeGeomAndMat(obj);
+
+        if (obj instanceof Light) {
+            if (obj && !this.scene.getObjectById(obj.id)) {
+                obj.dispose();
+            }
+        }
+
     }
 
     disposeGeomAndMat(object: Object3D) {

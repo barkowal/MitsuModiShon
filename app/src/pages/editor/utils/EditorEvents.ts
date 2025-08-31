@@ -3,7 +3,7 @@ import type { AnimationLoopSettings, AnimationObjectData, MaterialItem, TreeItem
 export const EDITOR_EVENT = {
   /**
    * Signal for adding a mesh to the scene.
-   * @returns {Array<number>} meshData- Mesh type with parameters to add to the scene
+   * @returns {Array<number>} meshData - Mesh type with parameters to add to the scene
    */
   AddMesh: "AddMesh",
 
@@ -12,6 +12,12 @@ export const EDITOR_EVENT = {
    * @returns {void}
    */
   RemoveMesh: "RemoveMesh",
+
+  /**
+   * Signal for adding a light to the scene.
+   * @returns {Array<number>} addLightData - light type with parameters like color and intensity
+   */
+  AddLight: "AddLight",
 
   /**
    * Signal for refreshing the tree scene view

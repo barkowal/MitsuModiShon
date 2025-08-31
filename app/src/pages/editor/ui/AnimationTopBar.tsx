@@ -5,6 +5,7 @@ import RemoveMeshButton from "./RemoveMeshButton";
 import { RenderingButton } from "./RenderingButton";
 import { AddObjectDialog } from "./AddObjectMenu/AddObjectDialog";
 import { AnimationOptionsDropdown } from "./AnimationOptionsDropdown";
+import { AddLightDialog } from "./AddLightDialog";
 
 function AnimationTopBar() {
 
@@ -20,6 +21,7 @@ function AnimationTopBar() {
         </Button>
         <AddObjectDialog />
         <RemoveMeshButton />
+        <AddLightDialog />
         <RenderingButton />
       </div>
     </>

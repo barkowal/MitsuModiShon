@@ -23,6 +23,8 @@ import { PaintModeHandler } from "./utils/PaintModeHandler";
 import { PaintingHelper } from "./utils/PaintingHelper";
 import { CreateMesh } from "./utils/CreateMesh";
 import { InitRenderer } from "./utils/InitRenderer";
+import { CreateLight } from "./utils/CreateLight";
+import { AddLightCommand } from "./commands/AddLightCommand";
 
 
 function Editor() {
@@ -50,6 +52,14 @@ function Editor() {
     const handleAddMesh = (meshData: Array<number>) => {
       const mesh = CreateMesh(meshData);
       commandHistory.addCommand(new AddMeshCommand(scene, mesh));
+      uiController.refreshTree();
+    };
+
+    const handleAddLight = (lightData: Array<number>) => {
+      const light = CreateLight(lightData);
+
+      commandHistory.addCommand(new AddLightCommand(scene, light));
+
       uiController.refreshTree();
     };
 
@@ -164,6 +174,7 @@ function Editor() {
     };
 
     editorEventBus.on(EDITOR_EVENT.AddMesh, handleAddMesh);
+    editorEventBus.on(EDITOR_EVENT.AddLight, handleAddLight);
     editorEventBus.on(EDITOR_EVENT.SelectObject, handleSelectObject);
     editorEventBus.on(EDITOR_EVENT.AddSelection, handleAddSelection);
     editorEventBus.on(EDITOR_EVENT.AttachToObject, handleAttachToObject);
@@ -179,6 +190,7 @@ function Editor() {
 
     return () => {
       editorEventBus.off(EDITOR_EVENT.AddMesh, handleAddMesh);
+      editorEventBus.off(EDITOR_EVENT.AddLight, handleAddLight);
       editorEventBus.off(EDITOR_EVENT.SelectObject, handleSelectObject);
       editorEventBus.off(EDITOR_EVENT.AddSelection, handleAddSelection);
       editorEventBus.off(EDITOR_EVENT.AttachToObject, handleAttachToObject);

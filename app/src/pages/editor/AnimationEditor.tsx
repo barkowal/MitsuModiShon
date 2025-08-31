@@ -21,6 +21,8 @@ import { InitRenderer } from "./utils/InitRenderer";
 import AnimationPanel from "./ui/AnimationPanel";
 import { GetAnimationSceneJSON, getObjectsJSON } from "./utils/GetJSON";
 import type { UploadableAnimationSceneData, UploadableObjectData } from "./utils/Types";
+import { CreateLight } from "./utils/CreateLight";
+import { AddLightCommand } from "./commands/AddLightCommand";
 
 function AnimationEditor() {
   const { canvasRef, rendererController, selectionController } = InitRenderer();
@@ -44,6 +46,14 @@ function AnimationEditor() {
     const handleAddMesh = (meshData: Array<number>) => {
       const mesh = CreateMesh(meshData);
       commandHistory.addCommand(new AddMeshCommand(scene, mesh));
+      uiController.refreshTree();
+    };
+
+    const handleAddLight = (lightData: Array<number>) => {
+      const light = CreateLight(lightData);
+
+      commandHistory.addCommand(new AddLightCommand(scene, light));
+
       uiController.refreshTree();
     };
 
@@ -144,6 +154,7 @@ function AnimationEditor() {
     };
 
     editorEventBus.on(EDITOR_EVENT.AddMesh, handleAddMesh);
+    editorEventBus.on(EDITOR_EVENT.AddLight, handleAddLight);
     editorEventBus.on(EDITOR_EVENT.SelectObject, handleSelectObject);
     editorEventBus.on(EDITOR_EVENT.AddSelection, handleAddSelection);
     editorEventBus.on(EDITOR_EVENT.AttachToObject, handleAttachToObject);
@@ -160,6 +171,7 @@ function AnimationEditor() {
 
     return () => {
       editorEventBus.off(EDITOR_EVENT.AddMesh, handleAddMesh);
+      editorEventBus.off(EDITOR_EVENT.AddLight, handleAddLight);
       editorEventBus.off(EDITOR_EVENT.SelectObject, handleSelectObject);
       editorEventBus.off(EDITOR_EVENT.AddSelection, handleAddSelection);
       editorEventBus.off(EDITOR_EVENT.AttachToObject, handleAttachToObject);

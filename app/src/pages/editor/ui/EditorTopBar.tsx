@@ -6,6 +6,7 @@ import ChangeModeDropdown from "./EditorModeMenu/ChangeModeDropdown";
 import { RenderingButton } from "./RenderingButton";
 import { AddObjectDialog } from "./AddObjectMenu/AddObjectDialog";
 import { OptionsDropdown } from "./OptionsDropdown";
+import { AddLightDialog } from "./AddLightDialog";
 
 function EditorTopBar() {
 
@@ -21,6 +22,7 @@ function EditorTopBar() {
         </Button>
         <AddObjectDialog />
         <RemoveMeshButton />
+        <AddLightDialog />
         <ChangeModeDropdown />
         <RenderingButton />
       </div>

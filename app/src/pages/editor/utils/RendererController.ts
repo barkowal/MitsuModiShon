@@ -231,13 +231,6 @@ export class RendererController {
     const gridHelper = this.createGridHelper();
     scene.add(gridHelper);
 
-    //TODO temporary light, make adding light in the editor
-    const color = 0xFFFFFF;
-    const intensity = 1;
-    const light = new THREE.AmbientLight(color, intensity);
-    light.layers.enable(BACKGROUND_LAYER);
-    scene.add(light);
-
     return scene;
   }
 
