@@ -29,6 +29,7 @@ export function AddLightDialog() {
     const handleAddLight = () => {
         const lightParams = [currentType, convertHexColorStringToNumber(currentColor), currentIntensity];
         editorEventBus.emit(EDITOR_EVENT.AddLight, lightParams);
+        setIsDialogOpen(false);
     };
 
     return (

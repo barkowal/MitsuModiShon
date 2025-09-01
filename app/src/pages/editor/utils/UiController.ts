@@ -88,6 +88,7 @@ export class UiController {
         editorEventBus.emit(EDITOR_EVENT.RefreshNameMenu, obj.name);
     }
 
+    // TODO instead of getting object by id on every method, check it and memoize?
     setSelectedMeshId(id: number) {
         if (this.selectedMeshId === id) {
             return;
@@ -97,6 +98,7 @@ export class UiController {
         this.refreshNameMenu();
         this.refreshMaterial();
         this.refreshVisibilityMenu();
+        this.refreshLight();
     }
 
     // Could be util function, if used more
@@ -169,6 +171,37 @@ export class UiController {
         editorEventBus.emit(EDITOR_EVENT.RefreshAnimationPlayback, settings);
     }
 
+    refreshLight() {
+        const lightObj = this.scene.getObjectById(this.selectedMeshId);
+        if (lightObj === undefined || lightObj.userData.isLight === undefined) {
+            editorEventBus.emit(EDITOR_EVENT.ShowMaterialView, true);
+            return;
+        };
+
+        // The selected object can be a light, or it's first child
+        let color: number;
+        let intensity: number;
+
+        if (lightObj instanceof THREE.Mesh) {
+
+            if (lightObj.children[0] instanceof THREE.Light) {
+                color = lightObj.children[0].color.getHex();
+                intensity = lightObj.children[0].intensity;
+            } else return;
+
+        } else if (lightObj instanceof THREE.Light) {
+
+            color = lightObj.color.getHex();
+            intensity = lightObj.intensity;
+
+        }
+        else return;
+
+        editorEventBus.emit(EDITOR_EVENT.ShowMaterialView, false);
+        editorEventBus.emit(EDITOR_EVENT.RefreshLightMenu, [lightObj.id, color, intensity]);
+
+
+    }
 
 }
 

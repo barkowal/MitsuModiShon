@@ -112,6 +112,12 @@ export const MATERIAL_TYPES = {
     Drawing: "MeshBasicNodeMaterial",
 } as const;
 
+export const LIGHT_ARRAY_DATA = {
+    id: 0,
+    color: 1,
+    intensity: 2,
+} as const;
+
 export const ANIMATION_PROPERTY = {
     Position: 0,
     Scale: 1,

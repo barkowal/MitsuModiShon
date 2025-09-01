@@ -119,10 +119,28 @@ export const EDITOR_EVENT = {
   ChangeMeshMaterial: "ChangeMeshMaterial",
 
   /**
+   * Signal for changing current's light data
+   * @returns {Array<number>} lightData - light id, color and intensity
+   */
+  ChangeLightData: "ChangeLightData",
+
+  /**
+   * Signal for changing from light to material view or opposite
+   * @returns {boolean} showMaterial - whether to show material(true) or light(false)
+   */
+  ShowMaterialView: "ShowMaterialView",
+
+  /**
    * Signal for refreshing the material menu in the ui
    * @returns {MaterialItem} materialItem - data about the material
    */
   RefreshMeshMaterial: "RefreshMeshMaterial",
+
+  /**
+   * Signal for refreshing the light menu
+   * @returns {Array<number>} lightData - object id, color and intensity
+   */
+  RefreshLightMenu: "RefreshLightMenu",
 
   /**
    * Signal for changing the scene's color 

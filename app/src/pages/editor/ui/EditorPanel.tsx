@@ -3,8 +3,8 @@ import { TransformationMenu } from "./TransformationMenu/TransformationMenu";
 import { SceneBackgroundMenu } from "./SceneBackgroundMenu";
 import { ObjectNameMenu } from "./ObjectNameMenu";
 import { Separator } from "@/components/ui/separator";
-import { MaterialView } from "./MaterialMenu/MaterialView";
 import { LayersMenu } from "./LayersMenu";
+import { MeshOrLightParamView } from "./MeshOrLightParamView";
 
 function EditorPanel() {
 
@@ -16,9 +16,9 @@ function EditorPanel() {
         <ObjectNameMenu />
         <SceneBackgroundMenu />
         <Separator orientation="horizontal" />
-        <MaterialView />
+        <MeshOrLightParamView />
         <LayersMenu />
-      </div>
+      </div >
     </>
   );
 

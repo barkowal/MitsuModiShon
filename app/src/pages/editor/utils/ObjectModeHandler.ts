@@ -2,7 +2,7 @@ import * as THREE from "three/webgpu";
 import { CommandHistory } from "@/lib/CommandHistory";
 import type { UiController } from "./UiController";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
-import { TRANSFORM_CHANGE, type EventHandlerType, type MaterialItem, type Vec3 } from "./Types";
+import { LIGHT_ARRAY_DATA, TRANSFORM_CHANGE, type EventHandlerType, type MaterialItem, type Vec3 } from "./Types";
 import type { SelectionController } from "./SelectionController";
 import { calculateVec3Difference, compareVec3, convertEulerToVec3Degrees, convertTVector3ToVec3, isArrayOfMeshes } from "./utils";
 import { TranslateObjectsCommand } from "../commands/TranslateObjectsCommand";
@@ -15,6 +15,7 @@ import { AddMeshCommand } from "../commands/AddMeshCommand";
 import { DownloadJSON } from "@/lib/DownloadJSON";
 import { INTERSECTION_LAYER } from "./Global";
 import { LoadObject } from "./LoadObject";
+import { ChangeLightDataCommand } from "../commands/ChangeLightDataCommand";
 
 export class ObjectModeHandler {
   eventHandlers: Array<EventHandlerType>;
@@ -43,6 +44,7 @@ export class ObjectModeHandler {
     this.handleRotateObject();
     this.handleSetLayers();
     this.handleChangeMaterial();
+    this.handleChangeLightData();
     this.handleSaveObject();
     this.handleUploadObject();
   }
@@ -104,6 +106,21 @@ export class ObjectModeHandler {
    * ////////////////////////
    * ////////////////////////
    * */
+
+  private handleChangeLightData() {
+
+    const handle = (lightData: Array<number>) => {
+
+      const light = this.scene.getObjectById(lightData[LIGHT_ARRAY_DATA.id]);
+      if (!light) return;
+
+      this.commandHistory.addCommand(new ChangeLightDataCommand(light, lightData));
+
+    };
+
+    editorEventBus.on(EDITOR_EVENT.ChangeLightData, handle);
+    this.eventHandlers.push({ event: EDITOR_EVENT.ChangeLightData, callback: handle });
+  }
 
   private handleRemoveMesh() {
     const handle = () => {

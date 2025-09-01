@@ -54,7 +54,11 @@ export function CreateLight(lightData: Array<number>) {
   light.layers.enable(EDITOR_LAYER);
   light.layers.enable(RENDER_LAYER);
 
-  if (helper) return helper;
+  if (helper) {
+    helper.userData.isLight = true;
+    return helper;
+  }
 
+  light.userData.isLight = true;
   return light;
 }

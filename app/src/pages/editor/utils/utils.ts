@@ -48,6 +48,12 @@ export function convertHexColorStringToNumber(hexString: string): number {
   return Number("0x" + hexString.slice(1));
 }
 
+export function convertHexColorNumberToString(hexColor: number): string {
+  let hex = hexColor.toString(16);
+  hex = hex.padStart(6, "0");
+  return "#" + hex;
+}
+
 export function isArrayOfMeshes(array: Array<THREE.Object3D>): boolean {
   let onlyMeshes = true;
   array.forEach((obj) => {

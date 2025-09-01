@@ -10,6 +10,7 @@ export function PositionInput() {
   const [posY, setPosY] = useState(0);
   const [posZ, setPosZ] = useState(0);
 
+  // TODO send position, rotation... listens on all document, change it
   const sendPosition = () => {
     const newPos: Vec3 = { x: posX, y: posY, z: posZ };
     if (!compareVec3(oldPos, newPos)) {
