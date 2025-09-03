@@ -1,13 +1,12 @@
 import * as THREE from "three/webgpu";
-import { BACKGROUND_LAYER, DEFAULT_SCENE_COLOR, EDITOR_LAYER, RENDER_LAYER } from "./Global";
+import { BACKGROUND_LAYER, DEFAULT_SCENE_COLOR, EDITOR_LAYER, MAIN_MESH_RENDER_ORDER, RENDER_LAYER } from "./Global";
 import { ViewHelper } from "./objects/ViewHelper";
-import { mix, pass, step, uniform } from "three/tsl";
-import OutlineNode, { outline } from "three/examples/jsm/tsl/display/OutlineNode.js";
 import { AddListener } from "./AddListener";
 import { OrbitControls, TransformControls } from "three/examples/jsm/Addons.js";
 import { type Vec3 } from "./Types";
 import { compareVec3, convertEulerToVec3Degrees, convertTVector3ToVec3 } from "./utils";
 import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
+import { CreateOutlineMaterial } from "./objects/Custom/OutlineMaterial";
 
 export class RendererController {
   private renderer: THREE.WebGPURenderer;
@@ -21,16 +20,16 @@ export class RendererController {
   private orbitControls: OrbitControls;
   private control: TransformControls;
 
-  private postProcessing: THREE.PostProcessing;
   private viewHelper: ViewHelper;
 
-  private outlinePass: THREE.TSL.ShaderNodeObject<OutlineNode>;
-  private outlineColor;
+  private outlinedObjects: Array<THREE.Mesh>;
+  private outlines: Array<THREE.Mesh>;
 
 
   constructor() {
 
     this.renderer = new THREE.WebGPURenderer({ antialias: true });
+    this.renderer.autoClear = false;
 
     this.scene = this.initScene();
     this.editorCamera = this.createEditorCamera();
@@ -39,12 +38,13 @@ export class RendererController {
 
     this.viewHelper = new ViewHelper(this.editorCamera, this.renderer.domElement);
     AddListener(window, "click", (event: Event) => {
-      this.viewHelper.handleClick(event);
+      if (event instanceof MouseEvent)
+        this.viewHelper.handleClick(event);
     });
 
-    this.outlinePass = this.createOutlinePass();
-    this.outlineColor = this.createOutlineColor();
-    this.postProcessing = this.createPostProcessing();
+    this.outlinedObjects = [];
+    this.outlines = [];
+
     this.isRenderingView = false;
     this.renderRequested = false;
 
@@ -83,7 +83,6 @@ export class RendererController {
     this.renderer.setSize(divElement.clientWidth, divElement.clientHeight);
 
     this.renderer.clearAsync();
-    this.recalculatePostProcessing();
   }
 
   setIsRenderingView(isRendering: boolean) {
@@ -107,17 +106,45 @@ export class RendererController {
     return { width: size.width, height: size.height };
   }
 
-  recalculatePostProcessing() {
-    const gizmoNode = this.viewHelper.getTexture();
-    this.postProcessing.outputNode = mix(this.outlineColor, gizmoNode, step(0.000001, gizmoNode));
-  }
-
+  // The main object has a higher render order than other objects
+  // Outline has a lower order than this object, but higher than others
+  // This way outline is visible even when other objects are in the way
   outlineObject(object: THREE.Object3D) {
-    this.outlinePass.selectedObjects.push(object);
+    if (object instanceof THREE.Mesh) {
+      object.renderOrder = 4;
+      this.outlinedObjects.push(object);
+
+      const clone = object.clone(false);
+      if (clone instanceof THREE.Mesh) {
+        clone.renderOrder = 3;
+        clone.material = CreateOutlineMaterial();
+        clone.matrixWorld = object.matrixWorld;
+        clone.matrixWorldAutoUpdate = false;
+        clone.layers.enable(BACKGROUND_LAYER);
+
+        this.scene.add(clone);
+        this.outlines.push(clone);
+
+      }
+
+    }
+
   }
 
   clearOutlines() {
-    this.outlinePass.selectedObjects = [];
+    this.outlinedObjects.forEach((obj) => {
+      obj.renderOrder = MAIN_MESH_RENDER_ORDER;
+    });
+
+    this.outlines.forEach((obj) => {
+
+      this.scene.remove(obj);
+
+      if ("dispose" in obj.material)
+        obj.material.dispose();
+      obj.geometry.dispose();
+
+    });
   }
 
   render() {
@@ -135,7 +162,6 @@ export class RendererController {
 
     this.scene.remove();
     this.viewHelper.dispose();
-    this.postProcessing.dispose();
     this.renderer._textures?.dispose();
     this.renderer._renderLists?.dispose();
     this.renderer.dispose();
@@ -207,10 +233,10 @@ export class RendererController {
       } else {
 
         this.renderer.clear();
+        this.renderer.render(this.scene, this.editorCamera);
 
         this.viewHelper.render(this.renderer);
 
-        this.postProcessing.render();
 
       }
     }
@@ -383,46 +409,6 @@ export class RendererController {
     });
 
     return control;
-  }
-
-  private createPostProcessing() {
-    const postProcessing = new THREE.PostProcessing(this.renderer);
-    const gizmoNode = this.viewHelper.getTexture();
-
-    postProcessing.outputNode = mix(this.outlineColor, gizmoNode, step(0.000001, gizmoNode));
-
-    AddListener(window, "click", (event: Event) => {
-      this.viewHelper.handleClick(event);
-    });
-
-    return postProcessing;
-  }
-
-  private createOutlinePass() {
-    const edgeGlow = uniform(0);
-    const edgeThickness = uniform(2.0);
-    const outlinePass = outline(this.scene, this.editorCamera, {
-      edgeGlow,
-      edgeThickness
-    });
-
-    outlinePass.selectedObjects = [];
-
-    return outlinePass;
-  }
-
-  private createOutlineColor() {
-    const edgeStrength = uniform(4.0);
-    const visibleEdgeColor = uniform(new THREE.Color(0xffffff));
-    const hiddenEdgeColor = uniform(new THREE.Color(0x4e3636));
-
-    const { visibleEdge, hiddenEdge } = this.outlinePass;
-
-    const outlineColor = visibleEdge.mul(visibleEdgeColor).add(hiddenEdge.mul(hiddenEdgeColor)).mul(edgeStrength);
-
-    const scenePass = pass(this.scene, this.editorCamera);
-
-    return outlineColor.add(scenePass);
   }
 
 }

@@ -1,4 +1,3 @@
-import { texture, uv, vec2 } from "three/tsl";
 import * as THREE from "three/webgpu";
 import { EDITOR_EVENT, editorEventBus } from "../EditorEvents";
 
@@ -41,8 +40,6 @@ export class ViewHelper extends THREE.Object3D {
   private raycaster: THREE.Raycaster;
   private point: THREE.Vector3;
 
-  private renderTarget: THREE.RenderTarget | null;
-
   private targetPosition: THREE.Vector3;
   private targetQuaternion: THREE.Quaternion;
 
@@ -81,8 +78,6 @@ export class ViewHelper extends THREE.Object3D {
     this.orthoCamera = new THREE.OrthographicCamera(- 2, 2, 2, - 2, 0, 4);
     this.orthoCamera.position.set(0, 0, 2);
 
-    this.renderTarget = null;
-
     this.targetPosition = new THREE.Vector3();
     this.targetQuaternion = new THREE.Quaternion();
 
@@ -95,7 +90,6 @@ export class ViewHelper extends THREE.Object3D {
     this.handleViewChange = null;
 
     this.init();
-    this.initRenderTarget();
     this.initEventListeners();
   }
 
@@ -169,13 +163,6 @@ export class ViewHelper extends THREE.Object3D {
 
   }
 
-  private initRenderTarget() {
-    const dimension = this.calculateDimension();
-    const x = dimension.width;
-    const y = dimension.height;
-    this.renderTarget = new THREE.RenderTarget(x, y);
-  }
-
   initEventListeners() {
     this.handleViewChange = (viewType: string) => {
       this.changeView(viewType, this.center);
@@ -191,39 +178,19 @@ export class ViewHelper extends THREE.Object3D {
     this.point.set(0, 0, 1);
     this.point.applyQuaternion(this.camera.quaternion);
 
-    renderer.setRenderTarget(this.renderTarget);
-    renderer.clearAsync();
+    const viewport = new THREE.Vector4();
+    const x = this.domElement.offsetWidth - this.viewSize;
+    const y = this.domElement.offsetHeight - this.viewSize;
 
-    renderer.renderAsync(this.scene, this.orthoCamera);
-    renderer.setRenderTarget(null);
+    renderer.clearDepth();
+    renderer.getViewport(viewport);
+    renderer.setViewport(x, y, this.viewSize, this.viewSize);
+
+    renderer.render(this.scene, this.orthoCamera);
+
+    renderer.setViewport(viewport);
 
   };
-
-  private calculateDimension() {
-    const rect = this.domElement.getBoundingClientRect();
-    const offsetX = rect.left + this.domElement.offsetWidth;
-    const offsetY = rect.top + this.domElement.offsetHeight;
-
-    const x = offsetX / (offsetX + this.viewSize);
-    const y = offsetY / (offsetY + this.viewSize);
-
-    const width = (offsetX + this.viewSize);
-    const height = (offsetY + this.viewSize);
-
-    return { x: x, y: y, width: width, height: height };
-
-  }
-
-  getTexture() {
-    if (this.renderTarget === null) return texture(undefined, 1);
-
-    const dimension = this.calculateDimension();
-    const scale = uv()
-      .sub(vec2(dimension.x, dimension.y))
-      .mul(vec2((dimension.width / this.viewSize), (dimension.height / this.viewSize))).toVar();
-
-    return texture(this.renderTarget.texture, scale);
-  }
 
   handleClick(event: Event) {
     if (!(event instanceof MouseEvent)) {
@@ -276,14 +243,13 @@ export class ViewHelper extends THREE.Object3D {
       obj.material.dispose();
     });
 
-    this.renderTarget?.dispose();
-
     if (this.handleViewChange) {
       editorEventBus.off(EDITOR_EVENT.ChangeViewport, this.handleViewChange);
     }
 
   };
 
+  // TODO add animations back
   changeView(viewType: string, focusPoint: THREE.Vector3) {
 
     switch (viewType) {

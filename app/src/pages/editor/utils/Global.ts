@@ -9,3 +9,4 @@ export const DEFAULT_LINE_OFFSET = 0.05;
 export const DEFAULT_KEYFRAME_DURATION = 250;
 export const DEFAULT_FPS = 24;
 export const DEFAULT_LOOP_SETTING = true;
+export const MAIN_MESH_RENDER_ORDER = 0;
