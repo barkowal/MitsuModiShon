@@ -8,8 +8,10 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/auth/useAuth";
 import { LoginFormSchema, type LoginFormType } from "@/lib/types/Schemas";
+import { useTranslation } from "react-i18next";
 
 export default function LoginForm() {
+  const { t } = useTranslation();
   const auth = useAuth();
   const [loginResponse, setLoginResponse] = useState("");
 
@@ -32,8 +34,8 @@ export default function LoginForm() {
 
     <Card>
       <CardHeader>
-        <CardTitle className="font-bold text-2xl"> SIGN IN </CardTitle>
-        <CardDescription>Enter your email address and password to login.</CardDescription>
+        <CardTitle className="font-bold text-2xl"> {t("SignIn").toUpperCase()} </CardTitle>
+        <CardDescription> {t("EnterEmailPasswordToLoginMessage")}</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -43,9 +45,9 @@ export default function LoginForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>EMAIL</FormLabel>
+                  <FormLabel>{t("Email")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="EMAIL" {...field} className="w-[60ch]" />
+                    <Input placeholder={t("Email")} {...field} className="w-[60ch]" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -56,9 +58,9 @@ export default function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>PASSWORD</FormLabel>
+                  <FormLabel>{t("Password")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Password" {...field} className="w-[60ch]" type="password" />
+                    <Input placeholder={t("Password")} {...field} className="w-[60ch]" type="password" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -66,15 +68,15 @@ export default function LoginForm() {
             />
             <p className="text-red-300">{loginResponse}</p>
             <div className="flex justify-end">
-              <Button type="submit" >LOGIN</Button>
+              <Button type="submit" >{t("Login")}</Button>
             </div>
           </form>
         </Form>
       </CardContent>
       <CardFooter className="text-center justify-center">
-        <p>No account? Create it. </p>
+        <p>{t("NoAccountMessageToSignUp")}</p>
         <Link to={"/Register"}>
-          <span className="underline mx-2 font-bold text-secondary-foreground"> SIGN UP</span>
+          <span className="underline mx-2 font-bold text-secondary-foreground"> {t("SignUp").toUpperCase()}</span>
         </Link>
       </CardFooter>
     </Card>

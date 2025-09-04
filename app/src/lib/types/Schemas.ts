@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 export const LoginFormSchema = z.object({
-  email: z.email({ message: "Wrong email address." })
-    .min(2, { message: "Email must be at least 2 characters.", })
-    .max(50, { message: "Email can't be longer than 50 characters." }),
+  email: z.email({ message: "LoginFormEmailError" })
+    .min(2, { message: "LoginFormEmailMin2CharactersError", })
+    .max(50, { message: "LoginFormEmailMax50CharactersError" }),
   password: z.string()
-    .min(8, { message: "Password must be at least 8 characters.", })
+    .min(8, { message: "LoginFormPasswordMin8CharacterError", })
 });
 
 export type LoginFormType = z.infer<typeof LoginFormSchema>;
@@ -13,13 +13,13 @@ export type LoginFormType = z.infer<typeof LoginFormSchema>;
 
 export const RegisterFormSchema = z.object({
   username: z.string()
-    .min(2, { message: "Username must be at least 2 characters.", })
-    .max(50, { message: "Username can't be longer than 50 characters." }),
-  email: z.email({ message: "Wrong email address." })
-    .min(2, { message: "Email must be at least 2 characters.", })
-    .max(50, { message: "Email can't be longer than 50 characters." }),
+    .min(2, { message: "LoginFormUsernameMin2CharactersError", })
+    .max(50, { message: "LoginFormUsernameMax50CharactersError" }),
+  email: z.email({ message: "LoginFormEmailError" })
+    .min(2, { message: "LoginFormEmailMin2CharactersError", })
+    .max(50, { message: "LoginFormEmailMax50CharactersError" }),
   password: z.string()
-    .min(8, { message: "Password must be at least 8 characters.", })
+    .min(8, { message: "LoginFormPasswordMin8CharacterError", })
 });
 
 export type RegisterFormType = z.infer<typeof RegisterFormSchema>;

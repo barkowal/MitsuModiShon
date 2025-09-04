@@ -14,6 +14,8 @@ import { Box, Clapperboard, Grid3x3, Home, PackageSearch } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Separator } from "./ui/separator";
 import { AccountDropdown } from "@/pages/account/AccountDropdown";
+import { LanguageToggle } from "./LanguageToggle";
+import { useTranslation } from "react-i18next";
 
 const items = [
   {
@@ -43,9 +45,8 @@ const items = [
   },
 ];
 
-
-
 export function AppSidebar() {
+  const { t } = useTranslation();
 
   return (
     <Sidebar collapsible="offcanvas">
@@ -68,7 +69,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <Link to={item.url}>
                       <item.icon />
-                      <span>{item.title}</span>
+                      <span>{t(item.title)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -82,6 +83,13 @@ export function AppSidebar() {
 
       <SidebarFooter>
         <SidebarMenu>
+
+          <SidebarMenuItem>
+
+            <LanguageToggle />
+
+          </SidebarMenuItem>
+
           <SidebarMenuItem>
 
             <AccountDropdown />

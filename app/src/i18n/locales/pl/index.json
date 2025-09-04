@@ -1,0 +1,34 @@
+{
+    "HomePageWelcome": "Prosta aplikacja internetowa do modelowania i animacji 3d.",
+
+    "HOME":"GŁÓWNA",
+    "EDITOR":"EDYTOR",
+    "ANIMATION":"ANIMACJA",
+    "OBJECTS3D":"OBIEKTY3D",
+    "SCENES":"SCENY",
+
+    "SignIn": "Zaloguj się",
+    "SignUp": "Zarejestruj się",
+    "Login": "Zaloguj się",
+    "Logout": "Wyloguj",
+    "Create": "Stwórz",
+    "RegisterNow": "Zarejestruj się!",
+    "Account": "Konto",
+    "MyAccount": "Moje Konto",
+    "Email": "Email",
+    "Password": "Hasło",
+    "Username": "Nazwa Użytkownika",
+
+    "EnterEmailPasswordToLoginMessage": "Podaj swój email i hasło, aby się zalogować.",
+    "NoAccountMessageToSignUp": "Nie masz konta? Kliknij tutaj: ",
+    "EnterInformationToSignUpMessage":"Wypełnij formularz, aby stworzyć konto.",
+    "AlreadyHaveAccountMessage":"Masz już konto?",
+
+    "LoginFormEmailError":"Niepoprawny Email.",
+    "LoginFormEmailMin2CharactersError":"Email musi mieć przynajmniej 2 znaki.",
+    "LoginFormEmailMax50CharactersError":"Email nie może mieć więcej niż 50 znaków.",
+    "LoginFormPasswordMin8CharacterError":"Hasło musi mieć przynajmniej 8 znaków.",
+    "LoginFormUsernameMin2CharactersError":"Nazwa użytkownika musi mieć przynajmniej 2 znaki.",
+    "LoginFormUsernameMax50CharactersError":"Nazwa użytkownika nie może mieć więcej niż 50 znaków."
+
+}

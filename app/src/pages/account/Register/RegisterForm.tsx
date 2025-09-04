@@ -8,8 +8,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { RegisterFormSchema, type RegisterFormType } from "@/lib/types/Schemas";
+import { useTranslation } from "react-i18next";
 
 export default function RegisterForm() {
+  const { t } = useTranslation();
   const [registerResponse, setRegisterResponse] = useState("");
   const navigate = useNavigate();
 
@@ -66,8 +68,8 @@ export default function RegisterForm() {
 
     <Card>
       <CardHeader>
-        <CardTitle className="font-bold text-2xl"> SIGN UP </CardTitle>
-        <CardDescription>Enter your information to create an account.</CardDescription>
+        <CardTitle className="font-bold text-2xl"> {t("SignUp").toUpperCase()} </CardTitle>
+        <CardDescription>{t("EnterInformationToSignUpMessage")}</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -78,9 +80,9 @@ export default function RegisterForm() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>USERNAME</FormLabel>
+                  <FormLabel>{t("Username").toUpperCase()}</FormLabel>
                   <FormControl>
-                    <Input placeholder="USERNAME" {...field} className="w-[60ch]" />
+                    <Input placeholder={t("Username")} {...field} className="w-[60ch]" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -92,9 +94,9 @@ export default function RegisterForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>EMAIL</FormLabel>
+                  <FormLabel>{t("Email").toUpperCase()}</FormLabel>
                   <FormControl>
-                    <Input placeholder="EMAIL" {...field} className="w-[60ch]" />
+                    <Input placeholder={t("Email")} {...field} className="w-[60ch]" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -105,9 +107,9 @@ export default function RegisterForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>PASSWORD</FormLabel>
+                  <FormLabel>{t("Password").toUpperCase()}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Password" {...field} className="w-[60ch]" type="password" />
+                    <Input placeholder={t("Password")} {...field} className="w-[60ch]" type="password" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -115,16 +117,16 @@ export default function RegisterForm() {
             />
             <p className="text-red-300">{registerResponse}</p>
             <div className="flex justify-end">
-              <Button type="submit" >REGISTER NOW</Button>
+              <Button type="submit" >{t("RegisterNow").toUpperCase()}</Button>
             </div>
           </form>
         </Form>
       </CardContent>
       <CardFooter className="text-center justify-center">
 
-        <p>Already have an account?</p>
+        <p>{t("AlreadyHaveAccountMessage")}</p>
         <Link to={"/Login"}>
-          <span className="underline mx-2 font-bold text-secondary-foreground"> SIGN IN</span>
+          <span className="underline mx-2 font-bold text-secondary-foreground"> {t("SignIn")}</span>
         </Link>
 
       </CardFooter>

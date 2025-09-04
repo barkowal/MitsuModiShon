@@ -10,6 +10,11 @@ import RegisterPage from "./pages/account/Register/RegisterPage.tsx";
 import AnimationSceneListingPage from "./pages/listPage/AnimationSceneListingPage.tsx";
 import Object3DListingPage from "./pages/listPage/Object3DListingPage.tsx";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+// eslint-disable-next-line 
+import i18n from "./i18n/config.ts";
+
 const router = createBrowserRouter([
   {
     path: "/",
