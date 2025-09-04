@@ -163,6 +163,11 @@ export class ModellingObjectLoader {
         if (!(geometry instanceof ModellingLineGeometry)) break;
         if (!(material instanceof THREE.Line2NodeMaterial)) break;
 
+        // Geometry has position set when creating from lines, so it needs to be translated
+        // Omitting this step results in wrong placement when uploading
+        const matr = new THREE.Matrix4().fromArray(jsonData.matrix as Array<number>);
+        geometry.applyMatrix4(matr);
+
         //@ts-expect-error Checked for correct type
         object = new Line2(geometry, material);
         object.name = jsonData.name ? jsonData.name : "Stroke";
