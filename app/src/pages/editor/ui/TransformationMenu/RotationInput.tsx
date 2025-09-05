@@ -3,8 +3,10 @@ import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
 import { compareVec3 } from "../../utils/utils";
 import { TRANSFORM_CHANGE, TRANSFORMATION_ARR, type Vec3 } from "../../utils/Types";
 import DraggableInput from "@/components/DraggableInput";
+import { useTranslation } from "react-i18next";
 
 export function RotationInput() {
+  const { t } = useTranslation();
   const [oldRotation, setOldRotation] = useState({ x: 0, y: 0, z: 0 });
   const [rotationX, setRotationX] = useState(0);
   const [rotationY, setRotationY] = useState(0);
@@ -51,7 +53,7 @@ export function RotationInput() {
   return (
     <>
       <div className="w-full p-2 flex justify-between gap-2 font-bold select-none ">
-        <p>Rotation</p>
+        <p>{t("Rotation")}</p>
         <div className="flex gap-1 w-fit"
           onBlur={() => { sendRotation(); }}>
           <DraggableInput labelText="X:" minValue={-1000} maxValue={1000} decimalPoints={2}

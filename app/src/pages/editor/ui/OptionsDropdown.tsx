@@ -7,8 +7,10 @@ import type { ChangeEvent } from "react";
 import { useAuth } from "@/hooks/auth/useAuth";
 import UploadObjectDialog from "./Upload/UploadObjectDialog";
 import { ServerDownloadDialog } from "./ServerObjectDownload/ServerDownloadDialog";
+import { useTranslation } from "react-i18next";
 
 export function OptionsDropdown() {
+  const { t } = useTranslation();
   const auth = useAuth();
 
   const signalDownload = () => {
@@ -59,33 +61,33 @@ export function OptionsDropdown() {
       <DropdownMenuTrigger asChild>
 
         <Button className="[&_svg]:size-6" >
-          <Menu /> Options
+          <Menu /> {t("Options")}
         </Button>
 
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel> Options </DropdownMenuLabel>
+        <DropdownMenuLabel> {t("Options")} </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
         <DropdownMenuItem onClick={signalDownload}>
-          <Download /><p>Download</p>
+          <Download /><p>{t("Download")}</p>
         </DropdownMenuItem>
 
         <DropdownMenuItem>
           <label htmlFor="fileUpload" className="[&_svg]:size-6 w-full flex gap-2">
-            <Upload /><p>Upload</p>
+            <Upload /><p>{t("Import")}</p>
           </label>
         </DropdownMenuItem>
 
         <DropdownMenuItem onClick={signalRenderImage}>
-          <ImageDown /><p>Render Image</p>
+          <ImageDown /><p>{t("RenderImage")}</p>
         </DropdownMenuItem>
 
         {
           auth?.userName ?
             <DropdownMenuItem>
               <label htmlFor="uploadObjectDialog" className="[&_svg]:size-6 w-full flex gap-2">
-                <Upload /><p>Upload to server</p>
+                <Upload /><p>{t("UploadToServer")}</p>
               </label>
             </DropdownMenuItem>
             : null
@@ -93,7 +95,7 @@ export function OptionsDropdown() {
 
         <DropdownMenuItem>
           <label htmlFor="ServerDownloadObjectDialog" className="[&_svg]:size-6 w-full flex gap-2">
-            <CloudDownload /><p>Add From Server</p>
+            <CloudDownload /><p>{t("AddFromServer")}</p>
           </label>
         </DropdownMenuItem>
 

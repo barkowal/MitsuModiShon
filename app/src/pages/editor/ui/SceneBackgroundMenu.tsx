@@ -2,8 +2,10 @@ import ColorPopover from "@/components/ColorPopover";
 import { useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { DEFAULT_SCENE_COLOR } from "../utils/Global";
+import { useTranslation } from "react-i18next";
 
 export function SceneBackgroundMenu() {
+  const { t } = useTranslation();
   const [sceneColor, setSceneColor] = useState(DEFAULT_SCENE_COLOR);
 
   const changeSceneColor = (color: string) => {
@@ -16,7 +18,7 @@ export function SceneBackgroundMenu() {
     <div className="bg-sidebar-accent p-1 font-bold select-none">
       <span className=" flex items-center justify-between ">
         <span className="mx-2">
-          Scene Color
+          {t("SceneColor")}
         </span>
         <ColorPopover onColorChange={(val: string) => { changeSceneColor(val); }} colorValue={sceneColor} />
       </span>

@@ -1,5 +1,6 @@
 import ColorPopover from "@/components/ColorPopover";
 import type { MaterialItem } from "../../utils/Types";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   materialData: MaterialItem,
@@ -7,6 +8,7 @@ type Props = {
 };
 
 export function MeshColorMenu({ materialData, setMaterialData }: Props) {
+  const { t } = useTranslation();
 
   const changeMeshColor = (color: string) => {
     if (materialData.color === color)
@@ -21,7 +23,7 @@ export function MeshColorMenu({ materialData, setMaterialData }: Props) {
     <div className="bg-sidebar-accent p-1 font-bold select-none">
       <span className=" flex items-center justify-between ">
         <span className="mx-2">
-          Mesh Color
+          {t("Color")}
         </span>
         <ColorPopover onColorChange={(val: string) => { changeMeshColor(val); }} colorValue={materialData.color} />
       </span>

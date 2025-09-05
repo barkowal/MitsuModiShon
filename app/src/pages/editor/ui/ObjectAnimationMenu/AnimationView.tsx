@@ -5,8 +5,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { AnimationKeyframes } from "./AnimationKeyframes";
 import type { AnimationObjectData, KeyframeSequence } from "../../utils/Types";
+import { useTranslation } from "react-i18next";
 
 export function AnimationView() {
+  const { t } = useTranslation();
   const [isAnimationObject, setIsAnimationObject] = useState(false);
   const [isLooping, setIsLooping] = useState(true);
   const [isEnabled, setIsEnabled] = useState(true);
@@ -59,7 +61,7 @@ export function AnimationView() {
 
               <div className=" select-none p-2 flex justify-between" >
                 <span className="w-full font-bold">
-                  ANIMATION
+                  {t("Animation").toUpperCase()}
                 </span>
               </div>
 
@@ -67,12 +69,12 @@ export function AnimationView() {
 
               <div className="w-1/2">
                 <div className="flex items-center justify-center gap-3 w-full m-2">
-                  <label htmlFor="Enabled" className="w-1/2 font-bold select-none">Enable</label>
+                  <label htmlFor="Enabled" className="w-1/2 font-bold select-none">{t("Enable")}</label>
                   <Checkbox id="Enabled" checked={isEnabled} onCheckedChange={(val: boolean) => { changeObjectsPlaying(val); }} />
                 </div>
 
                 <div className="flex items-center justify-center gap-3 w-full m-2">
-                  <label htmlFor="Loopable" className="w-1/2 font-bold select-none">Loop</label>
+                  <label htmlFor="Loopable" className="w-1/2 font-bold select-none">{t("Loop")}</label>
                   <Checkbox id="Loopable" checked={isLooping} onCheckedChange={(val: boolean) => { changeObjectsLooping(val); }} />
                 </div>
               </div>
@@ -86,11 +88,11 @@ export function AnimationView() {
             <div>
               <div className=" select-none p-2 flex justify-between" >
                 <span className="w-full font-bold">
-                  ANIMATION
+                  {t("Animation").toUpperCase()}
                 </span>
               </div>
               <span className="w-full flex justify-center">
-                <Button className="w-1/2 m-2" onClick={() => { makeAnimationObject(); }}>Animate</Button>
+                <Button className="w-1/2 m-2" onClick={() => { makeAnimationObject(); }}>{t("Animate")}</Button>
               </span>
             </div>
 

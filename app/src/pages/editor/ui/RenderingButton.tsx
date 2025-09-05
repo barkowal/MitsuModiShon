@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Camera } from "lucide-react";
 import { useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
+import { useTranslation } from "react-i18next";
 
 export function RenderingButton() {
+  const { t } = useTranslation();
   const [isRendering, setIsRendering] = useState(false);
 
   const handleSwitchScene = () => {
@@ -17,7 +19,7 @@ export function RenderingButton() {
       <Camera className="size-1" />
       <p>
         {
-          isRendering ? "Switch to Editing" : "Switch to Rendering"
+          isRendering ? t("EditingView") : t("RenderingView")
         }
       </p>
 

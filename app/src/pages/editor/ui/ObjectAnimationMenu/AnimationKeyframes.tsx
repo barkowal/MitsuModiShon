@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ANIMATION_PROPERTY, type KeyframeSequence } from "../../utils/Types";
+import { useTranslation } from "react-i18next";
 
 type frame = {
   property: string,
@@ -18,6 +19,7 @@ type Props = {
 }
 
 export function AnimationKeyframes({ sequenceData }: Props) {
+  const { t } = useTranslation();
   const currentKeyframe = useRef(0);
   const [selectedProperty, setSelectedProperty] = useState("All");
   const [animationKeyframes, setAnimationKeyframes] = useState<Array<frame>>(getDataFromSequence(sequenceData));
@@ -138,24 +140,24 @@ export function AnimationKeyframes({ sequenceData }: Props) {
 
       <div className=" select-none p-2 flex justify-between items-center" >
         <span className=" w-1/3 font-bold">
-          KEYFRAMES
+          {t("Keyframes").toUpperCase()}
         </span>
 
         <div className="flex items-center my-2 justify-center gap-3 w-full ">
           <Select defaultValue="All" onValueChange={(val: string) => { setSelectedProperty(val); }}>
             <SelectTrigger className=" w-11/12 min-[30ch] m-auto">
-              <SelectValue placeholder="All" />
+              <SelectValue placeholder={t("All")} />
             </SelectTrigger>
             <SelectContent >
-              <SelectItem value="All">All</SelectItem>
-              <SelectItem value="Position">Position</SelectItem>
-              <SelectItem value="Scale">Scale</SelectItem>
-              <SelectItem value="Rotation">Rotation</SelectItem>
+              <SelectItem value="All">{t("All")}</SelectItem>
+              <SelectItem value="Position">{t("Position")}</SelectItem>
+              <SelectItem value="Scale">{t("Scale")}</SelectItem>
+              <SelectItem value="Rotation">{t("Rotation")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <Button className="w-1/3" onClick={() => { handleCreatingKeyframe(); }}>Add</Button>
+        <Button className="w-1/3" onClick={() => { handleCreatingKeyframe(); }}>{t("Add")}</Button>
 
       </div>
 

@@ -8,9 +8,11 @@ import { Film } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import DraggableInput from "@/components/DraggableInput";
 import type { AnimationLoopSettings } from "../../utils/Types";
+import { useTranslation } from "react-i18next";
 
 
 export function PlaybackPanel() {
+  const { t } = useTranslation();
   const [duration, setDuration] = useState(DEFAULT_KEYFRAME_DURATION);
   const [fps, setFps] = useState(DEFAULT_FPS);
   const [isLooping, setIsLooping] = useState(DEFAULT_LOOP_SETTING);
@@ -116,7 +118,7 @@ export function PlaybackPanel() {
         <div className="flex gap-2 items-center font-bold">
 
           <span className="flex">
-            <DraggableInput labelText="Duration:" minValue={0} maxValue={1000} decimalPoints={0}
+            <DraggableInput labelText={t("Duration") + ":"} minValue={0} maxValue={1000} decimalPoints={0}
               value={duration} onValueChange={(val: number) => { setKeyframeDuration(val); }}
               inputWidth={8} className="h-fit rounded-none p-0.5 m-0" />
           </span>
@@ -124,7 +126,7 @@ export function PlaybackPanel() {
           <Separator orientation="vertical" />
 
           <span className="flex">
-            <DraggableInput labelText="FPS:" minValue={1} maxValue={144} decimalPoints={0} step={1}
+            <DraggableInput labelText={t("FPS") + ":"} minValue={1} maxValue={144} decimalPoints={0} step={1}
               value={fps} onValueChange={(val: number) => { changeFPS(val); }}
               inputWidth={5} className="h-fit rounded-none p-0.5 m-0" />
           </span>
@@ -132,7 +134,7 @@ export function PlaybackPanel() {
           <Separator orientation="vertical" />
 
           <span className="flex items-center gap-2">
-            <label htmlFor="animation-loop">Loop</label>
+            <label htmlFor="animation-loop">{t("Loop")}</label>
             <Checkbox id="animation-loop" checked={isLooping} onCheckedChange={(val: boolean) => { changeLooping(val); }} />
           </span>
         </div>

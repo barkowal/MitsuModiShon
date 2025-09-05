@@ -4,8 +4,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useEffect, useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { EDITOR_LAYER, INTERSECTION_LAYER, RENDER_LAYER } from "../utils/Global";
+import { useTranslation } from "react-i18next";
 
 export function LayersMenu() {
+  const { t } = useTranslation();
   const [showInEditor, setShowInEditor] = useState(true);
   const [showInRender, setShowInRender] = useState(true);
   const [selectable, setSelectable] = useState(true);
@@ -62,7 +64,7 @@ export function LayersMenu() {
       <div className="w-[calc(100%-10px)] h-[calc(100%-10px)]">
         <div className=" select-none p-2 flex justify-between" >
           <span className="w-full font-bold">
-            LAYERS
+            {t("Layers")}
           </span>
         </div>
 
@@ -71,12 +73,12 @@ export function LayersMenu() {
         <Tooltip>
           <TooltipTrigger asChild>
             <div className="flex items-center justify-center gap-3 w-full m-2">
-              <label htmlFor="EditorVisibility" className="w-1/2 font-bold select-none">Editor</label>
+              <label htmlFor="EditorVisibility" className="w-1/2 font-bold select-none">{t("EditorLayer")}</label>
               <Checkbox id="EditorVisibility" checked={showInEditor} onCheckedChange={(val: boolean) => { handleEditorVisibility(val); }} />
             </div>
           </TooltipTrigger>
           <TooltipContent className="w-fit" side="left">
-            <p>Show object in editor view.</p>
+            <p>{t("ShowObjectInEditorMsg")}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -85,12 +87,12 @@ export function LayersMenu() {
         <Tooltip>
           <TooltipTrigger asChild>
             <div className="flex items-center justify-center gap-3 w-full m-2">
-              <label htmlFor="RenderVisibility" className="w-1/2 font-bold select-none">Render</label>
+              <label htmlFor="RenderVisibility" className="w-1/2 font-bold select-none">{t("RenderLayer")}</label>
               <Checkbox id="RenderVisibility" checked={showInRender} onCheckedChange={(val: boolean) => { handleRenderVisibility(val); }} />
             </div>
           </TooltipTrigger>
           <TooltipContent className="w-fit" side="left">
-            <p>Show object in render view.</p>
+            <p>{t("ShowObjectInRenderMsg")}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -99,12 +101,12 @@ export function LayersMenu() {
         <Tooltip>
           <TooltipTrigger asChild>
             <div className="flex items-center justify-center gap-3 w-full m-2">
-              <label htmlFor="Selectable" className="w-1/2 font-bold select-none">Selectable</label>
+              <label htmlFor="Selectable" className="w-1/2 font-bold select-none">{t("Selectable")}</label>
               <Checkbox id="Selectable" checked={selectable} onCheckedChange={(val: boolean) => { handleSelectable(val); }} />
             </div>
           </TooltipTrigger>
           <TooltipContent className="w-fit" side="left">
-            <p>Allow object to be selectable in editor view.</p>
+            <p>{t("SelectableInfoMsg")}</p>
           </TooltipContent>
         </Tooltip>
 

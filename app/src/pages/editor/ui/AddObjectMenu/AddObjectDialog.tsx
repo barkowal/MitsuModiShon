@@ -5,32 +5,33 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
+import { useTranslation } from "react-i18next";
 
 const AvailableObjects = [
   {
-    name: "ModellingPlane",
-    params: ["Width", "Height", "Width Segments", "Height Segments"],
+    name: "Plane",
+    params: ["Width", "Height", "WidthSegments", "HeightSegments"],
     minValues: [1, 1, 1, 1],
     maxValues: [20, 20, 10, 10],
     defaultValues: [1, 1, 1, 1],
   },
   {
-    name: "ModellingBox",
-    params: ["Width", "Height", "Depth", "Width Segments", "Height Segments", "Depth Segments"],
+    name: "Box",
+    params: ["Width", "Height", "Depth", "WidthSegments", "HeightSegments", "DepthSegments"],
     minValues: [1, 1, 1, 1, 1, 1],
     maxValues: [20, 20, 20, 10, 10, 10],
     defaultValues: [1, 1, 1, 1, 1, 1],
   },
   {
-    name: "ModellingCircle",
+    name: "Circle",
     params: ["Radius", "Segments", "ThetaStart", "ThetaLength"],
     minValues: [1, 1, 0, 0],
     maxValues: [20, 64, 100, 100],
     defaultValues: [1, 16, 0, 100],
   },
   {
-    name: "ModellingCylinder",
-    params: ["Top Radius", "Bottom Radius", "Height", "Radial Segments", "Height Segments", "ThetaStart", "ThetaLength"],
+    name: "Cylinder",
+    params: ["TopRadius", "BottomRadius", "Height", "RadialSegments", "HeightSegments", "ThetaStart", "ThetaLength"],
     minValues: [1, 1, 1, 3, 1, 0, 0],
     maxValues: [20, 20, 20, 64, 10, 100, 100],
     defaultValues: [1, 1, 1, 16, 1, 0, 100],
@@ -38,6 +39,7 @@ const AvailableObjects = [
 ];
 
 export function AddObjectDialog() {
+  const { t } = useTranslation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentObject, setCurrentObject] = useState(0);
   const [currentParams, setCurrentParams] = useState<Array<number>>([1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
@@ -72,9 +74,9 @@ export function AddObjectDialog() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader >
-          <DialogTitle className="text-center">Create Object</DialogTitle>
+          <DialogTitle className="text-center">{t("CreateObject")}</DialogTitle>
           <DialogDescription className="text-center">
-            Select object with preferred settings and add it to the scene.
+            {t("AddObjectDescription")}
           </DialogDescription>
         </DialogHeader>
 
@@ -87,7 +89,7 @@ export function AddObjectDialog() {
           <SelectContent >
             {
               AvailableObjects.map((obj, index) => (
-                <SelectItem value={index.toString()} key={index}>{obj.name}</SelectItem>
+                <SelectItem value={index.toString()} key={index}>{t(obj.name)}</SelectItem>
               ))
             }
           </SelectContent>
@@ -99,7 +101,7 @@ export function AddObjectDialog() {
               <span key={index} className="grid grid-cols-2 gap-1 font-bold m-2">
 
                 <span>
-                  {param}:
+                  {t(param)}:
                 </span>
 
                 <span className="flex gap-2">
@@ -121,7 +123,7 @@ export function AddObjectDialog() {
 
         <DialogFooter>
           <div className="w-full text-center" onClick={handleAddMesh}>
-            <Button>CREATE</Button>
+            <Button>{t("Add").toUpperCase()}</Button>
           </div>
         </DialogFooter>
 

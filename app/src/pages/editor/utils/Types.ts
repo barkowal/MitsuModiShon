@@ -36,9 +36,9 @@ export const TRANSFORM_CHANGE = {
 } as const;
 
 export const EDITOR_MODE = {
-    ObjectMode: "Object Mode",
-    EditMode: "Edit Mode",
-    PaintMode: "Paint Mode",
+    ObjectMode: "ObjectMode",
+    EditMode: "EditMode",
+    PaintMode: "PaintMode",
 } as const;
 
 export const ORBITCONTROLS_MODE = {

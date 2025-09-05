@@ -11,8 +11,10 @@ import { useAuth } from "@/hooks/auth/useAuth";
 import UploadObjectDialog from "./Upload/UploadObjectDialog";
 import { SceneDownloadDialog } from "./ServerAnimationSceneOptions/SceneDownloadDialog";
 import UploadSceneDialog from "./ServerAnimationSceneOptions/UploadSceneDialog";
+import { useTranslation } from "react-i18next";
 
 export function AnimationOptionsDropdown() {
+    const { t } = useTranslation();
     const auth = useAuth();
     const [sendObject, setSendObject] = useState(true);
     const inputRef = useRef<null | HTMLInputElement>(null);
@@ -76,41 +78,41 @@ export function AnimationOptionsDropdown() {
         <DropdownMenu>
             <DropdownMenuTrigger asChild >
                 <Button className="[&_svg]:size-6" >
-                    <Menu /> Options
+                    <Menu /> {t("Options")}
                 </Button>
             </DropdownMenuTrigger>
             < DropdownMenuContent >
-                <DropdownMenuLabel>Options</DropdownMenuLabel>
+                <DropdownMenuLabel>{t("Options")}</DropdownMenuLabel>
                 < DropdownMenuSeparator />
 
                 <DropdownMenuItem onClick={signalDownload}>
-                    <Download /><p>Export Object</p >
+                    <Download /><p>{t("Download")}</p >
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={signalSaveScene}>
-                    <Save /><p>Save Scene</p >
+                    <Save /><p>{t("SaveScene")}</p >
                 </DropdownMenuItem>
 
                 < DropdownMenuItem className="p-0" onClick={() => { setSendObject(true); }} >
                     <label htmlFor="fileUpload" className="[&_svg]:size-6 p-2 w-full flex gap-2" >
-                        <Upload /><p>Upload Animation</p >
+                        <Upload /><p>{t("Import")}</p >
                     </label>
                 </DropdownMenuItem>
 
 
                 < DropdownMenuItem className="p-0"  >
                     <label htmlFor="sceneLoadDialog" className="[&_svg]:size-6 p-2 w-full flex gap-2" >
-                        <Upload /><p>Load Scene</p >
+                        <Upload /><p>{t("LoadScene")}</p >
                     </label>
                 </DropdownMenuItem>
 
                 < DropdownMenuItem onClick={signalRenderImage} >
-                    <ImageDown /><p>Render Image</p >
+                    <ImageDown /><p>{t("RenderImage")}</p >
                 </DropdownMenuItem>
 
                 < DropdownMenuItem className="p-0" >
                     <label htmlFor="renderDialog" className="[&_svg]:size-6 p-2 w-full flex gap-2 " >
-                        <Camera /><p>Render Animation</p>
+                        <Camera /><p>{t("RenderAnimation")}</p>
                     </label>
                 </DropdownMenuItem>
 
@@ -119,13 +121,13 @@ export function AnimationOptionsDropdown() {
                         <>
                             <DropdownMenuItem>
                                 <label htmlFor="uploadObjectDialog" className="[&_svg]:size-6 w-full flex gap-2">
-                                    <Upload /><p>Upload to server</p>
+                                    <Upload /><p>{t("UploadToServer")}</p>
                                 </label>
                             </DropdownMenuItem>
 
                             <DropdownMenuItem>
                                 <label htmlFor="uploadAnimationSceneDialog" className="[&_svg]:size-6 w-full flex gap-2">
-                                    <Upload /><p>Upload scene to server</p>
+                                    <Upload /><p>{t("UploadSceneToServer")}</p>
                                 </label>
                             </DropdownMenuItem>
                         </>
@@ -134,13 +136,13 @@ export function AnimationOptionsDropdown() {
 
                 <DropdownMenuItem>
                     <label htmlFor="ServerDownloadObjectDialog" className="[&_svg]:size-6 w-full flex gap-2">
-                        <CloudDownload /><p>Add Object From Server</p>
+                        <CloudDownload /><p>{t("AddFromServer")}</p>
                     </label>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem>
                     <label htmlFor="ServerDownloadSceneDialog" className="[&_svg]:size-6 w-full flex gap-2">
-                        <CloudDownload /><p>Load Scene From Server</p>
+                        <CloudDownload /><p>{t("LoadSceneFromServer")}</p>
                     </label>
                 </DropdownMenuItem>
 

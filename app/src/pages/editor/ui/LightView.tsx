@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 import { convertHexColorNumberToString, convertHexColorStringToNumber } from "../utils/utils";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { LIGHT_ARRAY_DATA } from "../utils/Types";
+import { useTranslation } from "react-i18next";
 
 export function LightView() {
+    const { t } = useTranslation();
     const [isNewData, setIsNewData] = useState(false);
     const [lightID, setLightID] = useState(0);
     const [currentColor, setCurrentColor] = useState(0);
@@ -58,7 +60,7 @@ export function LightView() {
             <div className="w-[calc(100%-10px)] h-[calc(100%-10px)]">
                 <div className=" select-none p-2 flex justify-between" >
                     <span className="w-full font-bold">
-                        LIGHT
+                        {t("Light").toUpperCase()}
                     </span>
                 </div>
                 <Separator orientation="horizontal" />
@@ -66,15 +68,15 @@ export function LightView() {
                 <div className="bg-sidebar-accent p-1 font-bold select-none">
                     <span className=" flex items-center justify-between ">
                         <span className="mx-2">
-                            Light Color
+                            {t("LightColor").toUpperCase()}
                         </span>
                         <ColorPopover
                             onColorChange={(val: string) => { changeLightColor(val); }}
                             colorValue={convertHexColorNumberToString(currentColor)} />
                     </span>
                     <span className=" mx-2 flex items-center justify-between ">
-                        INTENSITY
-                        <DraggableInput labelText="VALUE: " minValue={0} maxValue={100} decimalPoints={2} value={currentIntensity} step={0.1} onValueChange={changeLightIntensity}
+                        {t("Intensity").toUpperCase()}
+                        <DraggableInput labelText={t("Value") + ":"} minValue={0} maxValue={100} decimalPoints={2} value={currentIntensity} step={0.1} onValueChange={changeLightIntensity}
                             inputWidth={6} className="h-fit rounded-none p-0.5 m-0" />
                     </span>
                 </div>

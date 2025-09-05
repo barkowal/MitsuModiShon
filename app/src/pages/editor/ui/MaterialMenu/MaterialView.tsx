@@ -4,6 +4,7 @@ import { MeshColorMenu } from "./MeshColorMenu";
 import { MATERIAL_TYPES, type MaterialItem } from "../../utils/Types";
 import { useEffect, useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
+import { useTranslation } from "react-i18next";
 
 const defaultMaterial: MaterialItem = {
   id: -1,
@@ -12,6 +13,7 @@ const defaultMaterial: MaterialItem = {
 };
 
 export function MaterialView() {
+  const { t } = useTranslation();
   const [materialData, setMaterialData] = useState(defaultMaterial);
 
   const emiteMaterialChange = (newMaterial: MaterialItem) => {
@@ -41,7 +43,7 @@ export function MaterialView() {
       <div className="w-[calc(100%-10px)] h-[calc(100%-10px)]">
         <div className=" select-none p-2 flex justify-between" >
           <span className="w-full font-bold">
-            MATERIAL
+            {t("Material").toUpperCase()}
           </span>
         </div>
         <Separator orientation="horizontal" />

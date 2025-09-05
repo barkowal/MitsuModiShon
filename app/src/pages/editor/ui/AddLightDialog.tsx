@@ -7,8 +7,10 @@ import { Sun } from "lucide-react";
 import { useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { convertHexColorStringToNumber } from "../utils/utils";
+import { useTranslation } from "react-i18next";
 
 export function AddLightDialog() {
+    const { t } = useTranslation();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [currentType, setCurrentType] = useState(0);
     const [currentColor, setCurrentColor] = useState("#ffffff");
@@ -44,9 +46,9 @@ export function AddLightDialog() {
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader >
-                    <DialogTitle className="text-center">Add Light</DialogTitle>
+                    <DialogTitle className="text-center">{t("AddLight")}</DialogTitle>
                     <DialogDescription className="text-center">
-                        Select light with preferred settings and add it to the scene.
+                        {t("AddLightDescription")}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -54,12 +56,12 @@ export function AddLightDialog() {
                     defaultValue={"0"}
                     onValueChange={(val: string) => { setCurrentType(Number(val)); resetCurrentParams(); }}>
                     <SelectTrigger className="w-full min-[20ch]: m-auto">
-                        <SelectValue placeholder="Light" />
+                        <SelectValue placeholder={t("Light")} />
                     </SelectTrigger>
                     <SelectContent >
                         {
                             lights.map((obj, index) => (
-                                <SelectItem value={index.toString()} key={index}>{obj}</SelectItem>
+                                <SelectItem value={index.toString()} key={index}>{t(obj)}</SelectItem>
                             ))
                         }
                     </SelectContent>
@@ -67,10 +69,10 @@ export function AddLightDialog() {
 
                 <span className="grid grid-cols-2 gap-1 font-bold m-2">
 
-                    <span>COLOR</span>
+                    <span>{t("Color").toUpperCase()}</span>
                     <ColorPopover colorValue={currentColor} onColorChange={(val: string) => { setCurrentColor(val); }} />
 
-                    <span>INTENSITY</span>
+                    <span>{t("Intensity").toUpperCase()}</span>
                     <span className="flex gap-2">
                         {currentIntensity}
                         <Slider
@@ -89,7 +91,7 @@ export function AddLightDialog() {
 
                 <DialogFooter>
                     <div className="w-full text-center" onClick={handleAddLight}>
-                        <Button>ADD</Button>
+                        <Button>{t("Add")}</Button>
                     </div>
                 </DialogFooter>
 

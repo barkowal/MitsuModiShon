@@ -10,9 +10,11 @@ import { PAINTING_MODE, PAINTING_SETTINGS } from "../../utils/Types";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_LINE_OFFSET, DEFAULT_LINE_WIDTH } from "../../utils/Global";
 import { Toggle } from "@/components/ui/toggle";
+import { useTranslation } from "react-i18next";
 
 
 export function PaintModeMenu() {
+  const { t } = useTranslation();
   const [paintingMode, setPaintingMode] = useState<number>(PAINTING_MODE.VertexColor);
   const [brushColor, setBrushColor] = useState("#000000");
   const [lineWidth, setLineWidth] = useState(DEFAULT_LINE_WIDTH);
@@ -92,14 +94,14 @@ export function PaintModeMenu() {
         <PopoverContent className="my-5 p-2 bg-card">
           <div className="grid gap-4">
             <div className="space-y-2">
-              <h4 className="leading-none font-medium">SETTINGS</h4>
+              <h4 className="leading-none font-medium">{t("Settings").toUpperCase()}</h4>
               <p className="text-muted-foreground text-sm">
-                Paint Mode Settings
+                {t("PaintModeSettings")}
               </p>
             </div>
             <div className="grid gap-2">
               <div className="grid grid-cols-2 items-center gap-2 ">
-                <p>{paintingMode === PAINTING_MODE.VertexColor ? "Brush " : "Line "} Color</p>
+                <p>{paintingMode === PAINTING_MODE.VertexColor ? t("BrushColor") : t("LineColor")}:</p>
                 <ColorPopover onColorChange={changeBrushColor} colorValue={brushColor} />
               </div>
 
@@ -108,7 +110,7 @@ export function PaintModeMenu() {
 
                   <div>
                     <div className="grid grid-cols-2 items-center gap-2 ">
-                      <p>Line Width: {lineWidth}</p>
+                      <p>{t("LineWidth")}: {lineWidth}</p>
                       <div className="items-center justify-center text-center">
                         <Slider
                           defaultValue={[lineWidth]}
@@ -122,7 +124,7 @@ export function PaintModeMenu() {
                     </div>
 
                     <div className="grid grid-cols-2 items-center gap-2 ">
-                      <p>Offset: {lineOffset}</p>
+                      <p>{t("Offset")}: {lineOffset}</p>
                       <div className="items-center justify-center text-center">
                         <Slider
                           defaultValue={[lineOffset]}
@@ -144,7 +146,7 @@ export function PaintModeMenu() {
                   <div>
 
                     <div className="grid grid-cols-2 items-center gap-2 ">
-                      <p>Erase:</p>
+                      <p>{t("Eraser")}:</p>
                       <div className="items-center justify-center text-center">
                         <Toggle pressed={clearLine === 0 ? false : true} onPressedChange={changeClearLine}>
                           <Eraser />
@@ -153,7 +155,7 @@ export function PaintModeMenu() {
                     </div>
 
                     <div className="grid grid-cols-2 items-center gap-2 ">
-                      <p>Line Width: {lineWidth}</p>
+                      <p>{t("LineWidth")}: {lineWidth}</p>
                       <div className="items-center justify-center text-center">
                         <Slider
                           defaultValue={[lineWidth]}

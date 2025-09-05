@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { SCENE_INFO } from "../utils/Types";
+import { useTranslation } from "react-i18next";
 
 export default function RenderInfoPanel() {
+  const { t } = useTranslation();
   const [shouldShow, setShouldShow] = useState(true);
   const [objectCount, setObjectCount] = useState(0);
   const [verticesCount, setVerticesCount] = useState(0);
@@ -47,12 +49,12 @@ export default function RenderInfoPanel() {
   return (<>
     {shouldShow ?
       <div className="absolute z-[100] bottom-0 m-4 text-sm block select-none">
-        <p>Objects: {objectCount}</p>
-        <p>Vertices: {verticesCount}</p>
-        <p>Triangles: {trianglesCount}</p>
-        <p>Renderer Geometries: {geometries}</p>
-        <p>Renderer Textures: {textures}</p>
-        <p>Render Time: {renderTime}</p>
+        <p>{t("Objects")}: {objectCount}</p>
+        <p>{t("Vertices")}: {verticesCount}</p>
+        <p>{t("Triangles")}: {trianglesCount}</p>
+        <p>{t("RendererGeometries")}: {geometries}</p>
+        <p>{t("RendererTextures")}: {textures}</p>
+        <p>{t("RenderTime")}: {renderTime}</p>
       </div > : null
     }
   </>);

@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
 import { compareVec3 } from "../../utils/utils";
 import { TRANSFORM_CHANGE, TRANSFORMATION_ARR, type Vec3 } from "../../utils/Types";
+import { useTranslation } from "react-i18next";
 
 export function PositionInput() {
+  const { t } = useTranslation();
   const [oldPos, setOldPos] = useState({ x: 0, y: 0, z: 0 });
   const [posX, setPosX] = useState(0);
   const [posY, setPosY] = useState(0);
@@ -53,7 +55,7 @@ export function PositionInput() {
     <>
       <div
         className="w-full p-2 flex justify-between gap-2 font-bold select-none ">
-        <p>Position</p>
+        <p>{t("Position")}</p>
         <div onBlur={() => { sendPosition(); }} className="flex gap-1 w-fit">
           <DraggableInput labelText="X:" minValue={-1000} maxValue={1000} value={posX} step={0.01} onValueChange={setPosX}
             inputWidth={8} className="h-fit rounded-none p-0.5 m-0" />

@@ -6,10 +6,12 @@ import { EDITING_MODE, EDITOR_MODE } from "../../utils/Types";
 import { useEffect, useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { PaintModeMenu } from "./PaintModeMenu";
+import { useTranslation } from "react-i18next";
 
 let EditorMode: string = EDITOR_MODE.ObjectMode;
 
 function ChangeModeDropdown() {
+  const { t } = useTranslation();
   const [currentMode, setCurrentMode] = useState<string>(EditorMode);
   const [editingMode, setEditingMode] = useState<number>(EDITING_MODE.Faces);
 
@@ -76,17 +78,17 @@ function ChangeModeDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button className="[&_svg]:size-6" >
-          <SquarePen className="size-1" /> {currentMode}
+          <SquarePen className="size-1" /> {t(currentMode)}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel> Select Editor Mode </DropdownMenuLabel>
+        <DropdownMenuLabel> {t("SelectMode")}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           {
             Object.values(EDITOR_MODE).map((val, i) => (
               <DropdownMenuItem onClick={() => { handleModeChange(val); }}
-                key={i}>{val}</DropdownMenuItem>
+                key={i}>{t(val)}</DropdownMenuItem>
             ))
           }
         </DropdownMenuGroup>
