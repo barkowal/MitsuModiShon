@@ -48,7 +48,7 @@ export function AnimationOptionsDropdown() {
         fileExtension = fileExtension.toLowerCase();
 
         if (!["json"].includes(fileExtension)) {
-            editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Invalid file type. Please upload a JSON file.");
+            editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "WarningLogInvalidFileType");
             return;
         }
 

@@ -112,7 +112,7 @@ function Editor() {
         if (selection instanceof ModellingMesh) {
           modellingHelper.setCurrentObjectToEditMode(selection);
         } else {
-          editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Please select a modelling object in object mode before editing.");
+          editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "WarningLogSelectModellingObjectBeforeEditing");
 
         }
         selectionController.setEditorMode(EDITOR_MODE.EditMode);
@@ -125,7 +125,7 @@ function Editor() {
         if (selection instanceof ModellingMesh) {
           paintingHelper.setCurrentObjectToPaintMode(selection);
         } else {
-          editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Please select a modelling object in object mode before painting.");
+          editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "WarningLogSelectModellingObjectBeforePainting");
         }
         selectionController.setEditorMode(EDITOR_MODE.PaintMode);
       }

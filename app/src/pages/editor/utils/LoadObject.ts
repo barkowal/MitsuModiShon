@@ -13,7 +13,7 @@ export function LoadObject(file: string): Object3D | null {
   let object;
 
   if (!("object" in jsonData)) {
-    editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Error uploading a file. Please upload json of type Object3d.");
+    editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "WarningLogImportWrongObjectFile");
     return null;
   }
 

@@ -141,7 +141,7 @@ export class EditModeHandler {
 
   private handleRemoveMesh() {
     const handle = () => {
-      editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "You cannot delete vertices.");
+      editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "WarningLogCannotDeleteVertices");
     };
 
     editorEventBus.on(EDITOR_EVENT.RemoveMesh, handle);
@@ -150,7 +150,7 @@ export class EditModeHandler {
 
   private handleChangeRotation() {
     const handle = () => {
-      editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "There is no rotation in edit mode.");
+      editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "WarningLogNoRotationInEditMode");
       const obj = this.modellingHelper.getCurrentObject();
       if (obj instanceof ModellingMesh) {
         const transform = obj.getTransformHelper();

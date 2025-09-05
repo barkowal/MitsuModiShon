@@ -17,7 +17,7 @@ export class RemoveObjectsCommand implements Command {
         this.objects.forEach((object: Object3D, i: number) => {
 
             if (object.userData.removable === false) {
-                editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "You cannot remove this object.");
+                editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "WarningLogCannotRemoveObject");
                 return;
             }
 

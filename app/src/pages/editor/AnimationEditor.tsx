@@ -97,7 +97,7 @@ function AnimationEditor() {
 
 
         if (selection === null) {
-          editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Please select an object.");
+          editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "WarningLogSelectObject");
           return;
         }
 

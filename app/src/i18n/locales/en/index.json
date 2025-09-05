@@ -144,7 +144,15 @@
     "RendererTextures":"Renderer Textures",
     "RenderTime":"RenderTime",
 
-
+    "WarningLogImportWrongObjectFile":"Error uploading a file. Please upload json of type Object3d.",
+    "WarningLogNoRotationInEditMode":"There is no rotation in edit mode.",
+    "WarningLogCannotDeleteVertices":"You cannot delete vertices.",
+    "WarningLogSelectObject":"Please select an object.",
+    "WarningLogInvalidFileType":"Invalid file type. Please upload a JSON file.",
+    "WarningLogCannotRemoveObject":"You cannot remove this object.",
+    "WarningLogCannotAttachObject":"You cannot attach this object to another.",
+    "WarningLogSelectModellingObjectBeforePainting":"Please select a modelling object in object mode before painting.",
+    "WarningLogSelectModellingObjectBeforeEditing":"Please select a modelling object in object mode before editing.",
 
     "End": "End"
 }

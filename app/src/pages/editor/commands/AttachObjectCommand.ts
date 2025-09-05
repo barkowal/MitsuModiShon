@@ -61,7 +61,7 @@ export class AttachObjectCommand implements Command {
 
         if (this.child.userData.attachable === false) {
             this.child = undefined;
-            editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "You cannot attach this object to another");
+            editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "WarningLogCannotAttachObject");
             return;
         }
 

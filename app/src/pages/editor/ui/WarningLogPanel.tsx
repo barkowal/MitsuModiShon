@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   bottomMargin?: number;
 }
 
 export default function WarningLogPanel({ bottomMargin = 0 }: Props) {
+  const { t } = useTranslation();
   const [msg, setMsg] = useState("");
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export default function WarningLogPanel({ bottomMargin = 0 }: Props) {
       left-1/4 text-cente  m-4 text-md block select-none text-warning-log"
       style={{ bottom: bottomMargin }}
     >
-      <p>{msg}</p>
+      <p>{t(msg)}</p>
     </div >
   </>);
 

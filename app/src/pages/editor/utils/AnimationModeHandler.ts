@@ -309,7 +309,7 @@ export class AnimationModeHandler {
       const obj = this.selectionController.getCurrentSelection();
 
       if (obj === null) {
-        editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "Please select an object.");
+        editorEventBus.emit(EDITOR_EVENT.SendWarningLog, "WarningLogSelectObject");
         return;
       }
 
