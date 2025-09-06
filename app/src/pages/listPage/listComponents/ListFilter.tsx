@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Funnel } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   filterOptions: Array<string>,
@@ -9,6 +10,7 @@ type Props = {
 }
 
 export function ListFilter({ filterOptions, onFilterChange }: Props) {
+  const { t } = useTranslation();
 
   const [filters, setFilters] = useState<Array<number>>(Array(filterOptions.length / 2).fill(1));
 
@@ -28,7 +30,7 @@ export function ListFilter({ filterOptions, onFilterChange }: Props) {
 
       <DropdownMenuTrigger asChild >
         <Button variant="outline">
-          <Funnel />Show
+          <Funnel />{t("Filters").toUpperCase()}
         </Button>
       </DropdownMenuTrigger>
 
@@ -44,7 +46,7 @@ export function ListFilter({ filterOptions, onFilterChange }: Props) {
                 onCheckedChange={(value) =>
                   changeFilter(i, value ? 1 : -1)
                 }>
-                {filterOptions[i * 2]}
+                {t(filterOptions[i * 2])}
               </DropdownMenuCheckboxItem>
 
               <DropdownMenuCheckboxItem
@@ -53,7 +55,7 @@ export function ListFilter({ filterOptions, onFilterChange }: Props) {
                 onCheckedChange={(value) =>
                   changeFilter(i, value ? 2 : -2)
                 }>
-                {filterOptions[i * 2 + 1]}
+                {t(filterOptions[i * 2 + 1])}
               </DropdownMenuCheckboxItem>
 
               {

@@ -66,7 +66,7 @@ export default function LoginForm() {
                 </FormItem>
               )}
             />
-            <p className="text-red-300">{loginResponse}</p>
+            <p className="text-red-300">{t(loginResponse)}</p>
             <div className="flex justify-end">
               <Button type="submit" >{t("Login")}</Button>
             </div>

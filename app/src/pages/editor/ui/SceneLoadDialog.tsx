@@ -1,12 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
     onConfirm: CallableFunction;
 };
 
 export function SceneLoadDialog({ onConfirm }: Props) {
+    const { t } = useTranslation();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const handleOpenChange = () => {
@@ -29,17 +31,17 @@ export function SceneLoadDialog({ onConfirm }: Props) {
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader >
-                    <DialogTitle className="text-center">Are you sure?</DialogTitle>
+                    <DialogTitle className="text-center">{t("AreYouSure")}</DialogTitle>
                     <DialogDescription className="text-center">
-                        All unsaved progress will be lost.
+                        {t("AllUnsavedProgressLost")}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="flex justify-evenly">
                     <div className="w-full text-center" >
-                        <Button className="bg-destructive" onClick={handleConfirm}>YES</Button>
+                        <Button className="bg-destructive" onClick={handleConfirm}>{t("Yes").toUpperCase()}</Button>
                     </div>
                     <div className="w-full text-center"  >
-                        <Button onClick={handleCancel}>CANCEL</Button>
+                        <Button onClick={handleCancel}>{t("Cancel").toUpperCase()}</Button>
                     </div>
                 </DialogFooter>
             </DialogContent>

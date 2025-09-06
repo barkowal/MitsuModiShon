@@ -7,6 +7,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { ListCard } from "./listComponents/ListCard";
 import { formatDateString } from "@/lib/utils";
 import { ListFilter } from "./listComponents/ListFilter";
+import { useTranslation } from "react-i18next";
 
 const USERS_OBJECT3D_URL = "/api/v1/objects3D/private";
 const USERS_OBJECT3D_DOWNLOAD = "/api/v1/objects3D/download/users";
@@ -14,11 +15,12 @@ const USERS_OBJECT3D_DELETE = "/api/v1/objects3D";
 const USER_OBJECT3D_PATCH = "/api/v1/objects3D";
 
 export function Object3DUserListing() {
+  const { t } = useTranslation();
   const { data: objectsData, isLoading, error, getData: getObjectsData } = useAuthGetFetch<MitsuShortObjectResponse>(USERS_OBJECT3D_URL);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [filters, setFilters] = useState([1, 1]); // 3 - both filter options , 2 - only second , 1-only first 
-  const filterOptions = ["Private", "Public", "Static Objects", "Animated Objects"];
+  const filterOptions = ["Private", "Public", "StaticObjects", "AnimatedObjects"];
   const pageLimit = 10;
   const lastPage = objectsData ? objectsData.data.result.pageData.lastPage : 1;
 
@@ -29,17 +31,17 @@ export function Object3DUserListing() {
 
   const getCardDescription = (data: MitsuShortObjectData) => {
     return [
-      `MitsuModiShon Object`,
-      `Published By: ${data.username}`,
+      t("MitsuModiShonObject"),
+      `${t("PublishedBy")}: ${data.username}`,
     ];
   };
 
   const getDialogDescription = (data: MitsuShortObjectData) => {
     return [
-      `${data.isAnimated ? "Animated" : "Static"} Object`,
-      `Published By: ${data.username}`,
-      `Created At: ${formatDateString(data.createdAt.toString())}`,
-      `Visibility: ${data.isPublic ? "Public" : "Private"}`,
+      `${data.isAnimated ? t("AnimatedObject") : t("StaticObject")}`,
+      `${t("PublishedBy")}: ${data.username}`,
+      `${t("CreatedAt")}: ${formatDateString(data.createdAt.toString())}`,
+      `${t("Visibility")}: ${data.isPublic ? t("Public") : t("Private")}`,
     ];
   };
 
@@ -74,7 +76,7 @@ export function Object3DUserListing() {
         {
           error ?
             <span className="text-destructive w-full p-2 space-x-2 flex text-2xl justify-center items-center">
-              <p>Something went wrong. </p>
+              <p>{t("SomethingWentWrong")}</p>
               <p>{objectsData?.message}</p>
             </span> :
             null
@@ -83,7 +85,7 @@ export function Object3DUserListing() {
         {
           isLoading ?
             <span className=" w-full p-2 space-x-2 flex text-2xl justify-center items-center">
-              <LoadingText LoadingText="LOADING" />
+              <LoadingText LoadingText={t("Loading")} />
             </span> :
             null
         }

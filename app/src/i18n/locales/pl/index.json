@@ -44,8 +44,22 @@
     "LoadSceneFromServer":"Załaduj Scenę Z Chmury",
     "RenderAnimation":"Renderuj Animację",
 
+    "AreYouSure":"Czy jesteś pewien?",
+    "AllUnsavedProgressLost":"Niezapisane postęy zostaną utracone.",
+
+    "StopRenderingBeforeLeaving":"Proszę przerwij renderowanie przed wyjściem.",
+
+    "WantToUploadMSG":"Chcesz przesłać obiekt?",
+    "WantToUploadSceneMSG":"Chcesz przesłać scenę?",
+    "NameTheObjectAndUpload":"Nazwij obiekt i prześlij na serwer.",
+    "NameTheSceneAndUpload":"Nazwij scenę i prześlij na serwer.",
+    "SelectRenderSettingsToRender":"Wybierz odpowiednie ustawienia i naciśnij przycisk, aby wyrenderować animację.",
+
     "CreateObject": "Stwórz Obiekt",
     "AddObjectDescription": "Ustaw żądane opcje i dodaj obiekt do sceny.",
+    "SelectAndAdd":"Wybierz obiekt i dodaj do sceny.",
+    "SelectSceneToLoad":"Wybierz scenę do załadowania.",
+    "AddToScene":"Dodaj Do Sceny",
     "Add": "Dodaj",
 
     "Plane":"Płaszczyzna",
@@ -101,9 +115,16 @@
 
     "Name":"Nazwa",
     "Change":"Zmień",
+    "Yes":"Tak",
+    "No":"Nie",
+    "Cancel":"Anuluj",
+    "Delete":"Usuń",
     "Value": "Wartość",
     "Enable":"Włącz",
     "All":"Wszystkie",
+    "Resolution":"Rozdzieloczość",
+    "Render":"Renderuj",
+    "Rendering":"Renderowanie",
 
     "SceneColor":"Kolor Sceny",
     "Type":"Rodzaj",
@@ -153,6 +174,39 @@
     "WarningLogCannotAttachObject":"Nie możesz przyłączyć tego obiektu do innego.",
     "WarningLogSelectModellingObjectBeforePainting":"Proszę wybierz odpowiedni obiekt przed przejściem do trybu malowania.",
     "WarningLogSelectModellingObjectBeforeEditing":"Proszę wybierz odpowiedni obiekt przed przejściem do trybu edytowania.",
+
+    "PublicObjects":"Publiczne Obiekty",
+    "PublicScenes":"Publiczne Sceny",
+    "MyObjects":"Moje Obiekty",
+    "MyScenes":"Moje Sceny",
+    "Search":"Wyszukaj",
+
+    "Filters":"Filtry",
+    "StaticObjects":"Zwykłe Obiekty",
+    "AnimatedObjects":"Animowane Obiekty",
+
+    "SomethingWentWrong":"Coś poszło nie tak.",
+    "Loading":"Ładowanie",
+    "MitsuModiShonObject":"Obiekt MitsuModiShon",
+    "AnimatedObject":"Animowany Obiekt",
+    "StaticObject":"Zwykły Obiekt",
+    "PublishedBy":"Opublikowane Przez",
+    "CreatedAt":"Data Utworzenia",
+    "AnimationScene":"Animowana Scena",
+    "Visibility":"Widoczność",
+    "Public":"Publiczne",
+    "Private":"Prywatne",
+
+    "DownloadImage":"Pobierz Obraz",
+    "DownloadData":"Pobierz Dane",
+    "UpdateObject":"Aktualizuj",
+
+    "DownloadedSuccesfully":"Pomyślnie Pobrano",
+
+    "Invalid email or password.":"Niepoprawny email lub hasło.",
+    "User already exists.":"Użytkownik już istnieje.",
+    "Invalid data.":"Niepoprawne dane.",
+
 
     "End": "Koniec"
 

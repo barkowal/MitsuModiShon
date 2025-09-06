@@ -3,6 +3,7 @@ import { useAuthFetch } from "@/hooks/useAuthFetch";
 import { DownloadJSON } from "@/lib/DownloadJSON";
 import type { AnimationSceneData, MitsuShortObjectData } from "@/lib/types/ServerResponseTypes";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   data: MitsuShortObjectData | AnimationSceneData,
@@ -13,6 +14,7 @@ type Props = {
 }
 
 export function PublicListDialog({ data, showDialog, setShowDialog, downloadUrl, dialogDescriptionTexts }: Props) {
+  const { t } = useTranslation();
   const { response, error, makeRequest } = useAuthFetch(downloadUrl);
   const imgUrl = "/api/v1/image" + data.imgPath;
 
@@ -52,9 +54,9 @@ export function PublicListDialog({ data, showDialog, setShowDialog, downloadUrl,
         <DialogFooter>
           <div className=" grid grid-cols-2 justify-center w-full items-center gap-2 gap-y-6 p-2 ">
 
-            <a download href={imgUrl} className=" h-9 px-4 py-2 bg-primary hover:bg-primary/80 text-primary-foreground cursor-pointer font-bold rounded-md inline-flex items-center justify-center whitespace-nowrap text-sm "> DOWNLOAD IMAGE </a>
+            <a download href={imgUrl} className=" h-9 px-4 py-2 bg-primary hover:bg-primary/80 text-primary-foreground cursor-pointer font-bold rounded-md inline-flex items-center justify-center whitespace-nowrap text-sm ">{t("DownloadImage")}</a>
 
-            <a onClick={downloadObject} className=" h-9 px-4 py-2 bg-primary hover:bg-primary/80 text-primary-foreground cursor-pointer  font-bold rounded-md inline-flex items-center justify-center whitespace-nowrap text-sm "> DOWNLOAD DATA </a>
+            <a onClick={downloadObject} className=" h-9 px-4 py-2 bg-primary hover:bg-primary/80 text-primary-foreground cursor-pointer  font-bold rounded-md inline-flex items-center justify-center whitespace-nowrap text-sm ">{t("DownloadData")}</a>
 
           </div>
         </DialogFooter>

@@ -44,8 +44,22 @@
     "LoadSceneFromServer":"Load Scene From Server",
     "RenderAnimation":"Render Animation",
 
+    "AreYouSure":"Are you sure?",
+    "AllUnsavedProgressLost":"All unsaved progress will be lost.",
+
+    "StopRenderingBeforeLeaving":"Please stop rendering before leaving.",
+
+    "WantToUploadMSG":"Do you want to upload the object?",
+    "WantToUploadSceneMSG":"Do you want to upload the animation scene?",
+    "NameTheObjectAndUpload":"Name the object and upload it.",
+    "NameTheSceneAndUpload":"Name the scene and upload it.",
+    "SelectRenderSettingsToRender":"Select render settings and click the button to render animation.",
+
     "CreateObject": "Create Object",
     "AddObjectDescription": "Select object with preferred settings and add it to the scene.",
+    "SelectAndAdd":"Select an object to add to the scene.",
+    "SelectSceneToLoad":"Select scene to load.",
+    "AddToScene":"Add To Scene",
     "Add": "Add",
 
     "Plane":"Plane",
@@ -102,8 +116,15 @@
 
     "Name":"Name",
     "Change":"Change",
+    "Yes":"Yes",
+    "No":"No",
+    "Delete":"Delete",
+    "Cancel":"Cancel",
     "Value": "Value",
     "Enable":"Enable",
+    "Resolution":"Resolution",
+    "Render":"Render",
+    "Rendering":"Rendering",
 
     "SceneColor":"Scene Color",
     "Type":"Type",
@@ -153,6 +174,40 @@
     "WarningLogCannotAttachObject":"You cannot attach this object to another.",
     "WarningLogSelectModellingObjectBeforePainting":"Please select a modelling object in object mode before painting.",
     "WarningLogSelectModellingObjectBeforeEditing":"Please select a modelling object in object mode before editing.",
+
+    "PublicObjects":"Public Objects",
+    "PublicScenes":"Public Scenes",
+    "MyObjects":"My Objects",
+    "MyScenes":"My Scenes",
+    "Search":"Search",
+
+    "Filters":"Filters",
+    "StaticObjects":"Static Objects",
+    "AnimatedObjects":"Animated Objects",
+
+    "SomethingWentWrong":"Something Went Wrong.",
+    "Loading":"Loading",
+    "MitsuModiShonObject":"MitsuModiShon Object",
+    "AnimatedObject":"Animated Object",
+    "StaticObject":"Static Object",
+    "PublishedBy":"Published By",
+    "CreatedAt":"Created At",
+    "AnimationScene":"Animation Scene",
+    "Visibility":"Visibility",
+    "Public":"Public",
+    "Private":"Private",
+
+    "DownloadImage":"Download Image",
+    "DownloadData":"Download Data",
+    "UpdateObject":"Update",
+
+    "DownloadedSuccesfully":"Downloaded Succesfully",
+
+    "Invalid email or password.":"Invalid email or password.",
+    "User already exists.":"User already exists.",
+    "Invalid data.":"Invalid data.",
+
+
 
     "End": "End"
 }

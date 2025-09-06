@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   onSearch: CallableFunction,
@@ -9,6 +10,7 @@ type Props = {
 }
 
 export function SearchBar({ onSearch, minSearchWidth = "50ch" }: Props) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
 
   const handleKey = (event: React.KeyboardEvent) => {
@@ -20,7 +22,7 @@ export function SearchBar({ onSearch, minSearchWidth = "50ch" }: Props) {
   return (
     <>
       <div className="flex justify-center items-center">
-        <Input type="search" className="w-[30%] rounded-r-none" style={{ minWidth: minSearchWidth }} placeholder="SEARCH"
+        <Input type="search" className="w-[30%] rounded-r-none" style={{ minWidth: minSearchWidth }} placeholder={t("Search")}
           onChange={(event) => { setSearch(event ? event.target.value : ""); }}
           onKeyDown={(e: React.KeyboardEvent) => { handleKey(e); }} />
         <Button variant="outline" className="border rounded-l-none cursor-pointer"

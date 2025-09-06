@@ -4,8 +4,10 @@ import UploadObject3DForm from "./UploadObject3DForm";
 import { Button } from "@/components/ui/button";
 import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
 import type { UploadableObjectData } from "../../utils/Types";
+import { useTranslation } from "react-i18next";
 
 export default function UploadObjectDialog() {
+    const { t } = useTranslation();
     const [showExport, setShowExport] = useState(false);
     const [uploadableData, setUploadableData] = useState<UploadableObjectData>({ imgData: "", objectData: "", objectName: "" });
 
@@ -35,10 +37,10 @@ export default function UploadObjectDialog() {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle className="text-center">
-                        <span> Do you want to upload the object?</span>
+                        <span> {t("WantToUploadMSG")} </span>
                     </DialogTitle>
                     <DialogDescription className="text-center">
-                        Name the object and upload it.
+                        {t("NameTheObjectAndUpload")}
                     </DialogDescription>
 
                     <div className="flex justify-center text-center">

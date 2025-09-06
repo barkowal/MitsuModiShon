@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useState } from "react";
 import { SmallPublicMitsuListing } from "./SmallPublicMitsuListing";
 import { SmallUserMitsuListing } from "./SmallUserMitsuListing";
+import { useTranslation } from "react-i18next";
 
 type Props = {
     showPublic: boolean;
@@ -10,6 +11,7 @@ type Props = {
 }
 
 export function ServerDownloadDialog({ showPublic, addAnimation }: Props) {
+    const { t } = useTranslation();
     const [showExport, setShowExport] = useState(false);
     const [isPublicList, setIsPublicList] = useState(true);
 
@@ -23,10 +25,10 @@ export function ServerDownloadDialog({ showPublic, addAnimation }: Props) {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle className="text-center">
-                        Add To Scene
+                        {t("AddToScene")}
                     </DialogTitle>
                     <DialogDescription className="text-center">
-                        Select an object to add to the scene.
+                        {t("SelectAndAdd")}
                     </DialogDescription>
 
                     {
@@ -37,7 +39,7 @@ export function ServerDownloadDialog({ showPublic, addAnimation }: Props) {
                                     className={` ${isPublicList ? "bg-primary-foreground" : ""} text-center px-4 py-2 cursor-pointer hover:bg-primary/10 rounded transition duration-300`}
                                 >
                                     <p className="w-[12ch] select-none ">
-                                        Public
+                                        {t("Public")}
                                     </p>
                                 </div>
                                 <div
@@ -45,7 +47,7 @@ export function ServerDownloadDialog({ showPublic, addAnimation }: Props) {
                                     className={` ${isPublicList ? "" : "bg-primary-foreground"} text-center px-4 py-2 cursor-pointer hover:bg-primary/10 rounded transition duration-300`}
                                 >
                                     <p className=" w-[12ch] select-none " >
-                                        My Objects
+                                        {t("MyObjects")}
                                     </p>
                                 </div>
                             </div>

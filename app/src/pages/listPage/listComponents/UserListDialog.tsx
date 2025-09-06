@@ -5,6 +5,7 @@ import { DownloadJSON } from "@/lib/DownloadJSON";
 import type { AnimationSceneData, MitsuShortObjectData, SuccessfullResponse } from "@/lib/types/ServerResponseTypes";
 import { useEffect, useState } from "react";
 import { UpdateObjectForm } from "./UpdateObjectForm";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   data: MitsuShortObjectData | AnimationSceneData,
@@ -17,6 +18,7 @@ type Props = {
 }
 
 export function UserListDialog({ data, showDialog, setShowDialog, dialogDescriptionTexts, downloadUrl, deleteUrl, patchUrl }: Props) {
+  const { t } = useTranslation();
   const { response: downloadResponse, error: downloadError, makeRequest: makeDownloadRequest } = useAuthFetch(downloadUrl);
   const { response: deleteResponse, error: deleteError, makeRequest: makeDeleteRequest } = useAuthFetch<SuccessfullResponse>(deleteUrl);
   const imgUrl = "/api/v1/image" + data.imgPath;
@@ -66,15 +68,15 @@ export function UserListDialog({ data, showDialog, setShowDialog, dialogDescript
         <DialogFooter>
           <div className=" grid grid-cols-2 justify-center w-full items-center gap-2 gap-y-6 p-2 ">
 
-            <a download href={imgUrl} className=" h-9 px-4 py-2 bg-primary hover:bg-primary/80 text-primary-foreground cursor-pointer font-bold rounded-md inline-flex items-center justify-center whitespace-nowrap text-sm "> DOWNLOAD IMAGE </a>
+            <a download href={imgUrl} className=" h-9 px-4 py-2 bg-primary hover:bg-primary/80 text-primary-foreground cursor-pointer font-bold rounded-md inline-flex items-center justify-center whitespace-nowrap text-sm ">{t("DownloadImage")}</a>
 
-            <a onClick={handleDownload} className=" h-9 px-4 py-2 bg-primary hover:bg-primary/80 text-primary-foreground cursor-pointer  font-bold rounded-md inline-flex items-center justify-center whitespace-nowrap text-sm "> DOWNLOAD OBJECT </a>
+            <a onClick={handleDownload} className=" h-9 px-4 py-2 bg-primary hover:bg-primary/80 text-primary-foreground cursor-pointer  font-bold rounded-md inline-flex items-center justify-center whitespace-nowrap text-sm ">{t("DownloadData")}</a>
 
             <Button className="font-bold"
-              onClick={handleUpdate}>{showUpdating ? "CANCEL" : "CHANGE"}</Button>
+              onClick={handleUpdate}>{showUpdating ? t("Cancel").toUpperCase() : t("Change").toUpperCase()}</Button>
 
             <Button className="bg-destructive hover:bg-destructive/80 font-bold"
-              onClick={handleDelete}>DELETE</Button>
+              onClick={handleDelete}>{t("Delete").toUpperCase()}</Button>
 
           </div>
         </DialogFooter>
@@ -88,7 +90,7 @@ export function UserListDialog({ data, showDialog, setShowDialog, dialogDescript
           <div className="w-[100%] text-center text-fail-primary">{downloadError}</div> : null
         }
         {downloadResponse ?
-          <div className="w-[100%] text-center text-success-primary">DOWNLOADED SUCCESFULLY</div> : null
+          <div className="w-[100%] text-center text-success-primary">{t("DownloadedSuccesfully")}</div> : null
         }
 
         {deleteError ?

@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
 import type { UploadableAnimationSceneData } from "../../utils/Types";
 import UploadSceneForm from "./UploadSceneForm";
+import { useTranslation } from "react-i18next";
 
 export default function UploadSceneDialog() {
+    const { t } = useTranslation();
     const [showExport, setShowExport] = useState(false);
     const [uploadableData, setUploadableData] = useState<UploadableAnimationSceneData>(
         { imgData: "", sceneName: "", sceneData: "", duration: 250 });
@@ -36,10 +38,10 @@ export default function UploadSceneDialog() {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle className="text-center">
-                        <span> Do you want to upload the animation scene?</span>
+                        <span> {t("WantToUploadSceneMSG")} </span>
                     </DialogTitle>
                     <DialogDescription className="text-center">
-                        Name the scene and upload it.
+                        {t("NameTheSceneAndUpload")}
                     </DialogDescription>
 
                     <div className="flex justify-center text-center">

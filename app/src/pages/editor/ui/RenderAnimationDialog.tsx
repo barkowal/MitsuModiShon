@@ -6,8 +6,10 @@ import { EDITOR_EVENT, editorEventBus } from "../utils/EditorEvents";
 import { BoxLoadingAnimation } from "@/components/BoxLoadingAnimation";
 import { LoadingText } from "@/components/LoadingText";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 
 export function RenderAnimationDialog() {
+    const { t } = useTranslation();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isRendering, setIsRendering] = useState(false);
     const [cancelInfo, setCancelInfo] = useState("");
@@ -15,7 +17,7 @@ export function RenderAnimationDialog() {
 
     const handleOpenChange = () => {
         if (isDialogOpen && isRendering) {
-            setCancelInfo("Please stop rendering before leaving.");
+            setCancelInfo(t("StopRenderingBeforeLeaving"));
             return;
         }
         setIsDialogOpen(!isDialogOpen);
@@ -64,9 +66,9 @@ export function RenderAnimationDialog() {
 
             <DialogContent>
                 <DialogHeader >
-                    <DialogTitle className="text-center">Render Animation</DialogTitle>
+                    <DialogTitle className="text-center">{t("RenderAnimation")}</DialogTitle>
                     <DialogDescription className="text-center">
-                        Select render settings and click the button to render animation.
+                        {t("SelectRenderSettingsToRender")}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -76,10 +78,10 @@ export function RenderAnimationDialog() {
                             <BoxLoadingAnimation />
                         </div>
                         <div className="w-full flex justify-center">
-                            <LoadingText LoadingText="Rendering" />
+                            <LoadingText LoadingText={t("Rendering")} />
                         </div>
                         <div className="w-full flex justify-center">
-                            <Button className="w-fit" onClick={() => { editorEventBus.emit(EDITOR_EVENT.CancelRenderingAnimation); }}>Cancel</Button>
+                            <Button className="w-fit" onClick={() => { editorEventBus.emit(EDITOR_EVENT.CancelRenderingAnimation); }}>{t("Cancel")}</Button>
                         </div>
                         <p className="text-warning-log">{cancelInfo}</p>
                     </div>
@@ -87,12 +89,12 @@ export function RenderAnimationDialog() {
                     <div className="w-full items-center justify-center grid grid-cols-1 gap-2">
 
                         <div className="w-full items-center justify-evenly flex">
-                            <p>Resolution:</p>
+                            <p>{t("Resolution")}:</p>
                             <Select
                                 defaultValue="0"
                                 onValueChange={(val: string) => { changeRenderResolution(Number(val)); }}>
                                 <SelectTrigger className="min-w-[20ch]">
-                                    <SelectValue placeholder="Resolution" />
+                                    <SelectValue placeholder={t("Resolution")} />
                                 </SelectTrigger>
                                 <SelectContent >
                                     <SelectItem value="0" >640x360</SelectItem>
@@ -106,7 +108,7 @@ export function RenderAnimationDialog() {
                         <div className="w-full items-center justify-evenly my-2 flex ">
                             <Button className="[&_svg]:size-6 w-fit" onClick={handleRenderAnimation}>
                                 <Clapperboard className="size-1" />
-                                <p>Render</p>
+                                <p>{t("Render")}</p>
                             </Button>
                         </div>
                     </div>

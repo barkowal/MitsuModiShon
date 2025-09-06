@@ -6,12 +6,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuthFetch } from "@/hooks/useAuthFetch";
 import { DataURLToBlob } from "@/lib/DataUrlToBlob";
 import type { SuccessfullResponse } from "@/lib/types/ServerResponseTypes";
+import { useTranslation } from "react-i18next";
 
 type Props = {
     sendData: UploadableObjectData;
 };
 
 export default function UploadObject3DForm({ sendData }: Props) {
+    const { t } = useTranslation();
     const [name, setName] = useState(sendData.objectName);
     const [isPublic, setIsPublic] = useState(false);
     const { makeRequest, error, response } = useAuthFetch<SuccessfullResponse>("/api/v1/objects3D/upload");
@@ -39,15 +41,15 @@ export default function UploadObject3DForm({ sendData }: Props) {
         <div className="p-2 grid columns-1 gap-2">
 
             <span className="flex items-center font-bold space-x-10 gap-2">
-                <label htmlFor="publicCheckBox">Public</label>
+                <label htmlFor="publicCheckBox">{t("Public")}</label>
                 <Checkbox id="publicCheckBox" checked={isPublic} onCheckedChange={(val: boolean) => { changeIsPublic(val); }} />
             </span>
 
-            <Input placeholder={"Name"} className=""
+            <Input placeholder={t("Name")} className=""
                 onChange={(val: ChangeEvent<HTMLInputElement>) => { setName(val.target.value); }} value={name} />
 
 
-            <Button onClick={() => { sendRequest(); }} > CREATE NEW </Button>
+            <Button onClick={() => { sendRequest(); }} > {t("Create").toUpperCase()}</Button>
             {/* <Button onClick={() => { console.log("TODO"); }} > OVERRIDE EXISTING OBJECT</Button> */}
 
             {error ?

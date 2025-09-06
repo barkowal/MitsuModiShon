@@ -9,11 +9,13 @@ import type { AnimationSceneResponse } from "@/lib/types/ServerResponseTypes";
 import { formatDateString } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { EDITOR_EVENT, editorEventBus } from "../../utils/EditorEvents";
+import { useTranslation } from "react-i18next";
 
 const PUBLIC_SCENE_URL = "/api/v1/animationScene/public";
 const PUBLIC_SCENE_DOWNLOAD = "/api/v1/animationScene/download/public";
 
 export function SmallPublicSceneListing() {
+    const { t } = useTranslation();
 
     const { data: sceneData, isLoading, error, getData: getObjectsData } = useAuthGetFetch<AnimationSceneResponse>(PUBLIC_SCENE_URL);
     const { response: downloadResponse, error: downloadError, makeRequest: makeDownloadRequest } = useAuthFetch(PUBLIC_SCENE_DOWNLOAD);
@@ -57,7 +59,7 @@ export function SmallPublicSceneListing() {
             {
                 error || downloadError ?
                     <span className="text-fail-primary w-full p-2 space-x-2 flex text-2xl justify-center items-center">
-                        <p>Something went wrong. </p>
+                        <p>{t("SomethingWentWrong")}</p>
                         <p>{sceneData?.message}</p>
                     </span> :
                     null
@@ -66,7 +68,7 @@ export function SmallPublicSceneListing() {
             {
                 isLoading ?
                     <span className="w-full p-2 space-x-2 flex text-2xl justify-center items-center">
-                        <LoadingText LoadingText="LOADING" />
+                        <LoadingText LoadingText={t("Loading").toUpperCase()} />
                     </span> :
                     null
             }
@@ -79,14 +81,14 @@ export function SmallPublicSceneListing() {
                                 <AccordionTrigger>{scene.name}</AccordionTrigger>
                                 <AccordionContent>
                                     <div className=" text-center flex-col justify-center items-center ">
-                                        <p>Duration: {scene.duration.toString()}</p>
-                                        <p>Created at: {formatDateString(scene.createdAt.toString())}</p>
+                                        <p>{t("Duration")}: {scene.duration.toString()}</p>
+                                        <p>{t("CreatedAt")}: {formatDateString(scene.createdAt.toString())}</p>
                                         <div className="flex justify-center">
                                             <img src={"/api/v1/image" + scene.imgPath} width={128} height={128} className="aspect-square border border-primary" />
                                         </div>
                                         <Button
                                             onClick={() => { setSelectedSceneID(scene.id); setDownloadConfirmation(true); }}
-                                            className="my-2 w-[20ch] font-bold ">LOAD SCENE</Button>
+                                            className="my-2 w-[20ch] font-bold ">{t("LoadScene").toUpperCase()}</Button>
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>
@@ -99,11 +101,11 @@ export function SmallPublicSceneListing() {
             {downloadConfirmation ?
                 <div className="text-center">
                     <p>
-                        Are you sure? All unsaved progress will be lost.
+                        {t("AreYouSure")} {t("AllUnsavedProgressLost")}
                     </p>
                     <span className="flex justify-evenly">
-                        <Button onClick={() => { handleDownload(); }} className="my-2 w-[20ch] bg-destructive hover:bg-destructive/80 font-bold ">YES</Button>
-                        <Button onClick={() => { setDownloadConfirmation(false); }} className="my-2 w-[20ch] font-bold ">CANCEL</Button>
+                        <Button onClick={() => { handleDownload(); }} className="my-2 w-[20ch] bg-destructive hover:bg-destructive/80 font-bold ">{t("Yes").toUpperCase()}</Button>
+                        <Button onClick={() => { setDownloadConfirmation(false); }} className="my-2 w-[20ch] font-bold ">{t("Cancel").toUpperCase()}</Button>
                     </span>
                 </div>
                 : null

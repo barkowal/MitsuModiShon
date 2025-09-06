@@ -2,8 +2,10 @@ import { useAuth } from "@/hooks/auth/useAuth";
 import { useState } from "react";
 import { Object3DPublicListing } from "./Object3DPublicListing";
 import { Object3DUserListing } from "./Object3DUserListing";
+import { useTranslation } from "react-i18next";
 
 export default function Object3DListingPage() {
+  const { t } = useTranslation();
   const auth = useAuth();
   const [isPublicList, setIsPublicList] = useState(true);
 
@@ -18,7 +20,7 @@ export default function Object3DListingPage() {
             className={` ${isPublicList ? "bg-primary/15" : ""} text-center px-4 py-2 cursor-pointer hover:bg-primary/10 rounded transition duration-300`}
           >
             <p className="w-xs select-none ">
-              Public
+              {t("PublicObjects")}
             </p>
           </div>
           {
@@ -28,7 +30,7 @@ export default function Object3DListingPage() {
                 className={` ${isPublicList ? "" : "bg-primary/15"} text-center px-4 py-2 cursor-pointer hover:bg-primary/10 rounded transition duration-300`}
               >
                 <p className="w-xs select-none ">
-                  My Objects
+                  {t("MyObjects")}
                 </p>
               </div> : null
           }

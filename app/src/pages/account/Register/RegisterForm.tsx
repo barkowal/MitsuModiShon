@@ -115,7 +115,7 @@ export default function RegisterForm() {
                 </FormItem>
               )}
             />
-            <p className="text-red-300">{registerResponse}</p>
+            <p className="text-red-300">{t(registerResponse)}</p>
             <div className="flex justify-end">
               <Button type="submit" >{t("RegisterNow").toUpperCase()}</Button>
             </div>
