@@ -66,6 +66,7 @@
     "Box":"Box",
     "Circle":"Circle",
     "Cylinder":"Cylinder",
+    "Cone":"Cone",
 
     "Width":"Width",
     "Height":"Height",

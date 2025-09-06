@@ -448,6 +448,8 @@ export default class ModellingMesh extends THREE.Mesh {
     return transformHelper;
   }
 
+  // For vertices with the same position, I am making a "lookup" map
+  // That way if user selects one vertex, all vertices in the same position are selected
   private groupVertices() {
     const positionAttribute = this.geometry.getAttribute("position");
 
@@ -476,11 +478,12 @@ export default class ModellingMesh extends THREE.Mesh {
     }
 
     // Reverse map for fast lookups
+    // For each vertex set group of vertices with the same position
     const lookupVertices = new Map();
-    map.forEach((values) => {
-      lookupVertices.set(values[0], values);
-      lookupVertices.set(values[1], values);
-      lookupVertices.set(values[2], values);
+    map.forEach((group) => {
+      for (const vertex of group) {
+        lookupVertices.set(vertex, group);
+      }
     });
     return lookupVertices;
   }

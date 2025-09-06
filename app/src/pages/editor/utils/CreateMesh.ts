@@ -5,13 +5,14 @@ import { EDITOR_LAYER, INTERSECTION_LAYER, RENDER_LAYER } from "./Global";
 import { CreateModellingBoxGeometry } from "./objects/Custom/ModellingBoxGeometry";
 import { CreateModellingCircleGeometry } from "./objects/Custom/ModellingCircleGeometry";
 import { CreateModellingCylinderGeometry } from "./objects/Custom/ModellingCylinderGeometry";
+import { CreateModellingConeGeometry } from "./objects/Custom/ModellingConeGeometry";
 
 export const CREATE_OBJECT_TYPES = {
   ModelingPlane: 0,
   ModellingBox: 1,
   ModellingCircle: 2,
   ModellingCylinder: 3,
-  Cone: 4,
+  ModellingCone: 4,
   Sphere: 5,
   Ring: 6,
 } as const;
@@ -48,6 +49,14 @@ export function CreateMesh(meshData: Array<number>): THREE.Mesh {
       const thetaStart = meshData[6] / (100 / (Math.PI * 2));;
       const thetaLength = meshData[7] / (100 / (Math.PI * 2));
       geometry = CreateModellingCylinderGeometry(meshData[1], meshData[2], meshData[3], meshData[4], meshData[5], false, thetaStart, thetaLength);
+      mesh = new ModellingMesh(geometry, material);
+      break;
+    }
+
+    case CREATE_OBJECT_TYPES.ModellingCone: {
+      const thetaStart = meshData[5] / (100 / (Math.PI * 2));;
+      const thetaLength = meshData[6] / (100 / (Math.PI * 2));
+      geometry = CreateModellingConeGeometry(meshData[1], meshData[2], meshData[3], meshData[4], false, thetaStart, thetaLength);
       mesh = new ModellingMesh(geometry, material);
       break;
     }
