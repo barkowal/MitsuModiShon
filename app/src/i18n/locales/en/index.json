@@ -208,6 +208,14 @@
     "User already exists.":"User already exists.",
     "Invalid data.":"Invalid data.",
 
+    "ToggleTheme":"Toggle Theme",
+    "Light":"Light",
+    "Dark":"Dark",
+    "System":"System",
+
+    "ToggleLanguage":"Toggle Language",
+    "PolishLanguage":"Polish",
+    "EnglishLanguage":"English",
 
 
     "End": "End"

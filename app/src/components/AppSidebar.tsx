@@ -14,8 +14,8 @@ import { Box, Clapperboard, Grid3x3, Home, PackageSearch } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Separator } from "./ui/separator";
 import { AccountDropdown } from "@/pages/account/AccountDropdown";
-import { LanguageToggle } from "./LanguageToggle";
 import { useTranslation } from "react-i18next";
+import { SettingsToggles } from "./SettingsToggles";
 
 const items = [
   {
@@ -85,19 +85,15 @@ export function AppSidebar() {
         <SidebarMenu>
 
           <SidebarMenuItem>
-
-            <LanguageToggle />
-
+            <SettingsToggles />
           </SidebarMenuItem>
 
           <SidebarMenuItem>
-
             <AccountDropdown />
-
           </SidebarMenuItem>
+
         </SidebarMenu>
       </SidebarFooter>
-
 
     </Sidebar >
   );

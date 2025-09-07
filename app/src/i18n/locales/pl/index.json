@@ -208,6 +208,15 @@
     "User already exists.":"Użytkownik już istnieje.",
     "Invalid data.":"Niepoprawne dane.",
 
+    "ToggleTheme":"Zmień Motyw",
+    "Light":"Jasny",
+    "Dark":"Ciemny",
+    "System":"Domyślny",
+
+    "ToggleLanguage":"Zmień Język",
+    "PolishLanguage":"Polski",
+    "EnglishLanguage":"Angielski",
+
 
     "End": "Koniec"
 
