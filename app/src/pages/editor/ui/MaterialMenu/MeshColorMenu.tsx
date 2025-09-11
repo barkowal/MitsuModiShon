@@ -20,7 +20,7 @@ export function MeshColorMenu({ materialData, setMaterialData }: Props) {
 
 
   return (<>
-    <div className="bg-sidebar-accent p-1 font-bold select-none">
+    <div className=" p-1 font-bold select-none">
       <span className=" flex items-center justify-between ">
         <span className="mx-2">
           {t("Color")}

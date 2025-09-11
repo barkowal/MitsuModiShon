@@ -39,7 +39,7 @@ export function AddLightDialog() {
         <Dialog onOpenChange={handleOpenChange} open={isDialogOpen}>
             <DialogTrigger asChild onClick={() => { setIsDialogOpen(true); }}>
 
-                <Button className="[&_svg]:size-6" >
+                <Button variant="outline" className="[&_svg]:size-6" >
                     <Sun className="size-1" />
                 </Button>
 

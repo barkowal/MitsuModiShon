@@ -77,7 +77,7 @@ export function AnimationOptionsDropdown() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild >
-                <Button className="[&_svg]:size-6" >
+                <Button variant="outline" className="[&_svg]:size-6" >
                     <Menu /> {t("Options")}
                 </Button>
             </DropdownMenuTrigger>

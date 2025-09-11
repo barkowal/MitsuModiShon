@@ -60,7 +60,7 @@ export function OptionsDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
 
-        <Button className="[&_svg]:size-6" >
+        <Button variant="outline" className="[&_svg]:size-6" >
           <Menu /> {t("Options")}
         </Button>
 

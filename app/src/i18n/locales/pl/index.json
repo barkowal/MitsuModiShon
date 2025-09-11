@@ -212,6 +212,8 @@
     "Light":"Jasny",
     "Dark":"Ciemny",
     "System":"Domyślny",
+    "NightViolet":"Nocny Fiolet",
+    "DayBlue":"Dzienny Błękit",
 
     "ToggleLanguage":"Zmień Język",
     "PolishLanguage":"Polski",

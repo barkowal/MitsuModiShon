@@ -77,7 +77,7 @@ function ChangeModeDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="[&_svg]:size-6" >
+        <Button variant="outline" className="[&_svg]:size-6" >
           <SquarePen className="size-1" /> {t(currentMode)}
         </Button>
       </DropdownMenuTrigger>

@@ -60,7 +60,7 @@ export function LayersMenu() {
 
 
   return (<>
-    <div className="bg-sidebar-accent my-2 overflow-auto ">
+    <div className=" my-2 overflow-auto ">
       <div className="w-[calc(100%-10px)] h-[calc(100%-10px)]">
         <div className=" select-none p-2 flex justify-between" >
           <span className="w-full font-bold">

@@ -24,15 +24,27 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="center">
+
         <DropdownMenuItem className={theme === "light" ? "bg-primary/10" : ""} onClick={() => setTheme("light")}>
           {t("Light")}
         </DropdownMenuItem>
+
         <DropdownMenuItem className={theme === "dark" ? "bg-primary/10" : ""} onClick={() => setTheme("dark")}>
           {t("Dark")}
         </DropdownMenuItem>
+
         <DropdownMenuItem className={theme === "system" ? "bg-primary/10" : ""} onClick={() => setTheme("system")}>
           {t("System")}
         </DropdownMenuItem>
+
+        <DropdownMenuItem className={theme === "mitsu_dark" ? "bg-primary/10" : ""} onClick={() => setTheme("mitsu_dark")}>
+          {t("NightViolet")}
+        </DropdownMenuItem>
+
+        <DropdownMenuItem className={theme === "mitsu_light" ? "bg-primary/10" : ""} onClick={() => setTheme("mitsu_light")}>
+          {t("DayBlue")}
+        </DropdownMenuItem>
+
       </DropdownMenuContent>
     </DropdownMenu>
   );

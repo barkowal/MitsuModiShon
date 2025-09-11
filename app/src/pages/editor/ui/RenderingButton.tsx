@@ -15,7 +15,7 @@ export function RenderingButton() {
 
   return (<>
 
-    <Button className="[&_svg]:size-6" onClick={handleSwitchScene} >
+    <Button variant="outline" className="[&_svg]:size-6" onClick={handleSwitchScene} >
       <Camera className="size-1" />
       <p>
         {

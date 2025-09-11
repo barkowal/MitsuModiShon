@@ -5,7 +5,7 @@ import { LucidePackageMinus } from "lucide-react";
 function RemoveMeshButton() {
   return (
     <>
-      <Button className="[&_svg]:size-6"
+      <Button variant="outline" className="[&_svg]:size-6"
         onClick={() => { editorEventBus.emit(EDITOR_EVENT.RemoveMesh); }}><LucidePackageMinus className="size-1" /></Button>
     </>
   );

@@ -53,7 +53,7 @@ export function AnimationView() {
 
   return (<>
 
-    <div className="bg-sidebar-accent my-2 overflow-auto ">
+    <div className=" my-2 overflow-auto ">
       <div className="w-[calc(100%-10px)] h-[calc(100%-10px)] mx-[5px]">
         {
           isAnimationObject ?

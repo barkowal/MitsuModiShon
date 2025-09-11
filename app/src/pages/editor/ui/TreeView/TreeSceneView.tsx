@@ -20,7 +20,7 @@ export function TreeSceneView() {
   }, []);
 
   return (<>
-    <div className="overflow-auto border border-amber-200 bg-secondary resize-y w-full min-h-[10ch] max-h-1/2">
+    <div className="overflow-auto bg-tree-background border border-bg-primary resize-y w-full min-h-[10ch] max-h-1/2">
       {sceneObjects != null && <ObjectList treeList={sceneObjects} level={0} />}
     </div>
   </>);

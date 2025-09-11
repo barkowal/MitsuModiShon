@@ -13,10 +13,10 @@ function AnimationTopBar() {
     <>
       <div className="flex w-full h-full gap-4 p-2 mx-10 justify-center">
         <AnimationOptionsDropdown />
-        <Button className="[&_svg]:size-6" onClick={() => { editorEventBus.emit(EDITOR_EVENT.UNDO); }}>
+        <Button variant="outline" className="[&_svg]:size-6" onClick={() => { editorEventBus.emit(EDITOR_EVENT.UNDO); }}>
           <Undo className="size-1" />
         </Button>
-        <Button className="[&_svg]:size-6" onClick={() => { editorEventBus.emit(EDITOR_EVENT.REDO); }}>
+        <Button variant="outline" className="[&_svg]:size-6" onClick={() => { editorEventBus.emit(EDITOR_EVENT.REDO); }}>
           <Redo className="size-1" />
         </Button>
         <AddObjectDialog />

@@ -56,7 +56,7 @@ export function LightView() {
 
     return (
 
-        <div className="bg-sidebar-accent my-2 overflow-auto ">
+        <div className=" my-2 overflow-auto ">
             <div className="w-[calc(100%-10px)] h-[calc(100%-10px)]">
                 <div className=" select-none p-2 flex justify-between" >
                     <span className="w-full font-bold">
@@ -65,7 +65,7 @@ export function LightView() {
                 </div>
                 <Separator orientation="horizontal" />
 
-                <div className="bg-sidebar-accent p-1 font-bold select-none">
+                <div className=" p-1 font-bold select-none">
                     <span className=" flex items-center justify-between ">
                         <span className="mx-2">
                             {t("LightColor").toUpperCase()}
