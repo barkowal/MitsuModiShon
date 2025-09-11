@@ -91,8 +91,8 @@ export function AnimationView() {
                   {t("Animation").toUpperCase()}
                 </span>
               </div>
-              <span className="w-full flex justify-center">
-                <Button className="w-1/2 m-2" onClick={() => { makeAnimationObject(); }}>{t("Animate")}</Button>
+              <span className="w-full ">
+                <Button className="w-full my-2" onClick={() => { makeAnimationObject(); }}>{t("Animate")}</Button>
               </span>
             </div>
 

@@ -203,7 +203,7 @@ function AnimationEditor() {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel>
             <div className="flex-col inline-flex w-full h-full bg-background">
-              <div className="flex-auto bg-card border border-b-card-foreground">
+              <div className="flex-auto bg-card ">
                 <AnimationTopBar />
               </div>
               <div
@@ -211,7 +211,7 @@ function AnimationEditor() {
                 tabIndex={1}
                 onKeyDown={(event: KeyboardEvent) => { HandleKeyboardPress(event); }}
                 onMouseOver={(e) => { e.currentTarget.focus(); }}
-                className="flex-auto" >
+                className="flex-auto focus:outline-none" >
               </div>
               <ToolbarPanel />
               <WarningLogPanel bottomMargin={100} />
@@ -219,7 +219,7 @@ function AnimationEditor() {
             </div>
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel maxSize={38} minSize={26} className="bg-card border border-l-card-foreground">
+          <ResizablePanel maxSize={38} minSize={26} className="bg-card ">
             <AnimationPanel />
           </ResizablePanel>
         </ResizablePanelGroup>

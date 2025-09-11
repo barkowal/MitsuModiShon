@@ -96,7 +96,7 @@ export function PlaybackPanel() {
 
   return (<>
 
-    <div className="w-full h-fit p-0 m-0 bg-primary-foreground border-t border-white select-none">
+    <div className="w-full h-fit p-0 m-0 bg-card select-none">
 
 
       <div className="w-full h-fit gap-2 p-2 flex justify-between">

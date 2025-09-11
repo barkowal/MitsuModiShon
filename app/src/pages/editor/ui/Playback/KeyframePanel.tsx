@@ -39,13 +39,13 @@ export function KeyframePanel({ playHeadKeyframe, setPlayHeadKeyframe, duration 
   return (
 
     <>
-      <div ref={holder} className="flex flex-col items-center p-2 mx-2 border-white border rounded-md"
+      <div ref={holder} className="flex flex-col items-center p-2 mx-2  "
         onMouseDown={() => { setIsDragging(true); }}
         onMouseMove={(e) => { handleMousePosition(e); }}
         onClick={(e) => { changePos(e); }}
         onMouseUp={() => { setIsDragging(false); }}
       >
-        <div className="relative w-full h-10 bg-sidebar rounded-lg">
+        <div className="relative w-full h-10 bg-sidebar border-card-foreground/20 border-1">
           <div
             className="absolute top-0 left-0 h-full bg-sidebar-accent"
             style={{ width: `${(playHeadKeyframe / (duration)) * 100}%` }}

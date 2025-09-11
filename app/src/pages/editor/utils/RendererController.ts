@@ -1,5 +1,5 @@
 import * as THREE from "three/webgpu";
-import { BACKGROUND_LAYER, DEFAULT_SCENE_COLOR, EDITOR_LAYER, MAIN_MESH_RENDER_ORDER, RENDER_LAYER } from "./Global";
+import { BACKGROUND_LAYER, DEFAULT_SCENE_COLOR, EDITOR_LAYER, INTERSECTION_LAYER, MAIN_MESH_RENDER_ORDER, RENDER_LAYER } from "./Global";
 import { ViewHelper } from "./objects/ViewHelper";
 import { AddListener } from "./AddListener";
 import { OrbitControls, TransformControls } from "three/examples/jsm/Addons.js";
@@ -120,7 +120,11 @@ export class RendererController {
         clone.material = CreateOutlineMaterial();
         clone.matrixWorld = object.matrixWorld;
         clone.matrixWorldAutoUpdate = false;
+
+        // Don't show outline in treeview, render and selection
         clone.layers.enable(BACKGROUND_LAYER);
+        clone.layers.disable(RENDER_LAYER);
+        clone.layers.disable(INTERSECTION_LAYER);
 
         this.scene.add(clone);
         this.outlines.push(clone);
