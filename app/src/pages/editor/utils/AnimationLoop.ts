@@ -79,6 +79,7 @@ export class AnimationLoop {
 
     for (const object of this.animationObjects) {
       object.setTime(this.keyframeToTime(keyframe));
+      object.resetLooping();
     }
 
     this.keyframe = keyframe;

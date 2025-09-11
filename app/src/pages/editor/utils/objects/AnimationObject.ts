@@ -90,6 +90,13 @@ export class AnimationObject {
     this.fps = fps;
   }
 
+  resetLooping(){
+    this.actions.forEach((action)=>{
+      action?.reset();        
+    });
+  }
+
+
   resetAnimation() {
     this.animationSequences.forEach((sequence) => {
       sequence.keyframes = [];
