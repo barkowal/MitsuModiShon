@@ -2,7 +2,6 @@ import { useEffect, type KeyboardEvent } from "react";
 import EditorPanel from "./ui/EditorPanel";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import EditorTopBar from "./ui/EditorTopBar";
-import { AddMeshCommand } from "./commands/AddMeshCommand";
 import { CommandHistory } from "@/lib/CommandHistory";
 import { UiController } from "./utils/UiController";
 import { EDITOR_EVENT, editorEventBus } from "./utils/EditorEvents";
@@ -51,7 +50,7 @@ function Editor() {
 
     const handleAddMesh = (meshData: Array<number>) => {
       const mesh = CreateMesh(meshData);
-      commandHistory.addCommand(new AddMeshCommand(scene, mesh));
+      commandHistory.addCommand(new AddObjectsCommand(scene, [mesh]));
       uiController.refreshTree();
     };
 

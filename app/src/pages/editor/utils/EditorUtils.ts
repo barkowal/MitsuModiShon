@@ -1,5 +1,5 @@
 import * as THREE from "three/webgpu";
-import { disposeMesh } from "./utils";
+import { removeObjectFromScene } from "./utils";
 
 export class EditorUtils {
   private scene: THREE.Scene;
@@ -27,7 +27,9 @@ export class EditorUtils {
 
   private disposeCopies() {
     this.copiedObjects.forEach((copy) => {
-      disposeMesh(this.scene, copy);
+
+      removeObjectFromScene(this.scene, copy);
+
     });
     this.copiedObjects = [];
   }

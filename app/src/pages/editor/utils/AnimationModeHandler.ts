@@ -5,14 +5,14 @@ import { EDITOR_EVENT, editorEventBus } from "./EditorEvents";
 import type { AnimationLoop } from "./AnimationLoop";
 import { SelectionController } from "./SelectionController";
 import { AnimationObject } from "./objects/AnimationObject";
-import { Mesh, Scene, type Object3D, type Quaternion, type Vector3 } from "three/webgpu";
+import { Mesh, Object3D, Scene, type Quaternion, type Vector3 } from "three/webgpu";
 import { DownloadVideo } from "@/lib/DownloadVideo";
 import { DownloadJSON } from "@/lib/DownloadJSON";
 import { LoadAnimationObject, LoadAnimationScene } from "./LoadObject";
-import { AddMeshCommand } from "../commands/AddMeshCommand";
 import { GetAnimationSceneJSON, getObjectsJSON } from "./GetJSON";
 import { BACKGROUND_LAYER } from "./Global";
-import { disposeMesh } from "./utils";
+import { removeObjectFromScene } from "./utils";
+import { AddObjectsCommand } from "../commands/AddObjectsCommand";
 
 export class AnimationModeHandler {
   private eventHandlers: Array<EventHandlerType>;
@@ -337,8 +337,8 @@ export class AnimationModeHandler {
           rootObject = loadedObject.getRootObject();
         }
 
-        if (rootObject instanceof Mesh) {
-          this.commandHistory.addCommand(new AddMeshCommand(this.scene, rootObject));
+        if (rootObject instanceof Object3D) {
+          this.commandHistory.addCommand(new AddObjectsCommand(this.scene, [rootObject]));
           this.uiController.refreshTree();
         }
 
@@ -420,7 +420,7 @@ export class AnimationModeHandler {
 
     sceneObjects.forEach((obj) => {
       this.scene.remove(obj);
-      disposeMesh(this.scene, obj);
+      removeObjectFromScene(this.scene, obj);
     });
 
     cameraBox.position.set(0, 0, 0);

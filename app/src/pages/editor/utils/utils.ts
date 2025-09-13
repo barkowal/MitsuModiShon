@@ -64,20 +64,58 @@ export function isArrayOfMeshes(array: Array<THREE.Object3D>): boolean {
   return onlyMeshes;
 }
 
-// TODO check
-export function disposeMesh(scene: THREE.Scene, object3d: THREE.Object3D) {
-  object3d.traverse((obj) => disposeObject(scene, obj));
+export function removeObjectFromScene(scene: THREE.Scene, parentObject: THREE.Object3D) {
+
+  if (parentObject && scene.getObjectById(parentObject.id)) {
+    return;
+  }
+
+  disposeObject(parentObject);
 }
 
-function disposeObject(scene: THREE.Scene, object: THREE.Object3D) {
-  if (object && !scene.getObjectById(object.id)) {
-    if (object instanceof THREE.Mesh) {
-      if ("dispose" in object.material) {
-        object.material.dispose();
+export function disposeObject(parentObject: THREE.Object3D) {
+
+  parentObject.traverse((child) => {
+
+    if (child instanceof THREE.Mesh) {
+      if (child.geometry) {
+        child.geometry.dispose();
       }
-      object.geometry.dispose();
+
+      if (child.material) {
+
+        if ("materials" in child.material) {
+
+          //@ts-expect-error different material types
+          child.material.materials.forEach((mtrl) => {
+            if (mtrl.map) mtrl.map.dispose();
+            if (mtrl.lightMap) mtrl.lightMap.dispose();
+            if (mtrl.bumpMap) mtrl.bumpMap.dispose();
+            if (mtrl.normalMap) mtrl.normalMap.dispose();
+            if (mtrl.specularMap) mtrl.specularMap.dispose();
+            if (mtrl.envMap) mtrl.envMap.dispose();
+
+            mtrl.dispose();
+          });
+        }
+        else {
+          if (child.material.map) child.material.map.dispose();
+          if (child.material.lightMap) child.material.lightMap.dispose();
+          if (child.material.bumpMap) child.material.bumpMap.dispose();
+          if (child.material.normalMap) child.material.normalMap.dispose();
+          if (child.material.specularMap) child.material.specularMap.dispose();
+          if (child.material.envMap) child.material.envMap.dispose();
+
+          child.material.dispose();
+        }
+      }
     }
-  }
+
+    if (child instanceof THREE.Light) {
+      child.dispose();
+    }
+
+  });
 }
 
 export function distanceFromLine(pointA: Point2d, pointB: Point2d, pointC: Point2d): number {

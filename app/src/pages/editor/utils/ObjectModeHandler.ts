@@ -11,11 +11,11 @@ import { RotateObjectsCommand } from "../commands/RotateObjectsCommand";
 import { RemoveObjectsCommand } from "../commands/RemoveObjectsCommand";
 import { SetMeshesColorCommand } from "../commands/SetMeshesColorCommand";
 import { ChangeMeshesMaterialCommand } from "../commands/ChangeMeshesMaterialCommand";
-import { AddMeshCommand } from "../commands/AddMeshCommand";
 import { DownloadJSON } from "@/lib/DownloadJSON";
 import { INTERSECTION_LAYER } from "./Global";
 import { LoadObject } from "./LoadObject";
 import { ChangeLightDataCommand } from "../commands/ChangeLightDataCommand";
+import { AddObjectsCommand } from "../commands/AddObjectsCommand";
 
 export class ObjectModeHandler {
   eventHandlers: Array<EventHandlerType>;
@@ -338,10 +338,8 @@ export class ObjectModeHandler {
 
       if (object) {
 
-        if (object instanceof THREE.Mesh) {
-          this.commandHistory.addCommand(new AddMeshCommand(this.scene, object));
-          this.uiController.refreshTree();
-        }
+        this.commandHistory.addCommand(new AddObjectsCommand(this.scene, [object]));
+        this.uiController.refreshTree();
 
       }
 
