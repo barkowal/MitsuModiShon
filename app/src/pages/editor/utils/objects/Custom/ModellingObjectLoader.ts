@@ -26,7 +26,8 @@ type ModellingObjectJSON = {
   objectsGeometry?: string,
   lineWidth?: number,
   lineColor?: number,
-  currentLines?: Array<Array<number>>,
+  currentStartLines?: Array<Array<number>>;
+  currentEndLines?: Array<Array<number>>;
 
   children?: Array<ModellingObjectJSON> | Array<THREE.Object3DJSONObject>,
 };
@@ -134,8 +135,9 @@ export class ModellingObjectLoader {
         break;
       }
       case "ModellingOutline": {
-        if (!(jsonData.objectsGeometry)) break;
-        if (!(jsonData.currentLines)) break;
+        if (!(jsonData.objectsGeometry)) { console.warn("Wrong object, no objectsGeometry."); break; }
+        if (!(jsonData.currentStartLines)) { console.warn("Wrong object, no startLines."); break; }
+        if (!(jsonData.currentEndLines)) { console.warn("Wrong object, no endLines."); break; }
 
         const objectGeometry = getGeometry(jsonData.objectsGeometry);
         object = new ModellingOutline(objectGeometry);
@@ -149,7 +151,7 @@ export class ModellingObjectLoader {
         if (jsonData.lineColor)
           object.setLineColor(jsonData.lineColor);
 
-        object.createOutlineFromVerticesGroups(jsonData.currentLines);
+        object.createOutlineFromVerticesGroups(jsonData.currentStartLines, jsonData.currentEndLines);
 
         break;
       }

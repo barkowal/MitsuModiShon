@@ -103,10 +103,13 @@ export class PaintingHelper {
     const modellingOutline = this.currentObject.getModellingOutline();
     if (!modellingOutline) return;
 
+    const groupedStart =  this.currentObject.getGroupedVertices([indices[0]]);
+    const groupedEnd =  this.currentObject.getGroupedVertices([indices[1]]);
+
     if (this.shouldClearLines) {
-      modellingOutline.clearHighligtedEdge(indices);
+      modellingOutline.clearHighligtedEdge(groupedStart, groupedEnd);
     } else {
-      modellingOutline.highlightEdge(indices);
+      modellingOutline.highlightEdge(groupedStart, groupedEnd);
     }
   }
 

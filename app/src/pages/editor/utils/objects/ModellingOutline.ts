@@ -1,6 +1,9 @@
 import { Line2, LineGeometry, LineSegments2, LineSegmentsGeometry } from "three/examples/jsm/Addons.js";
 import { type BufferGeometry, Line2NodeMaterial, Vector3, Object3D, Line3, type JSONMeta, type Object3DJSON } from "three/webgpu";
 import { DEFAULT_LINE_WIDTH, EDITOR_LAYER, RENDER_LAYER } from "../Global";
+import { arraysAreEqual } from "@/lib/utils";
+
+const LINEWIDTH_DIVISOR = 256;
 
 export class ModellingOutline extends Object3D {
   private objectsGeometry: BufferGeometry;
@@ -8,8 +11,8 @@ export class ModellingOutline extends Object3D {
   private lineWidth: number;
   private lineColor: number;
   private outline: LineSegments2 | null;
-
-  private currentLines: Array<Array<number>>;
+  private currentStartLines: Array<Array<number>>;
+  private currentEndLines: Array<Array<number>>;
   private lineSet: Set<string>;
 
   private highlightedLines: Array<Line2>;
@@ -26,7 +29,8 @@ export class ModellingOutline extends Object3D {
     this.lineColor = 0x000000;
     this.outline = null;
     this.lineSet = new Set();
-    this.currentLines = [];
+    this.currentStartLines = [];
+    this.currentEndLines = [];
     this.highlightedLines = [];
     this.name = "ModellingOutline";
   }
@@ -48,15 +52,16 @@ export class ModellingOutline extends Object3D {
 
       this.objectsGeometry = source.objectsGeometry;
 
-      this.lineMaterial = new Line2NodeMaterial({ color: this.lineColor, linewidth: this.lineWidth, dashed: false });
+      this.createDefaultLineMaterial();
 
       this.outline = null;
       this.lineSet = new Set();
-      this.currentLines = [];
+      this.currentStartLines = [];
+      this.currentEndLines = [];
       this.highlightedLines = [];
       this.name = "ModellingOutline";
 
-      this.createOutlineFromVerticesGroups(source.currentLines);
+      this.createOutlineFromVerticesGroups(source.currentStartLines, source.currentEndLines);
     }
 
     return this;
@@ -113,16 +118,17 @@ export class ModellingOutline extends Object3D {
   makeOutlineEditable() {
     this.disposeOutline();
 
-    this.currentLines.forEach((verticesGroup) => {
-      this.createLine(verticesGroup);
+    this.currentStartLines.forEach((_, i) => {
+      this.createLine(this.currentStartLines[i], this.currentEndLines[i]);
     });
 
   }
 
-  createOutlineFromVerticesGroups(verticesGroups: Array<Array<number>>) {
-    verticesGroups.forEach(
-      (vertices) => {
-        this.highlightEdge(vertices);
+  createOutlineFromVerticesGroups(verticesGroupsStart: Array<Array<number>>, verticesGroupsEnd: Array<Array<number>>) {
+
+    verticesGroupsStart.forEach(
+      (_, i) => {
+        this.highlightEdge(verticesGroupsStart[i], verticesGroupsEnd[i]);
       }
     );
 
@@ -130,27 +136,32 @@ export class ModellingOutline extends Object3D {
     this.addOutline();
   }
 
-  highlightEdge(vertices: Array<number>) {
+  highlightEdge(verticesStart: Array<number>, verticesEnd: Array<number>) {
     if (!this.lineMaterial) {
-      this.lineMaterial = new Line2NodeMaterial({ color: this.lineColor, linewidth: this.lineWidth, dashed: false });
+      this.createDefaultLineMaterial();
     }
 
-    this.createLine(vertices);
+    this.createLine(verticesStart, verticesEnd);
+
   }
 
-  clearHighligtedEdge(vertices: Array<number>) {
+  clearHighligtedEdge(verticesStart: Array<number>, verticesEnd: Array<number>) {
     let lineIndex: number = -1;
 
-    this.currentLines.forEach((verticesGroup, i) => {
-      if (verticesGroup[0] === vertices[0] && verticesGroup[1] === vertices[1]) {
+    for (let i = 0; i < this.currentStartLines.length; i++) {
+
+      if (arraysAreEqual(verticesStart, this.currentStartLines[i]) && arraysAreEqual(verticesEnd, this.currentEndLines[i])) {
         lineIndex = i;
+        break;
       }
-    });
+
+    }
 
     if (lineIndex === -1) return;
 
-    this.removeLineFromSet(vertices);
-    this.currentLines.splice(lineIndex, 1);
+    this.removeLineFromSet(verticesStart, verticesEnd);
+    this.currentStartLines.splice(lineIndex, 1);
+    this.currentEndLines.splice(lineIndex, 1);
 
     const highlightedLine = this.highlightedLines.at(lineIndex);
     this.highlightedLines.splice(lineIndex, 1);
@@ -179,7 +190,7 @@ export class ModellingOutline extends Object3D {
   setLineColor(hexColor: number) {
     this.lineColor = hexColor;
     if (!this.lineMaterial) {
-      this.lineMaterial = new Line2NodeMaterial({ color: hexColor, linewidth: this.lineWidth, dashed: false });
+      this.createDefaultLineMaterial();
     } else {
       this.lineMaterial.color.setHex(hexColor);
     }
@@ -194,7 +205,7 @@ export class ModellingOutline extends Object3D {
     if (!this.lineMaterial) {
       return;
     }
-    this.lineMaterial.linewidth = width;
+    this.lineMaterial.linewidth = width / LINEWIDTH_DIVISOR;
   }
 
   getLineWidth() {
@@ -207,10 +218,10 @@ export class ModellingOutline extends Object3D {
     return false;
   }
 
-  private createLine(vertices: Array<number>) {
-    if (!this.isLineUnique(vertices)) return;
+  private createLine(verticesStart: Array<number>, verticesEnd: Array<number>) {
+    if (!this.isLineUnique(verticesStart, verticesEnd)) return;
 
-    const line = this.getLineFromVertices(vertices);
+    const line = this.getLineFromVertices(verticesStart, verticesEnd);
     const geometry = new LineGeometry();
     geometry.setFromPoints([line.start, line.end]);
 
@@ -219,19 +230,21 @@ export class ModellingOutline extends Object3D {
 
     this.highlightedLines.push(highlightedLine);
     this.add(highlightedLine);
-    this.addLineToSet(vertices);
-    this.currentLines.push(vertices);
+    this.addLineToSet(verticesStart, verticesEnd);
+    this.currentStartLines.push(verticesStart);
+    this.currentEndLines.push(verticesEnd);
+
   }
 
   private createLineSegments() {
     if (!this.lineMaterial) {
-      this.lineMaterial = new Line2NodeMaterial({ color: this.lineColor, linewidth: this.lineWidth, dashed: false });
+      this.createDefaultLineMaterial();
     }
 
     const positions: Array<number> = [];
 
-    this.currentLines.forEach((verticesGroup) => {
-      const line = this.getLineFromVertices(verticesGroup);
+    this.currentStartLines.forEach((_, i) => {
+      const line = this.getLineFromVertices(this.currentStartLines[i], this.currentEndLines[i]);
       positions.push(line.start.x, line.start.y, line.start.z);
       positions.push(line.end.x, line.end.y, line.end.z);
     });
@@ -248,37 +261,39 @@ export class ModellingOutline extends Object3D {
     return segments;
   }
 
-  private getLineFromVertices(vertices: Array<number>): Line3 {
+  private getLineFromVertices(verticesStart: Array<number>, verticesEnd: Array<number>): Line3 {
     const start = new Vector3();
     const end = new Vector3();
 
     const positionAttribute = this.objectsGeometry.getAttribute("position");
 
-    start.fromBufferAttribute(positionAttribute, vertices[0]);
-    end.fromBufferAttribute(positionAttribute, vertices[1]);
+    // Vertices should have the same position, so there is no need for getting different position attributes for each vert
+    start.fromBufferAttribute(positionAttribute, verticesStart[0]);
+    end.fromBufferAttribute(positionAttribute, verticesEnd[0]);
 
     return new Line3(start, end);
   }
 
-  private addLineToSet(vertices: Array<number>) {
-    const hash1 = `${vertices[0]}-${vertices[1]}`;
-    const hash2 = `${vertices[1]}-${vertices[0]}`;
+  private addLineToSet(verticesStart: Array<number>, verticesEnd: Array<number>) {
+
+    const hash1 = `${verticesStart.sort()}-${verticesEnd.sort()}`;
+    const hash2 = `${verticesEnd.sort()}-${verticesStart.sort()}`;
 
     this.lineSet.add(hash1);
     this.lineSet.add(hash2);
   }
 
-  private removeLineFromSet(vertices: Array<number>) {
-    const hash1 = `${vertices[0]}-${vertices[1]}`;
-    const hash2 = `${vertices[1]}-${vertices[0]}`;
+  private removeLineFromSet(verticesStart: Array<number>, verticesEnd: Array<number>) {
+    const hash1 = `${verticesStart.sort()}-${verticesEnd.sort()}`;
+    const hash2 = `${verticesEnd.sort()}-${verticesStart.sort()}`;
 
     this.lineSet.delete(hash1);
     this.lineSet.delete(hash2);
   }
 
-  private isLineUnique(vertices: Array<number>) {
-    const hash1 = `${vertices[0]}-${vertices[1]}`;
-    const hash2 = `${vertices[1]}-${vertices[0]}`;
+  private isLineUnique(verticesStart: Array<number>, verticesEnd: Array<number>) {
+    const hash1 = `${verticesStart.sort()}-${verticesEnd.sort()}`;
+    const hash2 = `${verticesEnd.sort()}-${verticesStart.sort()}`;
 
     if (this.lineSet.has(hash1) === true || this.lineSet.has(hash2) === true) {
       return false;
@@ -286,6 +301,18 @@ export class ModellingOutline extends Object3D {
       return true;
     }
 
+  }
+
+  private createDefaultLineMaterial() {
+    this.lineMaterial = new Line2NodeMaterial({
+      color: this.lineColor,
+      polygonOffset: true,
+      polygonOffsetFactor: -10, // Polygon settings for z-index fighting, might still need tweaking
+      polygonOffsetUnits: 0.1,
+      linewidth: this.lineWidth / LINEWIDTH_DIVISOR,
+      dashed: false,
+      worldUnits: true
+    });
   }
 
   // Custom to json for only mandatory things for modelling outline
@@ -309,13 +336,13 @@ export class ModellingOutline extends Object3D {
         objectsGeometry: objectGeometryJSON,
         name: this.name,
         lineWidth: this.lineWidth,
-        currentLines: this.currentLines,
+        currentStartLines: this.currentStartLines,
+        currentEndLines: this.currentEndLines,
         lineColor: this.lineColor,
       }
     };
 
     return data;
   }
-
 
 }

@@ -488,7 +488,7 @@ export default class ModellingMesh extends THREE.Mesh {
     return lookupVertices;
   }
 
-  private getGroupedVertices(indices: Array<number>) {
+  getGroupedVertices(indices: Array<number>) {
     let group: Array<number> = [];
     indices.forEach((indice) => {
       const same = this.groupedVertices.get(indice);
