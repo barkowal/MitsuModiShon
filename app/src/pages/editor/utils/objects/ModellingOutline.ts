@@ -303,12 +303,13 @@ export class ModellingOutline extends Object3D {
 
   }
 
+  // TODO: polygonoffset could be changable by the user, the look depends on linewidth
   private createDefaultLineMaterial() {
     this.lineMaterial = new Line2NodeMaterial({
       color: this.lineColor,
       polygonOffset: true,
-      polygonOffsetFactor: -10, // Polygon settings for z-index fighting, might still need tweaking
-      polygonOffsetUnits: 0.1,
+      polygonOffsetFactor: -6.0, // Polygon settings for z-index fighting, might still need tweaking
+      polygonOffsetUnits: 0.8,
       linewidth: this.lineWidth / LINEWIDTH_DIVISOR,
       dashed: false,
       worldUnits: true
