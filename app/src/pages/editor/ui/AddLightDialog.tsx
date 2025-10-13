@@ -39,7 +39,7 @@ export function AddLightDialog() {
         <Dialog onOpenChange={handleOpenChange} open={isDialogOpen}>
             <DialogTrigger asChild onClick={() => { setIsDialogOpen(true); }}>
 
-                <Button variant="outline" className="[&_svg]:size-6" >
+                <Button aria-label="addLight-dialog-button" variant="outline" className="[&_svg]:size-6" >
                     <Sun className="size-1" />
                 </Button>
 
@@ -55,13 +55,13 @@ export function AddLightDialog() {
                 <Select
                     defaultValue={"0"}
                     onValueChange={(val: string) => { setCurrentType(Number(val)); resetCurrentParams(); }}>
-                    <SelectTrigger className="w-full min-[20ch]: m-auto">
+                    <SelectTrigger className="w-full min-[20ch]: m-auto" aria-label="select-light-trigger">
                         <SelectValue placeholder={t("Light")} />
                     </SelectTrigger>
-                    <SelectContent >
+                    <SelectContent aria-label="select-light-content" >
                         {
                             lights.map((obj, index) => (
-                                <SelectItem value={index.toString()} key={index}>{t(obj)}</SelectItem>
+                                <SelectItem aria-label="light-options" value={index.toString()} key={index}>{t(obj)}</SelectItem>
                             ))
                         }
                     </SelectContent>
@@ -69,10 +69,10 @@ export function AddLightDialog() {
 
                 <span className="grid grid-cols-2 gap-1 font-bold m-2">
 
-                    <span>{t("Color").toUpperCase()}</span>
+                    <span aria-label="light-color-option">{t("Color").toUpperCase()}</span>
                     <ColorPopover colorValue={currentColor} onColorChange={(val: string) => { setCurrentColor(val); }} />
 
-                    <span>{t("Intensity").toUpperCase()}</span>
+                    <span aria-label="light-intensity-option">{t("Intensity").toUpperCase()}</span>
                     <span className="flex gap-2">
                         {currentIntensity}
                         <Slider
@@ -91,7 +91,7 @@ export function AddLightDialog() {
 
                 <DialogFooter>
                     <div className="w-full text-center" onClick={handleAddLight}>
-                        <Button>{t("Add")}</Button>
+                        <Button aria-label="addlight-button">{t("Add")}</Button>
                     </div>
                 </DialogFooter>
 

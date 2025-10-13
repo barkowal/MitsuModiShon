@@ -207,6 +207,7 @@
     "Invalid email or password.":"Invalid email or password.",
     "User already exists.":"User already exists.",
     "Invalid data.":"Invalid data.",
+    "Something went wrong.":"Something Went Wrong.",
 
     "ToggleTheme":"Toggle Theme",
     "Light":"Light",
