@@ -52,7 +52,7 @@ export function RotationInput() {
 
   return (
     <>
-      <div className="w-full p-2 flex justify-between gap-2 font-bold select-none ">
+      <div aria-label="RotationMenu" className="w-full p-2 flex justify-between gap-2 font-bold select-none ">
         <p>{t("Rotation")}</p>
         <div className="flex gap-1 w-fit"
           onBlur={() => { sendRotation(); }}>

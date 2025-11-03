@@ -78,13 +78,13 @@ export function PaintModeMenu() {
         onValueChange={handlePaintingModeChange}
         variant="outline"
         type="single">
-        <ToggleGroupItem value={PAINTING_MODE.VertexColor.toString()} aria-label="Toggle Vertices">
+        <ToggleGroupItem value={PAINTING_MODE.VertexColor.toString()} aria-label="Toggle VertexColor">
           <Brush />
         </ToggleGroupItem>
-        <ToggleGroupItem value={PAINTING_MODE.DrawLine.toString()} aria-label="Toggle Edges">
+        <ToggleGroupItem value={PAINTING_MODE.DrawLine.toString()} aria-label="Toggle DrawLine">
           <PenLine />
         </ToggleGroupItem>
-        <ToggleGroupItem value={PAINTING_MODE.DrawOutline.toString()} aria-label="Toggle Edges">
+        <ToggleGroupItem value={PAINTING_MODE.DrawOutline.toString()} aria-label="Toggle DrawOutline">
           <Pyramid />
         </ToggleGroupItem>
       </ToggleGroup>

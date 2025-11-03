@@ -54,6 +54,7 @@ export function PositionInput() {
   return (
     <>
       <div
+        aria-label="PositionMenu"
         className="w-full p-2 flex justify-between gap-2 font-bold select-none ">
         <p>{t("Position")}</p>
         <div onBlur={() => { sendPosition(); }} className="flex gap-1 w-fit">

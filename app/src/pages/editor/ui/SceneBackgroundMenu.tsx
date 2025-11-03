@@ -15,7 +15,7 @@ export function SceneBackgroundMenu() {
   };
 
   return (<>
-    <div className=" p-1 font-bold select-none">
+    <div className=" p-1 font-bold select-none" aria-label="SceneColorMenu">
       <span className=" flex items-center justify-between ">
         <span className="mx-2">
           {t("SceneColor")}

@@ -52,7 +52,7 @@ export function ScaleInput() {
 
   return (
     <>
-      <div className="w-full p-2 flex justify-between gap-2 font-bold select-none ">
+      <div aria-label="ScaleMenu" className="w-full p-2 flex justify-between gap-2 font-bold select-none ">
         <p>{t("Scale")}</p>
         <div className="flex gap-1 w-fit"
           onBlur={() => { sendScale(); }}>

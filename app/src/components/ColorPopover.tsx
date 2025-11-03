@@ -40,7 +40,7 @@ function ColorPopover({ onColorChange, colorValue = "#abcdef" }: Props) {
           </PopoverContent>
         </Popover>
         <div className="w-[10ch] border-2 inline text-center mx-2" >
-          #<HexColorInput color={colorValue} onChange={(val: string) => { changeColor(val); }} onBlur={() => { colorChanged(); }}
+          #<HexColorInput aria-label="HexColorInput" color={colorValue} onChange={(val: string) => { changeColor(val); }} onBlur={() => { colorChanged(); }}
             className="w-[7ch] focus:border-none focus-within:border-none" />
         </div>
       </span>

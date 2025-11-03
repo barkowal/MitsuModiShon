@@ -75,7 +75,7 @@ export function AddObjectDialog() {
   return (
     <Dialog onOpenChange={handleOpenChange} open={isDialogOpen}>
       <DialogTrigger asChild onClick={() => { setIsDialogOpen(true); }}>
-        <Button variant="outline" className="[&_svg]:size-6" >
+        <Button aria-label="AddObjectButton" variant="outline" className="[&_svg]:size-6" >
           <LucidePackagePlus className="size-1" />
         </Button>
       </DialogTrigger>
