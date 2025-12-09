@@ -13,13 +13,13 @@ export function PlaybackController({ onPlay, onPause, onRewind, onForward, isPla
   return (
     <>
       <div className="flex">
-        <Rewind className="cursor-pointer" onClick={() => { onRewind(); }} />
+        <Rewind aria-label="Rewind button" className="cursor-pointer" onClick={() => { onRewind(); }} />
         <div className="mx-2 cursor-pointer">
           {isPlaying ?
             <Pause onClick={() => { onPause(); }} /> :
             <Play onClick={() => { onPlay(); }} />}
         </div>
-        <FastForward className="cursor-pointer" onClick={() => { onForward(); }} />
+        <FastForward aria-label="Forward button" className="cursor-pointer" onClick={() => { onForward(); }} />
       </div>
     </>
   );

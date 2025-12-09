@@ -101,7 +101,7 @@ export function PlaybackPanel() {
 
       <div className="w-full h-fit gap-2 p-2 flex justify-between">
 
-        <div className="flex space-x-2">
+        <div aria-label="Current keyframe" className="flex space-x-2">
           <Film />
           <p>
             {currentKeyframe}
@@ -115,7 +115,7 @@ export function PlaybackPanel() {
           onRewind={() => { changeKeyframe(currentKeyframe - 10); }}
           onForward={() => { changeKeyframe(currentKeyframe + 10); }} />
 
-        <div className="flex gap-2 items-center font-bold">
+        <div aria-label="Playback panel" className="flex gap-2 items-center font-bold">
 
           <span className="flex">
             <DraggableInput labelText={t("Duration") + ":"} minValue={0} maxValue={1000} decimalPoints={0}

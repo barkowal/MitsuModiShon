@@ -136,7 +136,7 @@ export function AnimationKeyframes({ sequenceData }: Props) {
   }, [sequenceData]);
 
   return (
-    <div>
+    <div aria-label="Animation keyframes">
 
       <div className=" select-none p-2 flex justify-between items-center" >
         <span className=" w-1/3 font-bold">
