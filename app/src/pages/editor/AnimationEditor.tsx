@@ -75,6 +75,10 @@ function AnimationEditor() {
       selectionController.clearAllSelections();
     };
 
+    const handleSetMultipleSelection = (isMultipleSelection:boolean) => {
+      selectionController.setMultipleSelection(isMultipleSelection);
+    };
+
     const handleChangeObjectName = (name: string) => {
       const selection = selectionController.getCurrentSelection();
       if (selection) {
@@ -158,6 +162,7 @@ function AnimationEditor() {
     editorEventBus.on(EDITOR_EVENT.AddSelection, handleAddSelection);
     editorEventBus.on(EDITOR_EVENT.AttachToObject, handleAttachToObject);
     editorEventBus.on(EDITOR_EVENT.ClearSelections, handleClearSelections);
+    editorEventBus.on(EDITOR_EVENT.SetMultiSelect, handleSetMultipleSelection);
     editorEventBus.on(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
     editorEventBus.on(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
     editorEventBus.on(EDITOR_EVENT.PrepareObjectDataForUpload, handleUploadToServer);
@@ -175,6 +180,7 @@ function AnimationEditor() {
       editorEventBus.off(EDITOR_EVENT.AddSelection, handleAddSelection);
       editorEventBus.off(EDITOR_EVENT.AttachToObject, handleAttachToObject);
       editorEventBus.off(EDITOR_EVENT.ClearSelections, handleClearSelections);
+      editorEventBus.off(EDITOR_EVENT.SetMultiSelect, handleSetMultipleSelection);
       editorEventBus.off(EDITOR_EVENT.ChangeObjectName, handleChangeObjectName);
       editorEventBus.off(EDITOR_EVENT.ChangeSceneColor, handleChangeSceneColor);
       editorEventBus.off(EDITOR_EVENT.PrepareObjectDataForUpload, handleUploadToServer);

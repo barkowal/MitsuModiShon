@@ -173,6 +173,12 @@ export const EDITOR_EVENT = {
   SetControlMode: "SetControlMode",
 
   /**
+   * Signal for changing to single/multi select
+   * @returns {boolean} isMultiSelect - if multiple object selection is enabled
+   */
+  SetMultiSelect: "SetMultiSelect",
+
+  /**
    * Signal for sending scene information to show
    * @returns {Array<number>} sceneInfo - array of type SCENE_INFO
    */

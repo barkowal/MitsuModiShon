@@ -5,273 +5,280 @@ import ModellingMesh from "./objects/ModellingMesh";
 import { EDITOR_MODE } from "./Types";
 
 export class SelectionController {
-    private raycaster: THREE.Raycaster;
-    private onSelectListeners: Array<CallableFunction>;
-    private onClearListeners: Array<CallableFunction>;
-    private currentSelection: THREE.Object3D | null;
-    private selectedObjects: Array<THREE.Object3D>;
-    private enabled: boolean;
+  private raycaster: THREE.Raycaster;
+  private onSelectListeners: Array<CallableFunction>;
+  private onClearListeners: Array<CallableFunction>;
+  private currentSelection: THREE.Object3D | null;
+  private selectedObjects: Array<THREE.Object3D>;
+  private enabled: boolean;
+  private multipleSelection: boolean = false;
 
-    private modellingObject: ModellingMesh | null;
-    private editIntersections: Array<THREE.Intersection>;
-    private onEditListeners: Array<CallableFunction>;
-    private editorMode: string;
+  private modellingObject: ModellingMesh | null;
+  private editIntersections: Array<THREE.Intersection>;
+  private onEditListeners: Array<CallableFunction>;
+  private editorMode: string;
 
-    private onPaintListeners: Array<CallableFunction>;
+  private onPaintListeners: Array<CallableFunction>;
 
-    constructor() {
-        this.raycaster = new THREE.Raycaster();
-        this.currentSelection = null;
-        this.selectedObjects = [];
-        this.onEditListeners = [];
-        this.onPaintListeners = [];
-        this.onSelectListeners = [];
-        this.onClearListeners = [];
+  constructor() {
+    this.raycaster = new THREE.Raycaster();
+    this.currentSelection = null;
+    this.selectedObjects = [];
+    this.onEditListeners = [];
+    this.onPaintListeners = [];
+    this.onSelectListeners = [];
+    this.onClearListeners = [];
 
-        this.enabled = true;
+    this.enabled = true;
 
+    this.editIntersections = [];
+    this.modellingObject = null;
+    this.editorMode = EDITOR_MODE.ObjectMode;
+  }
+
+  setEditorMode(val: string) {
+    this.editorMode = val;
+    if (val !== EDITOR_MODE.ObjectMode && this.currentSelection instanceof ModellingMesh) {
+      this.modellingObject = this.currentSelection;
+    }
+    if (val === EDITOR_MODE.ObjectMode) {
+      this.modellingObject = null;
+    }
+    this.clearAllSelections();
+  }
+
+  select(normalizedPosition: THREE.Vector2, scene: THREE.Scene, camera: THREE.Camera, multiSelect: boolean = false) {
+
+    if (!this.enabled) {
+      return;
+    }
+
+    multiSelect = multiSelect || this.multipleSelection;
+
+    this.raycaster.setFromCamera(normalizedPosition, camera);
+    this.raycaster.layers.set(INTERSECTION_LAYER);
+
+    // If in edit mode intersect only the editable object
+    if (this.editorMode === EDITOR_MODE.EditMode) {
+      this.editModeSelect(multiSelect);
+      return;
+    }
+    if (this.editorMode === EDITOR_MODE.PaintMode) {
+      this.paintModeSelect();
+      return;
+    }
+
+    const intersectedObjects = this.raycaster.intersectObjects(scene.children);
+
+    this.checkIfSelectionExists(scene);
+
+    if (intersectedObjects.length) {
+
+
+      for (const obj of intersectedObjects) {
+
+        if (this.currentSelection && this.currentSelection.id == obj.object.id) {
+          return;
+        }
+
+        if (!multiSelect) {
+          this.clearSelectedObjects();
+        }
+
+        this.setCurrentSelection(obj.object);
+        break;
+
+      }
+
+    }
+  }
+
+  editModeSelect(multiSelect: boolean) {
+    if (this.modellingObject) {
+      const intersectedObject = this.raycaster.intersectObject(this.modellingObject);
+      if (intersectedObject.length === 0) return;
+      if (!multiSelect) {
         this.editIntersections = [];
-        this.modellingObject = null;
-        this.editorMode = EDITOR_MODE.ObjectMode;
+      }
+      if (!this.isAlreadySelectedIntersection(intersectedObject[0])) {
+        this.editIntersections.push(intersectedObject[0]);
+      }
+      this.notifyEditListeners(this.editIntersections);
     }
+  }
 
-    setEditorMode(val: string) {
-        this.editorMode = val;
-        if (val !== EDITOR_MODE.ObjectMode && this.currentSelection instanceof ModellingMesh) {
-            this.modellingObject = this.currentSelection;
-        }
-        if (val === EDITOR_MODE.ObjectMode) {
-            this.modellingObject = null;
-        }
-        this.clearAllSelections();
+  paintModeSelect() {
+    if (this.modellingObject) {
+      const intersectedObject = this.raycaster.intersectObject(this.modellingObject);
+      if (intersectedObject.length === 0) return;
+      this.notifyPaintListeners(intersectedObject[0]);
     }
+  }
 
-    select(normalizedPosition: THREE.Vector2, scene: THREE.Scene, camera: THREE.Camera, multiSelect: boolean = false) {
+  isAlreadySelectedIntersection(selectedIntersection: THREE.Intersection) {
+    let isSelected = false;
+    this.editIntersections.forEach((intersection) => {
+      if (!intersection.face) { isSelected = true; return; }
+      if (!selectedIntersection.face) { isSelected = true; return; }
+      if (intersection.face.a == selectedIntersection.face.a &&
+        intersection.face.b == selectedIntersection.face.b &&
+        intersection.face.c == selectedIntersection.face.c) {
+        isSelected = true;
+        return;
+      }
+    });
+    return isSelected;
+  }
 
-        if (!this.enabled) {
-            return;
-        }
+  IsAlreadySelected(objectId: number) {
 
-        this.raycaster.setFromCamera(normalizedPosition, camera);
-        this.raycaster.layers.set(INTERSECTION_LAYER);
+    let isSelected = false;
+    this.selectedObjects.forEach((obj) => {
+      if (objectId === obj.id) {
+        isSelected = true;
+        return;
+      }
+    });
 
-        // If in edit mode intersect only the editable object
-        if (this.editorMode === EDITOR_MODE.EditMode) {
-            this.editModeSelect(multiSelect);
-            return;
-        }
-        if (this.editorMode === EDITOR_MODE.PaintMode) {
-            this.paintModeSelect();
-            return;
-        }
+    return isSelected;
 
-        const intersectedObjects = this.raycaster.intersectObjects(scene.children);
+  }
 
-        this.checkIfSelectionExists(scene);
+  changeSelection(scene: THREE.Scene, id: number) {
+    if (!this.enabled) return;
 
-        if (intersectedObjects.length) {
-
-
-            for (const obj of intersectedObjects) {
-
-                if (this.currentSelection && this.currentSelection.id == obj.object.id) {
-                    return;
-                }
-
-                if (!multiSelect) {
-                    this.clearSelectedObjects();
-                }
-
-                this.setCurrentSelection(obj.object);
-                break;
-
-            }
-
-        }
+    if (this.editorMode !== EDITOR_MODE.ObjectMode) {
+      return;
     }
-
-    editModeSelect(multiSelect: boolean) {
-        if (this.modellingObject) {
-            const intersectedObject = this.raycaster.intersectObject(this.modellingObject);
-            if (intersectedObject.length === 0) return;
-            if (!multiSelect) {
-                this.editIntersections = [];
-            }
-            if (!this.isAlreadySelectedIntersection(intersectedObject[0])) {
-                this.editIntersections.push(intersectedObject[0]);
-            }
-            this.notifyEditListeners(this.editIntersections);
-        }
+    if (this.currentSelection?.id === id) {
+      return;
     }
-
-    paintModeSelect() {
-        if (this.modellingObject) {
-            const intersectedObject = this.raycaster.intersectObject(this.modellingObject);
-            if (intersectedObject.length === 0) return;
-            this.notifyPaintListeners(intersectedObject[0]);
-        }
+    this.checkIfSelectionExists(scene);
+    this.clearAllSelections();
+    const obj = scene.getObjectById(id);
+    if (obj) {
+      this.setCurrentSelection(obj);
     }
+  }
 
-    isAlreadySelectedIntersection(selectedIntersection: THREE.Intersection) {
-        let isSelected = false;
-        this.editIntersections.forEach((intersection) => {
-            if (!intersection.face) { isSelected = true; return; }
-            if (!selectedIntersection.face) { isSelected = true; return; }
-            if (intersection.face.a == selectedIntersection.face.a &&
-                intersection.face.b == selectedIntersection.face.b &&
-                intersection.face.c == selectedIntersection.face.c) {
-                isSelected = true;
-                return;
-            }
-        });
-        return isSelected;
+  addSelection(scene: THREE.Scene, id: number) {
+    const obj = scene.getObjectById(id);
+    if (obj) {
+      this.setCurrentSelection(obj);
     }
+  }
 
-    IsAlreadySelected(objectId: number) {
+  getCurrentSelection(): THREE.Object3D | null {
+    return this.currentSelection;
+  }
 
-        let isSelected = false;
-        this.selectedObjects.forEach((obj) => {
-            if (objectId === obj.id) {
-                isSelected = true;
-                return;
-            }
-        });
+  getSelectedObjects(): Array<THREE.Object3D> {
+    return this.selectedObjects;
+  }
 
-        return isSelected;
+  clearSelectedObjects() {
+    this.selectedObjects = [];
+    this.notifyClearListeners();
+  }
 
-    }
+  clearAllSelections() {
+    this.clearSelectedObjects();
+    this.removeCurrentSelection();
+    this.emitSelections();
+  }
 
-    changeSelection(scene: THREE.Scene, id: number) {
-        if (!this.enabled) return;
+  destroy() {
+    this.onSelectListeners = [];
+    this.onClearListeners = [];
+    this.onEditListeners = [];
+    this.onPaintListeners = [];
+  }
 
-        if (this.editorMode !== EDITOR_MODE.ObjectMode) {
-            return;
-        }
-        if (this.currentSelection?.id === id) {
-            return;
-        }
-        this.checkIfSelectionExists(scene);
-        this.clearAllSelections();
-        const obj = scene.getObjectById(id);
-        if (obj) {
-            this.setCurrentSelection(obj);
-        }
-    }
+  disable() {
+    this.enabled = false;
+  }
 
-    addSelection(scene: THREE.Scene, id: number) {
-        const obj = scene.getObjectById(id);
-        if (obj) {
-            this.setCurrentSelection(obj);
-        }
-    }
+  enable() {
+    this.enabled = true;
+  }
 
-    getCurrentSelection(): THREE.Object3D | null {
-        return this.currentSelection;
-    }
-
-    getSelectedObjects(): Array<THREE.Object3D> {
-        return this.selectedObjects;
-    }
-
-    clearSelectedObjects() {
-        this.selectedObjects = [];
+  checkIfSelectionExists(scene: THREE.Scene) {
+    if (this.currentSelection != null) {
+      const found = scene.getObjectById(this.currentSelection.id);
+      if (found == undefined) {
+        this.currentSelection = null;
         this.notifyClearListeners();
+      }
     }
+  }
 
-    clearAllSelections() {
-        this.clearSelectedObjects();
-        this.removeCurrentSelection();
-        this.emitSelections();
-    }
+  onSelect(fn: CallableFunction) {
+    this.onSelectListeners.push(fn);
+  }
 
-    destroy() {
-        this.onSelectListeners = [];
-        this.onClearListeners = [];
-        this.onEditListeners = [];
-        this.onPaintListeners = [];
-    }
+  onEditSelect(fn: CallableFunction) {
+    this.onEditListeners.push(fn);
+  }
 
-    disable() {
-        this.enabled = false;
-    }
+  onPaintSelect(fn: CallableFunction) {
+    this.onPaintListeners.push(fn);
+  }
 
-    enable() {
-        this.enabled = true;
-    }
+  onClear(fn: CallableFunction) {
+    this.onClearListeners.push(fn);
+  }
 
-    checkIfSelectionExists(scene: THREE.Scene) {
-        if (this.currentSelection != null) {
-            const found = scene.getObjectById(this.currentSelection.id);
-            if (found == undefined) {
-                this.currentSelection = null;
-                this.notifyClearListeners();
-            }
-        }
-    }
+  notifySelectionListeners(obj: THREE.Object3D) {
+    this.onSelectListeners.forEach((listener) => {
+      listener(obj);
+    });
+  }
 
-    onSelect(fn: CallableFunction) {
-        this.onSelectListeners.push(fn);
-    }
+  notifyClearListeners() {
+    this.onClearListeners.forEach((listener) => {
+      listener();
+    });
+  }
 
-    onEditSelect(fn: CallableFunction) {
-        this.onEditListeners.push(fn);
-    }
+  notifyEditListeners(intersection: Array<THREE.Intersection>) {
+    this.onEditListeners.forEach((listener) => {
+      listener(intersection);
+    });
+  }
 
-    onPaintSelect(fn: CallableFunction) {
-        this.onPaintListeners.push(fn);
-    }
+  notifyPaintListeners(intersection: THREE.Intersection) {
+    this.onPaintListeners.forEach((listener) => {
+      listener(intersection);
+    });
+  }
 
-    onClear(fn: CallableFunction) {
-        this.onClearListeners.push(fn);
-    }
+  setMultipleSelection(isMultiSelection:boolean) {
+    this.multipleSelection = isMultiSelection;
+  }
 
-    notifySelectionListeners(obj: THREE.Object3D) {
-        this.onSelectListeners.forEach((listener) => {
-            listener(obj);
-        });
-    }
+  private emitSelections() {
+    const objIds: Array<number> = [];
+    this.selectedObjects.forEach((obj) => {
+      objIds.push(obj.id);
+    });
+    editorEventBus.emit(EDITOR_EVENT.RefreshSelections, objIds);
+  }
 
-    notifyClearListeners() {
-        this.onClearListeners.forEach((listener) => {
-            listener();
-        });
+  private setCurrentSelection(obj: THREE.Object3D) {
+    if (!this.IsAlreadySelected(obj.id)) {
+      this.selectedObjects.push(obj);
     }
+    this.currentSelection = obj;
+    editorEventBus.emit(EDITOR_EVENT.SelectObject, obj.id);
+    this.emitSelections();
+    this.notifySelectionListeners(obj);
+  }
 
-    notifyEditListeners(intersection: Array<THREE.Intersection>) {
-        this.onEditListeners.forEach((listener) => {
-            listener(intersection);
-        });
+  private removeCurrentSelection() {
+    if (this.currentSelection) {
+      this.notifyClearListeners();
+      this.currentSelection = null;
     }
-
-    notifyPaintListeners(intersection: THREE.Intersection) {
-        this.onPaintListeners.forEach((listener) => {
-            listener(intersection);
-        });
-    }
-
-    private emitSelections() {
-        const objIds: Array<number> = [];
-        this.selectedObjects.forEach((obj) => {
-            objIds.push(obj.id);
-        });
-        editorEventBus.emit(EDITOR_EVENT.RefreshSelections, objIds);
-    }
-
-    private setCurrentSelection(obj: THREE.Object3D) {
-        if (!this.IsAlreadySelected(obj.id)) {
-            this.selectedObjects.push(obj);
-        }
-        this.currentSelection = obj;
-        editorEventBus.emit(EDITOR_EVENT.SelectObject, obj.id);
-        this.emitSelections();
-        this.notifySelectionListeners(obj);
-    }
-
-    private removeCurrentSelection() {
-        if (this.currentSelection) {
-            this.notifyClearListeners();
-            this.currentSelection = null;
-        }
-    }
+  }
 
 }
