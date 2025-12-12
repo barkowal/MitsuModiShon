@@ -14,6 +14,7 @@ import Object3DListingPage from "./pages/listPage/Object3DListingPage.tsx";
 // @ts-ignore
 // eslint-disable-next-line 
 import i18n from "./i18n/config.ts";
+import LearnPage from "./pages/learnPage/LearnPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,11 @@ const router = createBrowserRouter([
       {
         path: "/AnimationSceneListingPage",
         element: <AnimationSceneListingPage />
+      },
+
+      {
+        path: "/Learn",
+        element: <LearnPage/>
       },
 
       {

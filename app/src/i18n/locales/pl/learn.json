@@ -1,0 +1,16 @@
+{
+
+    "AboutTitle": "Czym jest MitsuModiShon?",
+    "AboutText": "Mitsumodishon jest to aplikacja webowa w której użytkownik może tworzyć własne proste kształty i animacje 3D. Przeznaczona jest głównie dla osób początkujących lub na szybkie tworzenie prototypów. Aktualnie aplikacja jest wciąż w fazie rozwijania, więc można natrafić na wiele błędów.",
+
+    "AboutLearnPage": "Niniejsza strona stanowi dobry sposób na zapoznanie się z możliwościami aplikacji.",
+
+    "OverviewTitle":"Ogólny przegląd",
+    "OverviewImgText":"Zdjęcie przedstawia aktualny wygląd zakładki \"EDYTOR\" z numerami każdego paska.",
+    "OverviewTopBarText":"1. Pasek górny zawiera opcje:<ul><li>cofania/przywracania operacji</li> <li>dodawania/usuwania kszałtów</li><li>dodawania światła</li><li>zmiany trybu edytora</li><li>przejścia do widoku renderowania/edytowania</li><li>dodatkowe opcje do zapisywana, eksportu, dodawania obiektów z chmury</li></ul>",
+    "OverviewOutlinerText":"2. Okno podglądu elementów sceny:<ul><li>domyślnie zawiera kamerę</li><li>wyświetla elementy sceny</li><li>umożliwia zaznaczanie ukrytych elementów</li><li>poprzez przeciąganie można grupować elementy</li></ul>",
+    "OverviewSidePanelText":"3. Pasek boczny<ul><li>wyświetla i pozwala zmieniać aktualną pozycję, skalę i rotację obiektów</li><li>umożliwia zmianę nazwy zaznaczonego obiektu</li><li>umożliwia zmianę koloru sceny, obiektów</li><li>pozwala na zmianę materiału obiektu</li><li>wyświetla aktualne warstwy zaznaczonego elementu</li></ul>",
+    "OverviewToolBarText":"4. Boczny pasek narzędzi zawiera<ul><li>przycisk do zmiany pozycji obiektu</li><li>przycisk do zmiany skali obiektu</li><li>przycisk do zmiany rotacji obiektu</li><li>przycisk do zaznaczaniu wielu elementów naraz</li></ul>",
+
+    "Enjoy":"Enjoy"
+}
