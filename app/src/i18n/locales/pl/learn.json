@@ -1,16 +1,70 @@
 {
-
+    "OnThisPage":"Na tej stronie",
+    "AboutLink":"O MitsuModiShon",
     "AboutTitle": "Czym jest MitsuModiShon?",
     "AboutText": "Mitsumodishon jest to aplikacja webowa w której użytkownik może tworzyć własne proste kształty i animacje 3D. Przeznaczona jest głównie dla osób początkujących lub na szybkie tworzenie prototypów. Aktualnie aplikacja jest wciąż w fazie rozwijania, więc można natrafić na wiele błędów.",
 
     "AboutLearnPage": "Niniejsza strona stanowi dobry sposób na zapoznanie się z możliwościami aplikacji.",
 
-    "OverviewTitle":"Ogólny przegląd",
-    "OverviewImgText":"Zdjęcie przedstawia aktualny wygląd zakładki \"EDYTOR\" z numerami każdego paska.",
-    "OverviewTopBarText":"1. Pasek górny zawiera opcje:<ul><li>cofania/przywracania operacji</li> <li>dodawania/usuwania kszałtów</li><li>dodawania światła</li><li>zmiany trybu edytora</li><li>przejścia do widoku renderowania/edytowania</li><li>dodatkowe opcje do zapisywana, eksportu, dodawania obiektów z chmury</li></ul>",
+    "OverviewLink":"Przegląd",
+    "OverviewTitle":"Przegląd interfejsu",
+    "OverviewImgText":"Zrzut przedstawia aktualny wygląd zakładki \"EDYTOR\" z numerami każdego paska.",
+    "OverviewTopBarText":"1. Pasek górny zawiera opcje:<ul><li>cofania/przywracania operacji</li> <li>dodawania/usuwania kształtów</li><li>dodawania światła</li><li>zmiany trybu edytora</li><li>przejścia do widoku renderowania/edytowania</li><li>dodatkowe opcje do zapisywana, eksportu, dodawania obiektów z chmury</li></ul>",
     "OverviewOutlinerText":"2. Okno podglądu elementów sceny:<ul><li>domyślnie zawiera kamerę</li><li>wyświetla elementy sceny</li><li>umożliwia zaznaczanie ukrytych elementów</li><li>poprzez przeciąganie można grupować elementy</li></ul>",
     "OverviewSidePanelText":"3. Pasek boczny<ul><li>wyświetla i pozwala zmieniać aktualną pozycję, skalę i rotację obiektów</li><li>umożliwia zmianę nazwy zaznaczonego obiektu</li><li>umożliwia zmianę koloru sceny, obiektów</li><li>pozwala na zmianę materiału obiektu</li><li>wyświetla aktualne warstwy zaznaczonego elementu</li></ul>",
     "OverviewToolBarText":"4. Boczny pasek narzędzi zawiera<ul><li>przycisk do zmiany pozycji obiektu</li><li>przycisk do zmiany skali obiektu</li><li>przycisk do zmiany rotacji obiektu</li><li>przycisk do zaznaczaniu wielu elementów naraz</li></ul>",
+
+    "AnimationViewLink":"Widok animacji",
+    "AnimationViewTitle":"Widok animacji",
+    "AnimationViewText":"Zakładka animacja pozwala na:<ul><li>tworzenie animacji składających się maksymalnie z 1000 klatek</li><li>zmianę klatek na sekundę</li><li>animowanie zmian pozycji, rotacji i skali obiektów</li><li>zmianę interpolacji animacji pozycji i skali</li><li>eksport do pliku formatu mp4</li></ul>",
+
+    "ShortcutsLink":"Skróty klawiszowe",
+    "ShortcutsTitle":"Skróty klawiszowe",
+    "ShortcutsText":"<box><shortcut>DELETE</shortcut></box><feature>Usunięcie aktualnie wybranego obiektu</feature><box><shortcut>X</shortcut></box><feature>Usunięcie aktualnie wybranego obiektu</feature><box><shortcut>ESC</shortcut></box><feature>Odznaczenie wszystkich obiektów</feature><box><shortcut>TAB</shortcut></box><feature>Przejście do trybu edytowania</feature><box><shortcut>G</shortcut></box><feature>Przejście do zmiany pozycji obiektu</feature> <box><shortcut>S</shortcut></box><feature>Przejście do zmiany skali obiektu</feature> <box><shortcut>R</shortcut></box><feature>Przejście do zmiany rotacji obiektu</feature> <box><shortcut>SHIFT</shortcut></box><feature>Przytrzymanie powoduje zaznaczanie wielu elementów naraz</feature> <box><shortcut>NUMPAD</shortcut><shortcut>1</shortcut></box><feature>Widok z lewego boku</feature> <box><shortcut>NUMPAD</shortcut><shortcut>3</shortcut></box><feature>Widok z prawego boku</feature> <box><shortcut>NUMPAD</shortcut><shortcut>4</shortcut></box><feature>Widok z tyłu</feature> <box><shortcut>NUMPAD</shortcut><shortcut>6</shortcut></box><feature>Widok z przodu</feature> <box><shortcut>NUMPAD</shortcut><shortcut>7</shortcut></box><feature>Widok z góry</feature> <box><shortcut>NUMPAD</shortcut><shortcut>9</shortcut></box><feature>Widok z dołu</feature> <box><shortcut>CTRL</shortcut><shortcut>Z</shortcut></box><feature>Cofanie operacji</feature> <box><shortcut>CTRL</shortcut><shortcut>Y</shortcut></box><feature>Przywracanie operacji</feature> <box><shortcut>CTRL</shortcut><shortcut>C</shortcut></box><feature>Kopiowanie zaznaczonego elementu</feature> <box><shortcut>CTRL</shortcut><shortcut>V</shortcut></box><feature>Dodawanie skopiowanego elementu</feature>",
+
+    "AddObjectLink":"Dodawanie obiektów",
+    "AddObjectTitle":"Dodawanie domyślnych kształtów",
+    "AddObjectText":"Aplikacja domyślnie zawiera kilka kształtów, które można dodać do sceny. Dodawanie nowych kształtów przebiega następująco: <ol><li>Naciśnięcie przycisku dodawania znajdującego się na górnym pasku.</li><li>W wyświetlonym okienku wybrać kształt.</li><li>Dobrać odpowiednie parametry. Do wyboru jest rozmiar nowego kształtu oraz ilość segmentów, które pozwalają na bardziej złożone modelowanie i dokładniejsze kolorowanie. Jeśli wystarczy domyślny kształt najlepiej segmenty zostawić na najmniejszej wartości.</li><li>Nacisnąć przycisk dodania. Okienko powinno zniknąć, a na scenie pojawi się nowy obiekt.</li></ol>",
+
+    "AddLightLink":"Dodawanie światła",
+    "AddLightTitle":"Dodawanie światła",
+    "AddLightText":"Aplikacja aktualnie zawiera dwa rodzaje świateł. Ogólne światło, które oświetla całą scenę oraz światło oświetlające dany punkt. Tylko światło punktu można przemieszczać. Domyślnie dodanie światła nie ma efektów, jeśli na scenie nie ma obiektów z odpowiednimi materiałami. Aby dodać światło należy: <ol><li>Nacisnąć przycisk dodawania światła w górnym pasku.</li><li>W okienku wybrać typ światła.</li><li>Wybrać kolor oraz jasność.</li><li>Na scenie pojawi się światło.</li></ol>Ogólne światło można zaznaczyć z poziomu podglądu sceny. Światło punktu będzie widoczne na wyświetlanej scenie. Po wybraniu dodanego światła na panelu bocznym pojawią się ustawienia zmiany koloru oraz poziomu jasności.",
+
+    "LayersLink":"Warstwy",
+    "LayersTitle":"Warstwy",
+    "LayersText":"Na panelu bocznym są ustawienia warstw obiektu. Warstwy służą do wyświetlania lub ukrywania obiektów. Można dodać/usunąć obiekt z 3 warstw:<ul><li>Warstwa Edytora - wyświetla obiekt w widoku modelowania. </li><li>Warstwa Renderowania - wyświetla obiekt w widoku renderowania. Jeśli obiekt ma być widoczny jedynie podczas modelowania, można usunąć obiekt z tej warstwy.</li><li>Warstwa Zaznaczania - włącza/wyłącza możliwość wybierania obiektu z poziomu sceny. Przydatne gdy na scenie jest wiele obiektów, aby przypadkowo nie zaznaczać niewłaściwych obiektów.</li></ul>",
+
+    "MaterialsLink":"Materiały",
+    "MaterialsTitle":"Materiały",
+    "MaterialsText":"MitsuModiShon udostępnia kilka typów materiałów. Określają one jak obiekty wyglądają w scenie i jak oddziałują na światło. Opcje zmiany materiału obiektu są na panelu bocznym. Typy materiałów:<ul><li>Prosty - domyślny materiał, który nie reaguje na światło. Umożliwia zmienianie koloru.</li><li>Standardowy - materiał podlega wpływowi na światło. W scenie musi znajdować się świałto, aby obiekt nie był czarny.</li><li>Kreskówkowy - materiał reagujący na światło, przypomina kreskówkowe cieniowanie.</li></ul>",
+
+    "EditorModesLink":"Tryby edytora",
+    "EditorModesTitle":"Tryby edytora",
+    "EditorModesText":"Górny pasek w zakładce edytora ma opcje do zmieniania aktualnego trybu edytora. Dostępne są tryby: <ul><li>Obiektu - tryb pozwalający dodawać, usuwać, przemieszczać obiekty na scenie.</li><li>Edycji - tryb pozwalający na modelowanie wybranego obiektu.</li><li>Malowania - tryb pozwalający zmieniać kolor wierzchołków obiektu, rysować linie na obiekcie oraz tworzyć obrysowanie wybranych krawędzi obiektu</li></ul>",
+
+    "ObjectModeLink":"Tryb obiektu",
+    "ObjectModeTitle":"Tryb obiektu",
+    "ObjectModeText":"Domyślny tryb edytora. W tym trybie można zmieniać pozycję, rotację, skalę obiektów, dodawać nowe obiekty, zmieniać kolor oraz dodawać światło.",
+
+    "EditModeLink":"Tryb edycji",
+    "EditModeTitle":"Tryb edycji",
+    "EditModeText":"Tryb edycji służy do modelowania obiektu. Po wybraniu tego trybu w pasku górnym pojawiają się opcje zaznaczania: wierzchołków, krawędzi lub ścian. Pozycję danego elementu można modyfikować, aby zmienić kształt obiektu. Na ten moment nie ma możliwości dodawania nowych wierchołków. W celu zwiększenia liczby wierzchołków trzeba dodać nowy obiekt z większymi ilościami segmentów. ",
+
+    "PaintModeLink":"Tryb malowania",
+    "PaintModeTitle":"Tryb malowania",
+    "PaintModeText":"Tryb malowania służy do stylizacji obiektów. Głównie można zmienić kolor wierzchołków, narysować linie oraz obrysowanie obiektu. W tym trybie na górnym pasku pojawią się dodatkowe opcje:<ul><li>Malowania wierchołków - Najechanie i kliknięcie wierzchołka obiektu powoduje zmianę koloru. Dodatkowe ustawienia służą do zmiany koloru pędzla.</li><li>Rysowania linii - Umożliwia rysowanie linii na obiekcie. Dodatkowe ustawienia pozwalają zmienić kolor, grubość oraz odległość od obiektu rysowanej linii.</li><li>Rysowania kontur - Umożliwia rysowanie kontur na krawędziach obiektu. Dodatkowe ustawienia pozwalają na zmianę koloru oraz szerokości kontur. W ustawieniach ukryta jest również gumka, która powoduje usunięcie wcześniej narysowanych kontur.</li></ul>",
+
+    "CameraLink":"Kamera",
+    "CameraTitle":"Kamera",
+    "CameraText":"W każdym projekcie istnieje jedna kamera, która służy do renderowania. Kamery nie można usunąć ani dodać nowej. Na górnym pasku jest przycisk, który pokazuje widok z kamery. Renderowanie tworzy obraz lub wideo z tego widoku. Kamerę na scenie można przemieszczać. Można również zmienić warstwy kamery, aby widzieć ją z poziomu widoku edytora.",
+
+    "EditorOptionsLink":"Pasek opcji",
+    "EditorOptionsTitle":"Pasek opcji",
+    "EditorOptionsText":"Na górnym pasku jest przycisk zawierający opcje:<ul><li>Pobierania - powoduje pobranie wybranego obiektu do pliku w formacie JSON</li><li>Importowania - umożliwia dodanie do sceny obiektu z pliku JSON</li><li>Renderowania obrazu - pobiera obraz widoku kamery w formacie png na urządzenie</li><li>Importowania z chmury - otwiera okienko publicznie udostępnionych obiektów, które można dodać do sceny</li></ul>",
+
+    "CloudFeaturesLink":"Chmura",
+    "CloudFeaturesTitle":"Usługa chmury",
+    "CloudFeaturesText":"MitsuModiShon nie wymaga zakładania nowego konta, jednak istnieje taka możliwość. Założenie konta umożliwia: <ul><li>Zapisywanie swoich prac w chmurze.</li><li>Udostępnianie prac innym.</li><li>Przeglądanie swoich prywatnych prac.</li></ul>",
 
     "Enjoy":"Enjoy"
 }
