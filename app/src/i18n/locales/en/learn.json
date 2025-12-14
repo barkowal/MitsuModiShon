@@ -1,8 +1,70 @@
 {
-    "AboutTitle": "About",
-    "AboutText": "TRANSLATE TEXT",
+    "OnThisPage":"On this page",
+    "AboutLink":"About",
+    "AboutTitle": "What is MitsuModiShon?",
+    "AboutText": "Mitsumodishon is a web app, where users can create their own simple shapes and 3D animations. It's mainly intended for beginners or quick prototyping. The app is currently in development, so you may encounter many bugs.",
 
+    "AboutLearnPage": "This page is a good introduction to MitsuModiShon. Here you can learn about many features of the application.",
+
+    "OverviewLink":"Overview",
     "OverviewTitle":"Overview",
+    "OverviewImgText":"Editor view contains 4 sections in which you can change settings.",
+    "OverviewTopBarText":"1. Top bar includes the following options:<ul><li>undo/redo</li> <li>add/remove shapes</li><li>add lights</li><li>change editor mode</li><li>switch between rendering/editing view</li><li>additional options for saving, exporting and adding shapes from the cloud</li></ul>",
+    "OverviewOutlinerText":"2. Outliner: <ul><li>by default it contains only a camera</li><li>it displays current elements of the scene</li><li>it allows selecting elements</li><li>it allows to group elements by dragging and dropping</li></ul>",
+    "OverviewSidePanelText":"3. Side panel:<ul><li>contains options for changing position, scale and rotation of selected object</li><li>allows changing the name of selected object</li><li>allows changing color of the scene or selected object</li><li>allows changing the material of selected object</li><li>shows options for switching layers of selected object</li></ul>",
+    "OverviewToolBarText":"4. Left toolbar:<ul><li>button for changing the position</li><li>button for changing the scale</li><li>button for changing the rotation</li><li>button for multiple selections</li></ul>",
+
+    "AnimationViewLink":"Animation View",
+    "AnimationViewTitle":"Animation view",
+    "AnimationViewText":"Animation view contains options for:<ul><li>animation creation with up to 1000 keyframes</li><li>changing fps</li><li>animating positions, rotations and scales of objects</li><li>changing interpolation between frames for position and scale animations</li><li>exporting video</li></ul>",
+
+    "ShortcutsLink":"Shortcuts",
+    "ShortcutsTitle":"Shortcuts",
+    "ShortcutsText":"<box><shortcut>DELETE</shortcut></box><feature>Delete selected object</feature><box><shortcut>X</shortcut></box><feature>Delete selected object</feature><box><shortcut>ESC</shortcut></box><feature>Deselect all object selections</feature><box><shortcut>TAB</shortcut></box><feature>Switch to edit mode</feature><box><shortcut>G</shortcut></box><feature>Switch to changing position</feature> <box><shortcut>S</shortcut></box><feature>Switch to changing scale</feature> <box><shortcut>R</shortcut></box><feature>Switch to changing rotation</feature> <box><shortcut>SHIFT</shortcut></box><feature>Select multiple elements while holding</feature> <box><shortcut>NUMPAD</shortcut><shortcut>1</shortcut></box><feature>Left side view</feature> <box><shortcut>NUMPAD</shortcut><shortcut>3</shortcut></box><feature>Right side view</feature> <box><shortcut>NUMPAD</shortcut><shortcut>4</shortcut></box><feature>Back view</feature> <box><shortcut>NUMPAD</shortcut><shortcut>6</shortcut></box><feature>Front view</feature> <box><shortcut>NUMPAD</shortcut><shortcut>7</shortcut></box><feature>Top view</feature> <box><shortcut>NUMPAD</shortcut><shortcut>9</shortcut></box><feature>Bottom view</feature> <box><shortcut>CTRL</shortcut><shortcut>Z</shortcut></box><feature>Undo</feature> <box><shortcut>CTRL</shortcut><shortcut>Y</shortcut></box><feature>Redo</feature> <box><shortcut>CTRL</shortcut><shortcut>C</shortcut></box><feature>Copy</feature> <box><shortcut>CTRL</shortcut><shortcut>V</shortcut></box><feature>Paste</feature>",
+
+    "AddObjectLink":"Adding objects",
+    "AddObjectTitle":"Adding objects",
+    "AddObjectText":"MitsuModiShon contains default 3D shapes that you can add to the scene. Adding new shapes is a simple process: <ol><li>Press the add button located on the top bar.</li><li>In the window that appears, select a shape.</li><li>Change the shape settings. You can change the scale of the object and number of segments. A larger number of segments enables more comples modeling and coloring, but it's better to keep them small unless needed.</li><li>Press the add button. New object should appear in the scene.</li></ol>",
+
+    "AddLightLink":"Adding lights",
+    "AddLightTitle":"Adding lights",
+    "AddLightText":"MitsuModiShon currently includes two types of lights. Ambient light and point light. Ambient light illuminated the whole scene, while a point light illuminates a specific point. Only the point light cen be moved. For light to have effects, you need to have objects with the appropriate materials in the scene. Adding lights is done as follows:<ol><li>Press the add light button in the top bar.</li><li>Select the ligth type.</li><li>Change color and intensity.</li><li>The light will appear in the scene.</li></ol>Ambient light is only selectable in outliner. Point light is visible and selectable in the editor scene. Selecting a light changes setting on the side panel. Instead of material options there will be settings for changing color and light intensity.",
+
+    "LayersLink":"Layers",
+    "LayersTitle":"Layers",
+    "LayersText":"Side panel contains settings for layers of the selected object. Layers are used to display or hide objects. Currently there are 3 layers:<ul><li>Editor Layer - Display/Hide object in the editor view.</li><li>Render Layer - Display/Hide object in the render view. Objects that shouldn't be rendered, should have this layer disabled.</li><li>Selectable - Enables/Disables the ability to select objects from the scene. Useful when there are many objects on the screen, to avoid accidentally selecting wrong objects.</li></ul>",
+
+    "MaterialsLink":"Materials",
+    "MaterialsTitle":"Materials",
+    "MaterialsText":"MitsuModiShon provides several types of materials. Materials determine how objects look and how they interact with lights. Options for changing the material are located on the side panel. Currently there are 3 distinct materials: <ul><li>Basic - default material that doesn't react with lights.</li><li>Standard - material affected by light. If there is no light in the scene, the object will be black.</li><li>Toon - material that resembles cartoon shading.</li></ul>",
+
+    "EditorModesLink":"Editor modes",
+    "EditorModesTitle":"Editor modes",
+    "EditorModesText":"Top bar contains a button for switching current editor mode. There are 3 modes: <ul><li>Object mode - allows you to add, remove and move objects in the scene</li><li>Edit mode - allows you to model a selected object</li><li>Paint mode - allows you to change the vertex colors, draw lines and outlines of selected object</li></ul>",
+
+    "ObjectModeLink":"Object mode",
+    "ObjectModeTitle":"Object mode",
+    "ObjectModeText":"Default editor mode. In this mode you can change positions, rotations and scales of selected objects. In addition you can add new objects, lights and change colors.",
+
+    "EditModeLink":"Edit mode",
+    "EditModeTitle":"Edit mode",
+    "EditModeText":"Used to change shapes of an object. After switching to this mode, the top bar displays selection options: vertices, edges or faces. In this mode you can change positions of selected vertices. It's not possible to add new vertices, for that you need to add a new object with a larger number of segments.",
+
+    "PaintModeLink":"Paint mode",
+    "PaintModeTitle":"Paint mode",
+    "PaintModeText":"Paint mode is mainly used to style objects. It allows for changing vertex colors, drawing lines and outlines for selected object. Switching to this mode shows additional options in the top bar: <ul><li>Vertex painting - Clicking on the top of the object changes its vertex color. Additional settings are used to change the color of the brush.</li><li>Drawing lines - used for drawing lines on the selected object. Additional settings are for changing the color, line thickness and offset from the object.</li><li>Outline - used for outlining the object with lines. Additional settings are for changing the color and line thickness. For deleting lines from the outline use the eraser button found in the settings.</li></ul>",
+
+    "CameraLink":"Camera",
+    "CameraTitle":"Camera",
+    "CameraText":"Each scene comes with a camera that is used for rendering. The camera cannot be removed, neither can a new one be added. There is a button on the top bar for switching between editor and render view. Render view is just what the camera sees. The camera can be moved and you can also change layers to see it from the editor view. ",
+
+    "EditorOptionsLink":"Options button",
+    "EditorOptionsTitle":"Options button",
+    "EditorOptionsText":"Clicking the options button located in the top bar shows more options: <ul><li>Download - downloads the selected object into a JSON file</li><li>Import - adds a new object to the scene from JSON file located on the users device</li><li>Render image - downloads an image file of the render view</li><li>Add from server - opens a window of publicly available objects that can be added to the scene</li></ul>",
+
+    "CloudFeaturesLink":"Account",
+    "CloudFeaturesTitle":"Account features",
+    "CloudFeaturesText":"MitsuModiShon doesn't require to create a new acocunt, but you can to unlock cloud features:<ul><li>Saving projects to the cloud.</li><li>Sharing projects.</li><li>Browsing through private objects saved on the cloud.</li></ul>",
 
     "Enjoy":"Enjoy"
 }
