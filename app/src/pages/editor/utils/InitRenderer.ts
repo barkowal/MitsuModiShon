@@ -90,7 +90,7 @@ export const InitRenderer = () => {
     AddListener(window, "keyup", () => { rendererController.render(); });
     AddListener(window, "click", () => { rendererController.render(); });
 
-    const resizeObserver = handleResizing(renderer, rendererController.getEditorCamera(), canvas, () => { rendererController.render(); });
+    const resizeObserver = handleResizing(renderer, rendererController.getEditorCamera(), rendererController.getRenderCamera(), canvas, () => { rendererController.render(); });
     handlePicking(canvas, rendererController.getScene(), rendererController.getEditorCamera(), selectionController);
 
     editorEventBus.on(EDITOR_EVENT.SetControlMode, handleControlMode);
@@ -113,12 +113,16 @@ export const InitRenderer = () => {
   return { canvasRef, rendererController, selectionController };
 };
 
-function handleResizing(renderer: THREE.Renderer, camera: THREE.PerspectiveCamera, canvas: HTMLElement, requestRender: CallableFunction): ResizeObserver {
+function handleResizing(renderer: THREE.Renderer, camera: THREE.PerspectiveCamera, renderCamera: THREE.PerspectiveCamera, canvas: HTMLElement, requestRender: CallableFunction): ResizeObserver {
   const observer = new ResizeObserver((entries) => {
     entries.forEach(() => {
       renderer.setSize(canvas.clientWidth, canvas.clientHeight);
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
+
+      renderCamera.aspect = window.innerWidth / window.innerHeight;
+      renderCamera.updateProjectionMatrix();
+
       requestRender();
     });
   });
@@ -127,6 +131,10 @@ function handleResizing(renderer: THREE.Renderer, camera: THREE.PerspectiveCamer
   const handleResize = () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
+
+    renderCamera.aspect = window.innerWidth / window.innerHeight;
+    renderCamera.updateProjectionMatrix();
+
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
   };
 

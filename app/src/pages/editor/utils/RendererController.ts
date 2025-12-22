@@ -11,7 +11,7 @@ import { CreateOutlineMaterial } from "./objects/Custom/OutlineMaterial";
 export class RendererController {
   private renderer: THREE.WebGPURenderer;
   private editorCamera: THREE.PerspectiveCamera;
-  private renderCamera: THREE.Camera;
+  private renderCamera: THREE.PerspectiveCamera;
   private cameraBox: THREE.Object3D;
   private scene: THREE.Scene;
   private renderRequested: boolean;
@@ -64,6 +64,10 @@ export class RendererController {
 
   getEditorCamera() {
     return this.editorCamera;
+  }
+
+  getRenderCamera() {
+    return this.renderCamera;
   }
 
   getCameraBox() {
@@ -280,7 +284,7 @@ export class RendererController {
   }
 
   private createRenderCamera() {
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.name = "Renderer";
     camera.layers.disable(EDITOR_LAYER);
     camera.layers.enable(RENDER_LAYER);
@@ -302,6 +306,7 @@ export class RendererController {
     cameraBox.layers.disable(EDITOR_LAYER);
     cameraBox.name = "Camera";
     cameraBox.scale.setScalar(0.4);
+    this.renderCamera.scale.setScalar(1/0.4);
     cameraBox.userData.removable = false;
     cameraBox.userData.attachable = false;
 
