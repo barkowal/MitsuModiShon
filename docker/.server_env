@@ -1,0 +1,17 @@
+DATABASE_URL = "postgres://postgres:password@172.20.0.2:5432"
+
+PORT = 3000
+SALT_ROUNDS = 10
+
+ACCESS_TOKEN_SECRET = "secure_secret"
+ACCESS_TOKEN_EXPIRES_IN = "10m"
+
+REFRESH_TOKEN_SECRET = "Very_Secure"
+REFRESH_TOKEN_EXPIRES_IN = "7d"
+
+IMAGE_URL_SECRET = "SEKr#tIm@ge"
+IMAGE_URL_EXPIRES_IN = "5m"
+
+BUCKET_BIN = "./uploads/trash"
+OBJECT3D_DATA_PATH = "./uploads/objects/data"
+OBJECT3D_IMAGE_PATH = "./uploads/objects/images"

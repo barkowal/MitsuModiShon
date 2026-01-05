@@ -73,7 +73,7 @@ export class AnimationModeHandler {
 
   private handlePlay() {
 
-    const handle = (keyframe: number) => {
+    const handle = () => {
 
       this.animationLoop.start();
 

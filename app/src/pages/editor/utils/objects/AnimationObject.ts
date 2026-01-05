@@ -377,10 +377,7 @@ export class AnimationObject {
     this.addClip(clip, property);
   }
 
-  private timeToKeyframes(seconds: number) {
-    return (seconds * this.fps);
-  }
-
+  // TODO: Add one place for keyframe converting
   private keyframeToTime(keyframe: number) {
     return keyframe / this.fps;
   }

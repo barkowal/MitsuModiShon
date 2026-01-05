@@ -30,7 +30,7 @@ export default function LearnPage() {
           </h1>
 
           <div className="justify-center flex w-full mb-4">
-            <img className="w-[80%] h-auto" aria-label="MitsuModiShon_Overview" alt="App overview" src="src/assets/app_screenshots/MitsuModiShon_Overview.png" />
+            <img className="w-[80%] h-auto" aria-label="MitsuModiShon_Overview" alt="App overview" src="/Screenshots/MitsuModiShon_Overview.png" />
           </div>
 
           <p className="mb-4">
@@ -78,7 +78,7 @@ export default function LearnPage() {
           </h1>
 
           <div className="justify-center flex w-full mb-4">
-            <img className="w-[80%] h-auto" aria-label="MitsuModiShon_AnimationView" alt="AnimationView" src="src/assets/app_screenshots/MitsuModiShon_AnimationView.png" />
+            <img className="w-[80%] h-auto" aria-label="MitsuModiShon_AnimationView" alt="AnimationView" src="/Screenshots/MitsuModiShon_AnimationView.png" />
           </div>
 
           <div className="mb-4">
@@ -114,7 +114,7 @@ export default function LearnPage() {
           </h1>
 
           <div className="justify-center flex w-full mb-4">
-            <img className="w-[40%] h-auto" aria-label="MitsuModiShon_AddObject" alt="Adding objects img" src="src/assets/app_screenshots/MitsuModiShon_AddObject.png" />
+            <img className="w-[40%] h-auto" aria-label="MitsuModiShon_AddObject" alt="Adding objects img" src="/Screenshots/MitsuModiShon_AddObject.png" />
           </div>
 
           <div className="mb-4">
@@ -134,7 +134,7 @@ export default function LearnPage() {
           </h1>
 
           <div className="justify-center flex w-full mb-4">
-            <img className="w-[40%] h-auto" aria-label="MitsuModiShon_AddLight" alt="Adding lights img" src="src/assets/app_screenshots/MitsuModiShon_AddLight.png" />
+            <img className="w-[40%] h-auto" aria-label="MitsuModiShon_AddLight" alt="Adding lights img" src="/Screenshots/MitsuModiShon_AddLight.png" />
           </div>
 
           <div className="mb-4">
@@ -154,7 +154,7 @@ export default function LearnPage() {
           </h1>
 
           <div className="justify-center flex w-full mb-4">
-            <img className="w-[40%] h-auto" aria-label="MitsuModiShon_Layers" alt="Layers img" src="src/assets/app_screenshots/MitsuModiShon_Layers.png" />
+            <img className="w-[40%] h-auto" aria-label="MitsuModiShon_Layers" alt="Layers img" src="/Screenshots/MitsuModiShon_Layers.png" />
           </div>
 
           <div className="mb-4">
@@ -206,7 +206,7 @@ export default function LearnPage() {
           </h1>
 
           <div className="justify-center flex w-full mb-4">
-            <img className="w-[40%] h-auto" aria-label="MitsuModiShon_ObjectMode" alt="Object mode img" src="src/assets/app_screenshots/MitsuModiShon_ObjectMode.png" />
+            <img className="w-[40%] h-auto" aria-label="MitsuModiShon_ObjectMode" alt="Object mode img" src="/Screenshots/MitsuModiShon_ObjectMode.png" />
           </div>
 
           <p className="mb-4">
@@ -222,7 +222,7 @@ export default function LearnPage() {
           </h1>
 
           <div className="justify-center flex w-full mb-4">
-            <img className="w-[40%] h-auto" aria-label="MitsuModiShon_EditMode" alt="Edit mode img" src="src/assets/app_screenshots/MitsuModiShon_EditMode.png" />
+            <img className="w-[40%] h-auto" aria-label="MitsuModiShon_EditMode" alt="Edit mode img" src="/Screenshots/MitsuModiShon_EditMode.png" />
           </div>
 
           <p className="mb-4">
@@ -238,7 +238,7 @@ export default function LearnPage() {
           </h1>
 
           <div className="justify-center flex w-full mb-4">
-            <img className="w-[40%] h-auto" aria-label="MitsuModiShon_PaintMode" alt="Paint mode img" src="src/assets/app_screenshots/MitsuModiShon_PaintMode.png" />
+            <img className="w-[40%] h-auto" aria-label="MitsuModiShon_PaintMode" alt="Paint mode img" src="/Screenshots/MitsuModiShon_PaintMode.png" />
           </div>
 
           <div className="mb-4">
@@ -258,7 +258,7 @@ export default function LearnPage() {
           </h1>
 
           <div className="justify-center flex w-full mb-4">
-            <img className="w-[80%] h-auto" aria-label="MitsuModiShon_Camera" alt="Editor image showing a camera" src="src/assets/app_screenshots/MitsuModiShon_RenderCamera.png" />
+            <img className="w-[80%] h-auto" aria-label="MitsuModiShon_Camera" alt="Editor image showing a camera" src="/Screenshots/MitsuModiShon_RenderCamera.png" />
           </div>
 
           <p className="mb-4">

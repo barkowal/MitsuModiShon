@@ -1,0 +1,45 @@
+version: "3"
+services:
+
+  app:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    networks:
+      mitsu_network:
+        ipv4_address: 172.20.0.4
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    networks:
+      mitsu_network:
+        ipv4_address: 172.20.0.2
+
+  server:
+    build:
+      context: https://github.com/barkowal/MitsuModiShon-Server.git
+      dockerfile: Dockerfile
+    env_file:
+      .server_env
+    ports:
+      - 3000:3000
+    networks:
+      mitsu_network:
+        ipv4_address: 172.20.0.3
+    command: >
+      sh -c "echo ' ' > ./.env && npx prisma migrate deploy && npx prisma generate && npm run dev"
+
+networks:
+  mitsu_network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
