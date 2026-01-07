@@ -2,16 +2,22 @@ version: "3"
 services:
 
   app:
+    container_name: mitsumodishon
+    restart: always
     build:
       context: ../
       dockerfile: Dockerfile
     ports:
-      - 80:80
+      - 8080:80
+    volumes:
+      - app-volume:/app/build
     networks:
       mitsu_network:
         ipv4_address: 172.20.0.4
 
   db:
+    container_name: mitsumodishon_postgres 
+    restart: always
     image: postgres
     environment:
       POSTGRES_PASSWORD: password
@@ -19,11 +25,15 @@ services:
       POSTGRES_DB: postgres
     ports:
       - 5432:5432
+    volumes:
+      - app-volume:/var/lib/db
     networks:
       mitsu_network:
         ipv4_address: 172.20.0.2
 
   server:
+    container_name: mitsumodishon_server
+    restart: always
     build:
       context: https://github.com/barkowal/MitsuModiShon-Server.git
       dockerfile: Dockerfile
@@ -31,15 +41,22 @@ services:
       .server_env
     ports:
       - 3000:3000
+    volumes:
+      - app-volume:/app/backend
     networks:
       mitsu_network:
         ipv4_address: 172.20.0.3
     command: >
       sh -c "echo ' ' > ./.env && npx prisma migrate deploy && npx prisma generate && npm run dev"
 
+volumes:
+  app-volume:
+
 networks:
   mitsu_network:
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: "172.20.0.1"
     ipam:
-      driver: default
       config:
-        - subnet: 172.20.0.0/16
+        - subnet: 172.20.0.0/24
+          gateway: 172.20.0.1
