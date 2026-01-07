@@ -40,22 +40,22 @@ To run the project using Docker Compose, follow these steps:
 Clone the project
 
 ```bash
-  git clone https://github.com/barkowal/MitsuModiShon.git
+git clone https://github.com/barkowal/MitsuModiShon.git
 ```
 
 Go to the docker directory
 
 ```bash
-  cd MitsuModiShon/docker
+cd MitsuModiShon/docker
 ```
 
 Run the command
 
 ```bash
-    docker-compose up --build
+docker compose up --build
 ```
 
-Access the application in your browser: http://localhost
+Access the application in your browser: http://172.20.0.1:8080
 
 ## Technologies and Tools Used
 
