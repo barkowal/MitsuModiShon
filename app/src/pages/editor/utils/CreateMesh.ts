@@ -6,6 +6,7 @@ import { CreateModellingBoxGeometry } from "./objects/Custom/ModellingBoxGeometr
 import { CreateModellingCircleGeometry } from "./objects/Custom/ModellingCircleGeometry";
 import { CreateModellingCylinderGeometry } from "./objects/Custom/ModellingCylinderGeometry";
 import { CreateModellingConeGeometry } from "./objects/Custom/ModellingConeGeometry";
+import { CreateModellingSphereGeometry } from "./objects/Custom/ModellingSphereGeometry.ts";
 
 export const CREATE_OBJECT_TYPES = {
   ModelingPlane: 0,
@@ -57,6 +58,14 @@ export function CreateMesh(meshData: Array<number>): THREE.Mesh {
       const thetaStart = meshData[5] / (100 / (Math.PI * 2));;
       const thetaLength = meshData[6] / (100 / (Math.PI * 2));
       geometry = CreateModellingConeGeometry(meshData[1], meshData[2], meshData[3], meshData[4], false, thetaStart, thetaLength);
+      mesh = new ModellingMesh(geometry, material);
+      break;
+    }
+
+    case CREATE_OBJECT_TYPES.Sphere: {
+      const thetaStart = meshData[4] / (100 / (Math.PI * 2));;
+      const thetaLength = meshData[5] / (100 / (Math.PI));
+      geometry = CreateModellingSphereGeometry(meshData[1], meshData[2], meshData[3], thetaStart, thetaLength);
       mesh = new ModellingMesh(geometry, material);
       break;
     }

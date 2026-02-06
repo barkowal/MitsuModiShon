@@ -68,6 +68,7 @@
     "Circle":"Circle",
     "Cylinder":"Cylinder",
     "Cone":"Cone",
+    "Sphere":"Sphere",
 
     "Width":"Width",
     "Height":"Height",

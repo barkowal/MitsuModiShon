@@ -12,14 +12,14 @@ const AvailableObjects = [
     name: "Plane",
     params: ["Width", "Height", "WidthSegments", "HeightSegments"],
     minValues: [1, 1, 1, 1],
-    maxValues: [20, 20, 10, 10],
+    maxValues: [20, 20, 8, 8],
     defaultValues: [1, 1, 1, 1],
   },
   {
     name: "Box",
     params: ["Width", "Height", "Depth", "WidthSegments", "HeightSegments", "DepthSegments"],
     minValues: [1, 1, 1, 1, 1, 1],
-    maxValues: [20, 20, 20, 10, 10, 10],
+    maxValues: [20, 20, 20, 8, 8, 8],
     defaultValues: [1, 1, 1, 1, 1, 1],
   },
   {
@@ -33,15 +33,22 @@ const AvailableObjects = [
     name: "Cylinder",
     params: ["TopRadius", "BottomRadius", "Height", "RadialSegments", "HeightSegments", "ThetaStart", "ThetaLength"],
     minValues: [1, 1, 1, 3, 1, 0, 0],
-    maxValues: [20, 20, 20, 64, 10, 100, 100],
+    maxValues: [20, 20, 20, 64, 8, 100, 100],
     defaultValues: [1, 1, 1, 16, 1, 0, 100],
   },
   {
     name: "Cone",
     params: ["Radius", "Height", "RadialSegments", "HeightSegments", "ThetaStart", "ThetaLength"],
     minValues: [1, 1, 3, 1, 0, 0],
-    maxValues: [20, 20, 64, 10, 100, 100],
+    maxValues: [20, 20, 64, 8, 100, 100],
     defaultValues: [1, 1, 16, 1, 0, 100],
+  },
+  {
+    name: "Sphere",
+    params: ["Radius", "WidthSegments", "HeightSegments", "ThetaStart", "ThetaLength"],
+    minValues: [1, 3, 3, 0, 0],
+    maxValues: [20, 64, 32, 100, 100],
+    defaultValues: [1, 32, 16, 0, 100],
   },
 ];
 
