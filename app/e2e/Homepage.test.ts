@@ -1,8 +1,9 @@
 import { test, expect } from "@playwright/test";
+import GlobalConfig from "./GlobalConfig";
 
 test.describe("Home Page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:5173");
+    await page.goto(GlobalConfig.baseUrl);
   });
 
   test("Should have correct title and page heading", async ({ page }) => {

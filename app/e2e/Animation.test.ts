@@ -1,9 +1,10 @@
 import { test, expect } from "@playwright/test";
+import GlobalConfig from "./GlobalConfig";
 
 test.describe("Animation", () => {
 
   test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:5173/Animation");
+    await page.goto(GlobalConfig.baseUrl + "/Animation");
   });
 
   test("Should show playback panel and animation button", async ({ page }) => {
@@ -24,7 +25,7 @@ test.describe("Animation", () => {
 
     await page.getByRole("button", { name: "Animate" }).click();
 
-    await expect(page.getByRole("checkbox", {name: "Enable"})).toBeVisible();
+    await expect(page.getByRole("checkbox", { name: "Enable" })).toBeVisible();
     await expect(page.locator("#Loopable")).toBeVisible();
     await expect(page.getByLabel("Animation keyframes")).toBeVisible();
   });
@@ -60,7 +61,7 @@ test.describe("Animation", () => {
 
     await page.getByLabel("Animation keyframes").getByRole("button", { name: "Add" }).click();
 
-    await page.getByRole("checkbox", {name: "Enable"}).click();
+    await page.getByRole("checkbox", { name: "Enable" }).click();
 
     await page.getByLabel("Rewind button").click();
     await page.getByLabel("Rewind button").click();
