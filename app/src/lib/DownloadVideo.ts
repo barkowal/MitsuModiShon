@@ -13,7 +13,7 @@ export const DownloadVideo = async (frames: Array<string>) => {
     await ffmpeg.writeFile(`${i}.png`, imageBlob);
   }
 
-  await ffmpeg.exec(["-framerate", "24", "-i", "%d.png", "output.mp4"]);
+  await ffmpeg.exec(["-framerate", "24", "-i", "%d.png", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-f", "mp4", "output.mp4"]);
 
   const data = await ffmpeg.readFile("output.mp4");
 
