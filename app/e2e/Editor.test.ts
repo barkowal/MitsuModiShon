@@ -1,8 +1,9 @@
 import { test, expect } from "@playwright/test";
+import GlobalConfig from "./GlobalConfig";
 
 test.describe("Editor", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:5173/Editor");
+    await page.goto(GlobalConfig.baseUrl + "/Editor");
   });
 
   test("Should render empty canvas with axes and grid helpers ", async ({ page }) => {
